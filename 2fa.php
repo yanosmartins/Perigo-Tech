@@ -1,5 +1,6 @@
 <?php
 session_start();
+include "conexao.php"; // Usa o mesmo banco do cadastro
 
 // Se o usuário não estiver logado, redireciona para o login
 if (!isset($_SESSION['email'])) {
