@@ -518,14 +518,12 @@
         </div>
     </header>
 
-    <!-- 🚀 Seção do Carrinho -->
     <main class="container" style="padding: 3rem 0;">
         <h1 style="text-align:center; color: var(--primary-color); margin-bottom: 2rem;">
             🛒 Meu Carrinho
         </h1>
 
         <div class="cart">
-            <!-- Produto no carrinho -->
             <div class="cart-item">
                 <img src="./img/rtx_5080.png" alt="Produto" class="cart-img">
                 <div class="cart-details">
@@ -540,7 +538,6 @@
                 </div>
             </div>
 
-            <!-- Total -->
             <div class="cart-total">
                 <h2>Total: R$ 7.999,90</h2>
                 <button class="btn-primary">Finalizar Compra</button>
