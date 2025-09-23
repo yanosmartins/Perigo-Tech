@@ -170,17 +170,21 @@
 
     /* --- Botões --- */
     .btn-primary {
-        background-color: var(--primary-color);
-        color: white;
-        padding: 12px 25px;
-        text-decoration: none;
+       background-color: transparent;
+        color: var(--primary-color);
+        padding: 10px 20px;
+        border: 2px solid var(--primary-color);
         border-radius: 5px;
         font-weight: 700;
-        transition: background-color 0.3s ease;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        width: 20%;
+        margin-top: 1rem;
     }
 
     .btn-primary:hover {
-        background-color: #994907ff;
+        background-color: var(--primary-color);
+        color: white;
     }
 
     .btn-secondary {
