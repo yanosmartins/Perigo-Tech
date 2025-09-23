@@ -12,11 +12,11 @@ function renderProduto($row) {
     echo '<article class="carrossel-item" data-description="' . $row['descricao'] . '">';
     echo '<a href="prod.php?id=' . $row['id_prod'] . '" class="produto-link">';
     echo '<img src="./img/' . $row['img'] . '" alt="' . $row['nome'] . '" id="produto' . $row['id_prod'] . '">';
-    echo '<h3 class="product-name">' . $row['nome'] . '</h3>'; // nome normal
+    echo '<h3 class="product-name">' . $row['nome'] . '</h3>';
     echo '<p class="product-category">' . $row['categoria'] . '</p>';
     echo '<div class="product-price"><span>R$ ' . number_format($row['preco'], 2, ',', '.') . '</span></div>';
-    echo '</a>'; // toda a caixa clicável
-    echo '<button class="btn-secondary">Adicionar ao Carrinho</button>'; // fora do link
+    echo '</a>';
+    echo '<button class="btn-secondary">Adicionar ao Carrinho</button>';
     echo '</article>';
 }
 ?>
@@ -58,7 +58,7 @@ function renderProduto($row) {
         </nav>
         <div class="header-icons">
             <a href="#" aria-label="Pesquisar"><i class="fas fa-search"></i></a>
-            <a href="#" aria-label="Carrinho"><i class="fas fa-shopping-cart"></i> <span>0</span></a>
+            <a href="carrinho.php" aria-label="Carrinho"><i class="fas fa-shopping-cart"></i> <span>0</span></a>
             <a href="#" aria-label="Login"><i class="fas fa-user"></i></a>
         </div>
         <button class="mobile-menu-icon" aria-label="Abrir menu">
