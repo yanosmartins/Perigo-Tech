@@ -417,21 +417,16 @@
 
     .produto-link {
         display: block;
-        /* Link envolve todo o conteúdo */
         text-decoration: none;
-        /* Remove sublinhado */
         color: inherit;
-        /* Mantém a cor do texto normal */
     }
 
     .produto-link:hover {
         cursor: pointer;
-        /* Mostra que é clicável */
     }
 
     .product-name {
         color: inherit;
-        /* Texto normal, sem azul */
     }
 
     .cart {
