@@ -174,7 +174,7 @@ $produto = $result->fetch_assoc();
         cursor: pointer;
         transition: all 0.3s ease;
         width: 100%;
-        margin-top: 1rem;
+        margin-top: 2rem;
     }
 
     .btn-secondary:hover {
@@ -337,7 +337,7 @@ $produto = $result->fetch_assoc();
             </nav>
             <div class="header-icons">
                 <a href="#" aria-label="Pesquisar"><i class="fas fa-search"></i></a>
-                <a href="#" aria-label="Carrinho"><i class="fas fa-shopping-cart"></i> <span>0</span></a>
+                <a href="carrinho.php" aria-label="Carrinho"><i class="fas fa-shopping-cart"></i> <span>0</span></a>
                 <a href="#" aria-label="Login"><i class="fas fa-user"></i></a>
             </div>
         </div>
@@ -352,7 +352,7 @@ $produto = $result->fetch_assoc();
                 <div class="produto-info">
                     <h1><?php echo $produto['nome']; ?></h1>
                     <p class="categoria"><?php echo $produto['categoria']; ?></p>
-                    <p class="descricao"><?php echo $produto['descricao']; ?></p>Á vista
+                    <p class="descricao"><?php echo $produto['descricao']; ?></p>À vista
                     <div class="preco">R$ <?php echo number_format($produto['preco'], 2, ',', '.'); ?></div>
                     <div class="price-box">
                         <p>Parcelamento</p>
@@ -387,7 +387,7 @@ $produto = $result->fetch_assoc();
                             ?>
                         </div>
                     </div>
-
+                    <p>Frete Grátis</p>
                     <button class="btn-secondary">Adicionar ao Carrinho</button>
                 </div>
             </div>
