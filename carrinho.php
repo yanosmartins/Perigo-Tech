@@ -170,7 +170,7 @@
 
     /* --- Botões --- */
     .btn-primary {
-       background-color: transparent;
+        background-color: transparent;
         color: var(--primary-color);
         padding: 10px 20px;
         border: 2px solid var(--primary-color);
@@ -187,7 +187,9 @@
         color: white;
     }
 
-    .btn-secondary {
+    .btn-secondary,
+    .btn-secondary-mais,
+    .btn-secondary-menos {
         background-color: transparent;
         color: var(--primary-color);
         padding: 10px 20px;
@@ -200,7 +202,9 @@
         margin-top: 1rem;
     }
 
-    .btn-secondary:hover {
+    .btn-secondary:hover,
+    .btn-secondary-menos:hover, 
+    .btn-secondary-mais:hover {
         background-color: var(--primary-color);
         color: white;
     }
@@ -434,65 +438,63 @@
     }
 
     .cart {
-    background: #1c1c1c;
-    padding: 2rem;
-    border-radius: 10px;
-    color: white;
-}
+        background: #1c1c1c;
+        padding: 2rem;
+        border-radius: 10px;
+        color: white;
+    }
 
-.cart-item {
-    display: flex;
-    align-items: center;
-    border-bottom: 1px solid #333;
-    padding: 1rem 0;
-}
+    .cart-item {
+        display: flex;
+        align-items: center;
+        border-bottom: 1px solid #333;
+        padding: 1rem 0;
+    }
 
-.cart-img {
-    width: 120px;
-    height: auto;
-    margin-right: 20px;
-    border-radius: 8px;
-    background: #fff;
-    padding: 5px;
-}
+    .cart-img {
+        width: 120px;
+        height: auto;
+        margin-right: 20px;
+        border-radius: 8px;
+        background: #fff;
+        padding: 5px;
+    }
 
-.cart-details {
-    flex: 1;
-}
+    .cart-details {
+        flex: 1;
+    }
 
-.cart-details h3 {
-    margin-bottom: .5rem;
-    color: white;
-}
+    .cart-details h3 {
+        margin-bottom: .5rem;
+        color: white;
+    }
 
-.cart-details .price {
-    color: var(--primary-color);
-    font-weight: bold;
-    margin-bottom: 1rem;
-}
+    .cart-details .price {
+        color: var(--primary-color);
+        font-weight: bold;
+        margin-bottom: 1rem;
+    }
 
-.cart-actions {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-}
+    .cart-actions {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
 
-.cart-actions span {
-    font-size: 1.2rem;
-    font-weight: bold;
-}
+    .cart-actions span {
+        font-size: 1.2rem;
+        font-weight: bold;
+    }
 
-.cart-total {
-    text-align: right;
-    margin-top: 2rem;
-}
+    .cart-total {
+        text-align: right;
+        margin-top: 2rem;
+    }
 
-.cart-total h2 {
-    margin-bottom: 1rem;
-    color: var(--primary-color);
-}
-
-
+    .cart-total h2 {
+        margin-bottom: 1rem;
+        color: var(--primary-color);
+    }
 </style>
 
 <body>
@@ -530,9 +532,9 @@
                     <h3>Placa de Vídeo RTX 5080</h3>
                     <p class="price">R$ 7.999,90</p>
                     <div class="cart-actions">
-                        <button class="btn-secondary">-</button>
+                        <button class="btn-secondary-menos">-</button>
                         <span>1</span>
-                        <button class="btn-secondary">+</button>
+                        <button class="btn-secondary-mais">+</button>
                         <button class="btn-secondary remove">Remover</button>
                     </div>
                 </div>
@@ -575,7 +577,32 @@
             </div>
         </div>
     </footer>
-</body>
+
+    <script>
+        // adicionar
+        const addToCartButtons = document.querySelectorAll('.btn-secondary-mais');
+        addToCartButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                alert('Produto adicionado ao carrinho!');
+            });
+        });
+
+        // remover unidade
+        const removeOneButtons = document.querySelectorAll('.btn-secondary-menos');
+        removeOneButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                alert('Uma unidade do produto foi removida do carrinho!');
+            });
+        });
+
+        // remover produto
+        const removeProductButtons = document.querySelectorAll('.btn-secondary.remove');
+        removeProductButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                alert('Produto removido do carrinho!');
+            });
+        });
+    </script>
 
 </body>
 
