@@ -1,0 +1,1 @@
+SELECT * FROM `cadastro-tech`.cadastro_tech;
