@@ -583,7 +583,7 @@
         const addToCartButtons = document.querySelectorAll('.btn-secondary-mais');
         addToCartButtons.forEach(button => {
             button.addEventListener('click', function() {
-                alert('Produto adicionado ao carrinho!');
+                alert('Produto adicionado ao carrinho(teste)');
             });
         });
 
@@ -591,7 +591,7 @@
         const removeOneButtons = document.querySelectorAll('.btn-secondary-menos');
         removeOneButtons.forEach(button => {
             button.addEventListener('click', function() {
-                alert('Uma unidade do produto foi removida do carrinho!');
+                alert('Uma unidade do produto foi removida do carrinho(teste)');
             });
         });
 
@@ -599,9 +599,16 @@
         const removeProductButtons = document.querySelectorAll('.btn-secondary.remove');
         removeProductButtons.forEach(button => {
             button.addEventListener('click', function() {
-                alert('Produto removido do carrinho!');
+                alert('Produto removido do carrinho(teste)');
             });
         });
+
+        const finalizePurchaseButton = document.querySelector('.btn-primary');
+            if (finalizePurchaseButton) {
+                finalizePurchaseButton.addEventListener('click', function() {
+                    alert('Compra finalizada com sucesso(teste)');
+                });
+            }
     </script>
 
 </body>
