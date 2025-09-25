@@ -425,6 +425,15 @@ $produto = $result->fetch_assoc();
         </div>
     </footer>
 
+    <script>
+        const addToCartButtons = document.querySelectorAll('.btn-secondary');
+        addToCartButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                alert('Produto adicionado ao carrinho!(teste)');
+            });
+        });
+    </script>
+
 </body>
 
 </html>
