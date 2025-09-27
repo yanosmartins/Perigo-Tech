@@ -90,7 +90,7 @@
         color: var(--text-color);
         text-decoration: none;
         font-size: 1.2rem;
-        margin-left: 20px;
+        margin-left: 31px;
         position: relative;
     }
 
@@ -510,7 +510,6 @@
                 </span>
             </nav>
             <div class="header-icons">
-                <a href="#" aria-label="Pesquisar"><i class="fas fa-search"></i></a>
                 <a href="carrinho.php" aria-label="Carrinho"><i class="fas fa-shopping-cart"></i> <span>0</span></a>
                 <a href="#" aria-label="Login"><i class="fas fa-user"></i></a>
             </div>
