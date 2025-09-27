@@ -450,6 +450,60 @@ function renderProduto($row)
         .product-name {
             color: inherit;
         }
+
+        /* --- ANIMAÇÃO: DESLIZAR SUAVEMENTE COM MARGEM --- */
+
+        /* O contêiner principal que segura todos os ícones */
+        .header-icons {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            /* Espaço padrão entre os ícones */
+        }
+
+        /* O contêiner específico da busca */
+        .search-container {
+            display: flex;
+            align-items: center;
+        }
+
+        /* O ícone da lupa. Usamos 'order' para ele aparecer sempre por último no container */
+        .search-button {
+            order: 2;
+            /* Garante que o ícone fique à direita do input */
+            z-index: 10;
+        }
+
+        /* O campo de busca (input) */
+        .search-input {
+            width: 0;
+            padding: 0;
+            border: none;
+            opacity: 0;
+            outline: none;
+
+            border-radius: 20px;
+            background-color: #ffffff;
+            color: #333;
+            font-size: 1rem;
+            height: 40px;
+            margin-left: -20px;
+            transition: all 0.5s ease-out;
+        }
+
+        .search-container.active .search-input {
+            width: 200px;
+            opacity: 1;
+            padding: 0 15px;
+            border: 1px solid #ddd;
+            margin-right: 10px;
+            margin-left: 0;
+        }
+
+        .search-input::placeholder {
+            color: #ff7300;
+            opacity: 1;
+        }
     </style>
 </head>
 
@@ -467,7 +521,11 @@ function renderProduto($row)
                 </span>
             </nav>
             <div class="header-icons">
-                <a href="#" aria-label="Pesquisar"><i class="fas fa-search"></i></a>
+                <div class="search-container">
+                    <input type="text" class="search-input" placeholder="Pesquisar...">
+                    <a href="#" class="search-button" aria-label="Pesquisar"><i class="fas fa-search"></i></a>
+                </div>
+
                 <a href="carrinho.php" aria-label="Carrinho"><i class="fas fa-shopping-cart"></i> <span>0</span></a>
                 <a href="#" aria-label="Login"><i class="fas fa-user"></i></a>
             </div>
@@ -649,6 +707,21 @@ function renderProduto($row)
                     alert('Produto adicionado ao carrinho! (Isso é uma demonstração)');
                 });
             });
+        });
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const searchButton = document.querySelector('.search-button');
+            const searchContainer = document.querySelector('.search-container');
+            const searchInput = document.querySelector('.search-input');
+
+            searchButton.addEventListener('click', function(event) {
+                event.preventDefault();
+                searchContainer.classList.toggle('active');
+                if (searchContainer.classList.contains('active')) {
+                    searchInput.focus();
+                }
+            });
+
         });
     </script>
 
