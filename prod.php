@@ -106,7 +106,7 @@ $produto = $result->fetch_assoc();
         color: var(--text-color);
         text-decoration: none;
         font-size: 1.2rem;
-        margin-left: 20px;
+        margin-left: 31px;
         position: relative;
     }
 
@@ -257,28 +257,28 @@ $produto = $result->fetch_assoc();
     }
 
     @media (max-width: 1024px) {
-    .produto-imagem img {
-        max-width: 600px;
-    }
-}
-
-/* Para celulares */
-@media (max-width: 768px) {
-    .produto-imagem img {
-        max-width: 550px;
-    }
-}
-
-/* Para celulares bem pequenos */
-@media (max-width: 580px) {
-    .produto-imagem img {
-        max-width: 360px;
+        .produto-imagem img {
+            max-width: 600px;
+        }
     }
 
-    .price-box{
-        left: -740px;
+    /* Para celulares */
+    @media (max-width: 768px) {
+        .produto-imagem img {
+            max-width: 550px;
+        }
     }
-}
+
+    /* Para celulares bem pequenos */
+    @media (max-width: 580px) {
+        .produto-imagem img {
+            max-width: 360px;
+        }
+
+        .price-box {
+            left: -740px;
+        }
+    }
 
     .price-box {
         margin: 20px 0;
@@ -289,18 +289,19 @@ $produto = $result->fetch_assoc();
         text-align: center;
         transform: scale(0.86);
         transform-origin: top left;
-        transition: transform 0.3s ease, box-shadow 0.3s ease;cursor: pointer;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        cursor: pointer;
     }
 
     .price-box p {
         margin: 2px 0;
         font-size: 0.85rem;
-        color: #444;
+        color: #ffffff;
         font-weight: 500;
     }
 
     .price-box:hover {
-    box-shadow: -10px 0 15px rgba(197, 81, 14, 0.5), 10px 0 15px rgba(197, 81, 14, 0.5), 0 10px 15px rgba(197, 81, 14, 0.5);
+        box-shadow: -10px 0 15px rgba(197, 81, 14, 0.5), 10px 0 15px rgba(197, 81, 14, 0.5), 0 10px 15px rgba(197, 81, 14, 0.5);
     }
 
 
@@ -318,7 +319,7 @@ $produto = $result->fetch_assoc();
 
     .parcelas-linha span {
         font-size: 1rem;
-        color: #444;
+        color: #ffffff;
     }
 </style>
 
@@ -336,7 +337,6 @@ $produto = $result->fetch_assoc();
                 </span>
             </nav>
             <div class="header-icons">
-                <a href="#" aria-label="Pesquisar"><i class="fas fa-search"></i></a>
                 <a href="carrinho.php" aria-label="Carrinho"><i class="fas fa-shopping-cart"></i> <span>0</span></a>
                 <a href="#" aria-label="Login"><i class="fas fa-user"></i></a>
             </div>
