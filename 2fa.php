@@ -140,24 +140,24 @@ button {
 }
 
 /* Dark Mode */
-body.dark { background-color: #0d1117; color: #c9d1d9; }
-body.dark .container { background-color: #161b22; box-shadow: 0 4px 15px rgba(0,0,0,0.5); color: #c9d1d9; }
-body.dark input { background-color: #0d1117; color: #c9d1d9; border-color: #30363d; }
-body.dark input::placeholder { color: #8b949e; }
-body.dark button { background-color: #238636; color: white; }
-body.dark button:hover { background-color: #2ea043; }
-body.dark .error { color: #f85149; }
-body.dark .theme-toggle { background-color: #c9d1d9; color: #0d1117; }
+    body.dark { background-color: #0d1117; color: #c9d1d9; }
+    body.dark .container { background-color: #161b22; box-shadow: 0 4px 15px rgba(0,0,0,0.5); color: #c9d1d9; }
+    body.dark input { background-color: #0d1117; color: #c9d1d9; border-color: #30363d; }
+    body.dark input::placeholder { color: #8b949e; }
+    body.dark button { background-color: #238636; color: white; }
+    body.dark button:hover { background-color: #2ea043; }
+    body.dark .error { color: #f85149; }
+    body.dark .theme-toggle { background-color: #c9d1d9; color: #0d1117; }
 
 /* Light Mode */
-body.light { background-color: #f5f5f5; color: #0d1117; }
-body.light .container { background-color: #ffffff; box-shadow: 0 4px 15px rgba(0,0,0,0.15); color: #0d1117; }
-body.light input { background-color: #fff; color: #0d1117; border-color: #ccc; }
-body.light input::placeholder { color: #888; }
-body.light button { background-color: #4CAF50; color: white; }
-body.light button:hover { background-color: #45a049; }
-body.light .error { color: red; }
-body.light .theme-toggle { background-color: #0d1117; color: #f5f5f5; }
+    body.light { background-color: #f5f5f5; color: #0d1117; }
+    body.light .container { background-color: #ffffff; box-shadow: 0 4px 15px rgba(0,0,0,0.15); color: #0d1117; }
+    body.light input { background-color: #fff; color: #0d1117; border-color: #ccc; }
+    body.light input::placeholder { color: #888; }
+    body.light button { background-color: #4CAF50; color: white; }
+    body.light button:hover { background-color: #45a049; }
+    body.light .error { color: red; }
+    body.light .theme-toggle { background-color: #0d1117; color: #f5f5f5; }
 
 </style>
 
@@ -183,14 +183,33 @@ body.light .theme-toggle { background-color: #0d1117; color: #f5f5f5; }
   </div>
 
 <script>
-    // ==== Alternar tema escuro/claro ====
-    const toggleBtn = document.getElementById("toggleTheme");
-    toggleBtn.addEventListener("click", () => {
-      document.body.classList.toggle("dark");
-      document.body.classList.toggle("light");
+  // Alternar tema claro/escuro
+  const toggleBtn = document.getElementById("toggleTheme");
 
-      toggleBtn.textContent = document.body.classList.contains("dark") ? "☀️" : "🌙";
-    });
+  // Matém o tema salvo mesmo se der f5
+  if (localStorage.getItem("tema") === "light") {
+      document.body.classList.remove("dark");
+      document.body.classList.add("light");
+      toggleBtn.textContent = "🌙";
+  } else {
+      document.body.classList.remove("light");
+      document.body.classList.add("dark");
+      toggleBtn.textContent = "☀️";
+  }
+
+  toggleBtn.addEventListener("click", () => {
+      if (document.body.classList.contains("dark")) {
+          document.body.classList.remove("dark");
+          document.body.classList.add("light");
+          toggleBtn.textContent = "🌙";
+          localStorage.setItem("tema", "light");
+      } else {
+          document.body.classList.remove("light");
+          document.body.classList.add("dark");
+          toggleBtn.textContent = "☀️";
+          localStorage.setItem("tema", "dark");
+      }
+  });
 </script>
 
 </body>
