@@ -77,8 +77,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <head>
   <meta charset="UTF-8">
   <title>Autenticação 2FA</title>
-  <style>
-/* === Mantive todo seu CSS original === */
+</head>
+
+<style>
 body {
       font-family: Arial, sans-serif;
       display: flex;
@@ -97,13 +98,48 @@ body {
       box-shadow: 0 4px 15px rgba(0,0,0,0.2);
       transition: background-color 0.3s, box-shadow 0.3s, color 0.3s;
 }
+
 h2 { margin-bottom: 20px; }
 .question { margin: 20px 0; font-size: 18px; font-weight: bold; }
-input { width: 100%; padding: 10px; font-size: 16px; margin-bottom: 15px; border-radius: 8px; border: 1px solid; text-align: center; transition: background-color 0.3s, color 0.3s, border-color 0.3s; }
+input { 
+  width: 100%; 
+  padding: 10px; 
+  font-size: 16px; 
+  margin-bottom: 15px; 
+  border-radius: 8px; 
+  border: 1px solid; 
+  text-align: center; 
+  transition: background-color 0.3s, color 0.3s, border-color 0.3s; 
+}
 input::placeholder { transition: color 0.3s; }
-button { width: 100%; padding: 12px; border: none; border-radius: 8px; font-size: 16px; cursor: pointer; font-weight: bold; transition: background-color 0.3s, color 0.3s; }
+button { 
+  width: 100%; 
+  padding: 12px; 
+  border: none; 
+  border-radius: 8px; 
+  font-size: 16px; 
+  cursor: pointer; 
+  font-weight: bold; 
+  transition: background-color 0.3s, color 0.3s; 
+}
 .error { margin-top: 10px; font-size: 14px; transition: color 0.3s; }
-.theme-toggle { position: absolute; top: 20px; right: 20px; width: 40px; height: 40px; border-radius: 50%; border: none; cursor: pointer; font-size: 20px; display: flex; align-items: center; justify-content: center; transition: background-color 0.3s, color 0.3s; }
+.theme-toggle { 
+  position: absolute; 
+  top: 20px; 
+  right: 20px; 
+  width: 40px; 
+  height: 40px; 
+  border-radius: 50%; 
+  border: none; 
+  cursor: pointer; 
+  font-size: 20px; 
+  display: flex; 
+  align-items: center; 
+  justify-content: center; 
+  transition: background-color 0.3s, color 0.3s; 
+}
+
+/* Dark Mode */
 body.dark { background-color: #0d1117; color: #c9d1d9; }
 body.dark .container { background-color: #161b22; box-shadow: 0 4px 15px rgba(0,0,0,0.5); color: #c9d1d9; }
 body.dark input { background-color: #0d1117; color: #c9d1d9; border-color: #30363d; }
@@ -112,6 +148,8 @@ body.dark button { background-color: #238636; color: white; }
 body.dark button:hover { background-color: #2ea043; }
 body.dark .error { color: #f85149; }
 body.dark .theme-toggle { background-color: #c9d1d9; color: #0d1117; }
+
+/* Light Mode */
 body.light { background-color: #f5f5f5; color: #0d1117; }
 body.light .container { background-color: #ffffff; box-shadow: 0 4px 15px rgba(0,0,0,0.15); color: #0d1117; }
 body.light input { background-color: #fff; color: #0d1117; border-color: #ccc; }
@@ -120,8 +158,8 @@ body.light button { background-color: #4CAF50; color: white; }
 body.light button:hover { background-color: #45a049; }
 body.light .error { color: red; }
 body.light .theme-toggle { background-color: #0d1117; color: #f5f5f5; }
-  </style>
-</head>
+
+</style>
 
 <body class="dark">
   <button class="theme-toggle" id="toggleTheme">☀️</button>
