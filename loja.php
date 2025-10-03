@@ -8,6 +8,7 @@ if ($conn->connect_error) {
     die("Conexão falhou: " . $conn->connect_error);
 }
 
+session_start();
 function renderProduto($row)
 {
     echo '<article class="carrossel-item" data-description="' . $row['descricao'] . '">';
@@ -525,9 +526,11 @@ function renderProduto($row)
                     <input type="text" class="search-input" placeholder="Pesquisar...">
                     <a href="#" class="search-button" aria-label="Pesquisar"><i class="fas fa-search"></i></a>
                 </div>
-
                 <a href="carrinho.php" aria-label="Carrinho"><i class="fas fa-shopping-cart"></i> <span>0</span></a>
                 <a href="#" aria-label="Login"><i class="fas fa-user"></i></a>
+                <span>
+                    <nav class="main-nav"><a href="login.php">Entrar/Cadastrar</a></nav>
+                </span>
             </div>
             <button class="mobile-menu-icon" aria-label="Abrir menu">
                 <i class="fas fa-bars"></i>
