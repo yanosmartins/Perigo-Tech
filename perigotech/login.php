@@ -140,6 +140,10 @@ button.login {
   transition: background 0.3s;
 }
 
+.login1{
+  border: none;
+}
+
 .login1 a { 
   width: 100%;
   background: #ff8c00;
@@ -157,7 +161,6 @@ button.login {
   align-items: center;
 
 }
-
 button.login:hover {
   background: #c27524;
 }

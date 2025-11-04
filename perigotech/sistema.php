@@ -123,6 +123,7 @@ $result = $conexao->query($sql);
     <h1>Bem-vindo ao Sistema</h1>
     <p>Olá, <?php echo $usuario; ?>! Você está logado no sistema.</p>
     <p><a href="logout.php">Sair</a></p>
+    <p><a href="loja.php">Voltar</a></p>
 
     <div class="container">
         <table>

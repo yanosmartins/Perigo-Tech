@@ -7,9 +7,14 @@ $conn = new mysqli($host, $user, $password, $dbname);
 if ($conn->connect_error) {
     die("Conexão falhou: " . $conn->connect_error);
 }
-
-// Inicia a sessão para "lembrar" do usuário logado
 session_start();
+
+$search_query = "";
+$search_term_sql = "";
+if (isset($_GET['q']) && !empty(trim($_GET['q']))) {
+    $search_query = trim($_GET['q']);
+    $search_term_sql = $conn->real_escape_string($search_query);
+}
 
 function renderProduto($row)
 {
@@ -20,8 +25,15 @@ function renderProduto($row)
     echo '<p class="product-category">' . htmlspecialchars($row['categorias'], ENT_QUOTES, 'UTF-8') . '</p>';
     echo '<div class="product-price"><span>R$ ' . number_format($row['preco'], 2, ',', '.') . '</span></div>';
     echo '</a>';
-    echo '<button class="btn-secondary">Adicionar ao Carrinho</button>';
+
+    if (isset($_SESSION['nome'])) {
+        echo '<button class="btn-secondary btn-add-cart" data-id="' . $row['id_prod'] . '">Adicionar ao Carrinho</button>';
+    } else {
+        echo '<a href="login.php" class="btn-secondary">Adicionar ao Carrinho</a>';
+    }
+    
     echo '</article>';
+    
 }
 ?>
 
@@ -226,6 +238,12 @@ function renderProduto($row)
             color: white;
         }
 
+        a.btn-secondary {
+            display: block;
+            text-decoration: none;
+            text-align: center;
+}
+
         /* --- Seção de Produtos --- */
         .product-section {
             padding: 4rem 0;
@@ -243,6 +261,11 @@ function renderProduto($row)
             grid-template-columns: 1fr;
             gap: 2rem;
         }
+        
+        .product-grid .carrossel-item {
+            cursor: default;
+        }
+
 
         .product-card {
             background-color: var(--card-bg);
@@ -452,16 +475,13 @@ function renderProduto($row)
 
         .product-name {
             color: white;
-            /* Garante que o nome do produto seja branco */
             font-size: 1.1rem;
             min-height: 4.5em;
-            /* Define uma altura mínima para alinhar os cards */
             display: flex;
             align-items: center;
             justify-content: center;
         }
 
-        /* --- ANIMAÇÃO: DESLIZAR SUAVEMENTE COM MARGEM --- */
 
         .header-icons {
             display: flex;
@@ -477,6 +497,17 @@ function renderProduto($row)
         .search-button {
             order: 2;
             z-index: 10;
+            background: none;
+            border: none;
+            padding: 0;
+            cursor: pointer;
+            color: var(--text-color); 
+            font-size: 1.2rem;
+            margin-left: 1px; 
+            transition: color 0.3s ease;
+        }
+        .search-button:hover {
+             color: #994907ff;
         }
 
         .search-input {
@@ -495,7 +526,7 @@ function renderProduto($row)
         }
 
         .search-container.active .search-input {
-            width: 200px;
+            width: 150px;
             opacity: 1;
             padding: 0 15px;
             border: 1px solid #ddd;
@@ -507,6 +538,42 @@ function renderProduto($row)
             color: #ff7300;
             opacity: 1;
         }
+
+        .admin-menu-container {
+          position: relative;
+          display: inline-block;
+        }
+        .admin-dropdown-content {
+          opacity: 0;
+          visibility: hidden;
+          transform: translateY(-10px);
+          transition: opacity 0.3s ease, transform 0.4s ease, visibility 0.3s;
+          position: absolute;
+          background-color: #1a1a1aff;
+          min-width: 180px;
+          box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.5);
+          z-index: 1001;
+          left: 0;
+          top: 30px;
+          border-radius: 5px;
+        }
+        .admin-dropdown-content a {
+          color: #ff7300; 
+          padding: 12px 16px;
+          text-decoration: none;
+          display: block;
+          font-size: 0.9rem;
+          white-space: nowrap;
+        }
+        .admin-dropdown-content a:hover {
+          background-color: #181818ff;
+          border-radius: 5px;
+        }
+        .admin-dropdown-content.show {
+          opacity: 1;
+          visibility: visible;
+          transform: translateY(0);
+        }
     </style>
 </head>
 
@@ -514,19 +581,23 @@ function renderProduto($row)
 
     <header class="main-header">
         <div class="container">
-            <a href="#" class="logo">Perigo <span>Tech</span></a>
+            <a href="loja.php" class="logo">Perigo <span>Tech</span></a>
             <nav class="main-nav">
-                <a href="#prod_destaq">Produtos em Destaque</a>
-                <a href="#perif">Periféricos</a>
-                <a href="#pc_completo">PCs Completos</a>
                 <a href="#">Início</a>
+                <a href="#prod_destaq"> Em Destaque</a>
+                <a href="#perif">Periféricos</a>
+                <a href="#pc_completo">PCs</a>
+                <a href="#fontes">Fontes</a>
+                <a href="#placas">Placas</a>
             </nav>
 
             <div class="header-icons">
-                <div class="search-container">
-                    <input type="text" class="search-input" placeholder="Pesquisar...">
-                    <a href="#" class="search-button" aria-label="Pesquisar"><i class="fas fa-search"></i></a>
-                </div>
+                
+                <form action="loja.php" method="GET" class="search-container">
+                    <input type="text" name="q" value="<?php echo htmlspecialchars($search_query); ?>" class="search-input" placeholder="Pesquisar...">
+                    <button type="submit" class="search-button" aria-label="Pesquisar"><i class="fas fa-search"></i></button>
+                </form>
+                
                 <a href="carrinho.php" aria-label="Carrinho"><i class="fas fa-shopping-cart"></i> <span>0</span></a>
                 <?php if (isset($_SESSION['nome'])) : ?>
                     <span style="font-size: 1rem; font-weight: 700; color: #000; white-space: nowrap;">
@@ -537,6 +608,19 @@ function renderProduto($row)
                 <?php else : ?>
                     <a href="login.php" aria-label="Login"><i class="fas fa-user"></i></a>
                     <a href="login.php" style="font-size: 1rem; font-weight: 700; white-space: nowrap;">Entrar/Cadastrar</a>
+                <?php endif; ?>
+                <?php
+                $admin_users = ['admin', 'master'];
+                if (isset($_SESSION['login']) && in_array($_SESSION['login'], $admin_users)) : 
+                ?>
+                <div class="admin-menu-container">
+                    <a href="#" id="admin-menu-button" aria-label="Painel Admin" title="Painel Admin">
+                        <i class="fas fa-cog"></i>
+                    </a>
+                    <div id="admin-menu-dropdown" class="admin-dropdown-content">
+                        <a href="sistema.php">Gerenciar Cadastros</a>
+                    </div>
+                </div>
                 <?php endif; ?>
             </div>
             <button class="mobile-menu-icon" aria-label="Abrir menu">
@@ -561,99 +645,150 @@ function renderProduto($row)
             </div>
         </section>
 
-        <section id="prod_destaq" class="product-section secao-carrossel">
-            <div class="container" style="text-align: center; width: 100%;">
-                <h2>Produtos em Destaque</h2>
-                <div style="display: flex; align-items: center; justify-content: center;">
-                    <button class="btn-carrossel esquerda" onclick="scrollCarrossel(-1, 'carrossel-destaques')">❮</button>
-                    <div class="carrossel-wrapper">
-                        <div class="horizontal" id="carrossel-destaques">
-                            <?php
-                            $categorias_destaque = ['Placas de Vídeo', 'Processadores', 'Armazenamento', 'Memória RAM', 'Monitor'];
-                            $sql = "SELECT * FROM produtos WHERE categorias IN ('" . implode("','", $categorias_destaque) . "')";
-                            $result = $conn->query($sql);
-                            if ($result->num_rows > 0) {
-                                while ($row = $result->fetch_assoc()) renderProduto($row);
-                            } else {
-                                echo "<p>Nenhum produto encontrado.</p>";
-                            }
-                            ?>
-                        </div>
-                    </div>
-                    <button class="btn-carrossel direita" onclick="scrollCarrossel(1, 'carrossel-destaques')">❯</button>
-                </div>
-            </div>
-        </section>
+        <?php if (!empty($search_query)) : ?>
 
-        <section id="perif" class="product-section secao-carrossel">
-            <div class="container" style="text-align: center; width: 100%;">
-                <h2>Periféricos</h2>
-                <div style="display: flex; align-items: center; justify-content: center;">
-                    <button class="btn-carrossel esquerda" onclick="scrollCarrossel(-1, 'carrossel-perifericos')">❮</button>
-                    <div class="carrossel-wrapper">
-                        <div class="horizontal" id="carrossel-perifericos">
-                            <?php
-                            $sql = "SELECT * FROM produtos WHERE categorias IN ('Microfones', 'Periféricos', 'Áudio', 'Pen Drive')";
-                            $result = $conn->query($sql);
-                            if ($result->num_rows > 0) {
-                                while ($row = $result->fetch_assoc()) renderProduto($row);
-                            } else {
-                                echo "<p>Nenhum periférico encontrado.</p>";
+            <section id="search-results" class="product-section">
+                <div class="container" style="text-align: center; width: 100%;">
+                    <h2>Resultados para "<?php echo htmlspecialchars($search_query); ?>"</h2>
+                    <div class="product-grid" style="margin-top: 2rem; padding: 0 20px;">
+                        <?php
+                        $sql_search = "SELECT * FROM produtos 
+                                       WHERE nomeprod LIKE '%$search_term_sql%'
+                                          OR categorias LIKE '%$search_term_sql%'";
+                        
+                        $result_search = $conn->query($sql_search);
+                        
+                        if ($result_search && $result_search->num_rows > 0) {
+                            while ($row = $result_search->fetch_assoc()) {
+                                renderProduto($row);
                             }
-                            ?>
-                        </div>
+                        } else {
+                            echo '<p style="color: white; font-size: 1.2rem; grid-column: 1 / -1;">Nenhum produto encontrado para sua busca.</p>';
+                        }
+                        ?>
                     </div>
-                    <button class="btn-carrossel direita" onclick="scrollCarrossel(1, 'carrossel-perifericos')">❯</button>
                 </div>
-            </div>
-        </section>
+            </section>
 
-        <section id="pc_completo" class="product-section secao-carrossel">
-            <div class="container" style="text-align: center; width: 100%;">
-                <h2>Computadores</h2>
-                <div style="display: flex; align-items: center; justify-content: center;">
-                    <button class="btn-carrossel esquerda" onclick="scrollCarrossel(-1, 'carrossel-computadores')">❮</button>
-                    <div class="carrossel-wrapper">
-                        <div class="horizontal" id="carrossel-computadores">
-                            <?php
-                            $sql = "SELECT * FROM produtos WHERE categorias = 'Computadores'";
-                            $result = $conn->query($sql);
-                            if ($result->num_rows > 0) {
-                                while ($row = $result->fetch_assoc()) renderProduto($row);
-                            } else {
-                                echo "<p>Nenhum computador encontrado.</p>";
-                            }
-                            ?>
+        <?php else : ?>
+
+            <section id="prod_destaq" class="product-section secao-carrossel">
+                <div class="container" style="text-align: center; width: 100%;">
+                    <h2>Produtos em Destaque</h2>
+                    <div style="display: flex; align-items: center; justify-content: center;">
+                        <button class="btn-carrossel esquerda" onclick="scrollCarrossel(-1, 'carrossel-destaques')">❮</button>
+                        <div class="carrossel-wrapper">
+                            <div class="horizontal" id="carrossel-destaques">
+                                <?php
+                                $categorias_destaque = ['Placas de vídeo2', 'Processadores', 'Armazenamento', 'Memória RAM', 'Monitor'];
+                                $sql = "SELECT * FROM produtos WHERE categorias IN ('" . implode("','", $categorias_destaque) . "')";
+                                $result = $conn->query($sql);
+                                if ($result->num_rows > 0) {
+                                    while ($row = $result->fetch_assoc()) renderProduto($row);
+                                } else {
+                                    echo "<p>Nenhum produto encontrado.</p>";
+                                }
+                                ?>
+                            </div>
                         </div>
+                        <button class="btn-carrossel direita" onclick="scrollCarrossel(1, 'carrossel-destaques')">❯</button>
                     </div>
-                    <button class="btn-carrossel direita" onclick="scrollCarrossel(1, 'carrossel-computadores')">❯</button>
                 </div>
-            </div>
-        </section>
+            </section>
 
-        <section id="fontes" class="product-section secao-carrossel">
-            <div class="container" style="text-align: center; width: 100%;">
-                <h2>Fontes</h2>
-                <div style="display: flex; align-items: center; justify-content: center;">
-                    <button class="btn-carrossel esquerda" onclick="scrollCarrossel(-1, 'carrossel-fontes')">❮</button>
-                    <div class="carrossel-wrapper">
-                        <div class="horizontal" id="carrossel-fontes">
-                            <?php
-                            $sql = "SELECT * FROM produtos WHERE categorias = 'Fontes'";
-                            $result = $conn->query($sql);
-                            if ($result->num_rows > 0) {
-                                while ($row = $result->fetch_assoc()) renderProduto($row);
-                            } else {
-                                echo "<p>Nenhuma fonte encontrada.</p>";
-                            }
-                            ?>
+            <section id="perif" class="product-section secao-carrossel">
+                <div class="container" style="text-align: center; width: 100%;">
+                    <h2>Periféricos</h2>
+                    <div style="display: flex; align-items: center; justify-content: center;">
+                        <button class="btn-carrossel esquerda" onclick="scrollCarrossel(-1, 'carrossel-perifericos')">❮</button>
+                        <div class="carrossel-wrapper">
+                            <div class="horizontal" id="carrossel-perifericos">
+                                <?php
+                                $sql = "SELECT * FROM produtos WHERE categorias IN ('Microfones', 'Periféricos', 'Áudio', 'Pen Drive')";
+                                $result = $conn->query($sql);
+                                if ($result->num_rows > 0) {
+                                    while ($row = $result->fetch_assoc()) renderProduto($row);
+                                } else {
+                                    echo "<p>Nenhum periférico encontrado.</p>";
+                                }
+                                ?>
+                            </div>
                         </div>
+                        <button class="btn-carrossel direita" onclick="scrollCarrossel(1, 'carrossel-perifericos')">❯</button>
                     </div>
-                    <button class="btn-carrossel direita" onclick="scrollCarrossel(1, 'carrossel-fontes')">❯</button>
                 </div>
-            </div>
-        </section>
+            </section>
 
+            <section id="pc_completo" class="product-section secao-carrossel">
+                <div class="container" style="text-align: center; width: 100%;">
+                    <h2>Computadores</h2>
+                    <div style="display: flex; align-items: center; justify-content: center;">
+                        <button class="btn-carrossel esquerda" onclick="scrollCarrossel(-1, 'carrossel-computadores')">❮</button>
+                        <div class="carrossel-wrapper">
+                            <div class="horizontal" id="carrossel-computadores">
+                                <?php
+                                $sql = "SELECT * FROM produtos WHERE categorias = 'Computadores'";
+                                $result = $conn->query($sql);
+                                if ($result->num_rows > 0) {
+                                    while ($row = $result->fetch_assoc()) renderProduto($row);
+                                } else {
+                                    echo "<p>Nenhum computador encontrado.</p>";
+                                }
+                                ?>
+                            </div>
+                        </div>
+                        <button class="btn-carrossel direita" onclick="scrollCarrossel(1, 'carrossel-computadores')">❯</button>
+                    </div>
+                </div>
+            </section>
+
+            <section id="fontes" class="product-section secao-carrossel">
+                <div class="container" style="text-align: center; width: 100%;">
+                    <h2>Fontes</h2>
+                    <div style="display: flex; align-items: center; justify-content: center;">
+                        <button class="btn-carrossel esquerda" onclick="scrollCarrossel(-1, 'carrossel-fontes')">❮</button>
+                        <div class="carrossel-wrapper">
+                            <div class="horizontal" id="carrossel-fontes">
+                                <?php
+                                $sql = "SELECT * FROM produtos WHERE categorias = 'Fontes'";
+                                $result = $conn->query($sql);
+                                if ($result->num_rows > 0) {
+                                    while ($row = $result->fetch_assoc()) renderProduto($row);
+                                } else {
+                                    echo "<p>Nenhuma fonte encontrada.</p>";
+                                }
+                                ?>
+                            </div>
+                        </div>
+                        <button class="btn-carrossel direita" onclick="scrollCarrossel(1, 'carrossel-fontes')">❯</button>
+                    </div>
+                </div>
+            </section>
+            
+            <section id="placas" class="product-section secao-carrossel">
+                <div class="container" style="text-align: center; width: 100%;">
+                    <h2>Placas de Vídeo</h2>
+                    <div style="display: flex; align-items: center; justify-content: center;">
+                        <button class="btn-carrossel esquerda" onclick="scrollCarrossel(-1, 'carrossel-placas')">❮</button>
+                        <div class="carrossel-wrapper">
+                            <div class="horizontal" id="carrossel-placas">
+                                <?php
+                                $sql = "SELECT * FROM produtos WHERE categorias = 'Placas de vídeo'";
+                                $result = $conn->query($sql);
+                                if ($result->num_rows > 0) {
+                                    while ($row = $result->fetch_assoc()) renderProduto($row);
+                                } else {
+                                    echo "<p>Nenhuma Placa encontrada.</p>";
+                                }
+                                ?>
+                            </div>
+                        </div>
+                        <button class="btn-carrossel direita" onclick="scrollCarrossel(1, 'carrossel-placas')">❯</button>
+                    </div>
+                </div>
+            </section>
+
+        <?php endif; ?>
         <footer class="main-footer">
             <div class="container">
                 <div class="footer-content">
@@ -688,16 +823,9 @@ function renderProduto($row)
     </main>
 
     <script>
-        function scrollCarrossel(direction, carrosselId) {
-            const carrossel = document.getElementById(carrosselId);
-            const itemWidth = carrossel.querySelector('.carrossel-item').offsetWidth + 30;
-            carrossel.scrollBy({
-                left: itemWidth * direction,
-                behavior: 'smooth'
-            });
-        }
-
         document.addEventListener('DOMContentLoaded', function() {
+            
+            // Menu Mobile
             const mobileMenuIcon = document.querySelector('.mobile-menu-icon');
             const mobileNav = document.querySelector('.mobile-nav');
             mobileMenuIcon.addEventListener('click', function() {
@@ -708,26 +836,88 @@ function renderProduto($row)
             });
 
             // Adicionar ao Carrinho
-            const addToCartButtons = document.querySelectorAll('.btn-secondary');
+            const addToCartButtons = document.querySelectorAll('.btn-add-cart'); 
             addToCartButtons.forEach(button => {
                 button.addEventListener('click', function() {
-                    alert('Produto adicionado ao carrinho! (Isso é uma demonstração)');
+                    const produtoId = this.dataset.id;
+                    alert('Produto ' + produtoId + ' adicionado ao carrinho! (Isso é uma demonstração)');
                 });
             });
 
-            // Barra de Pesquisa
-            const searchButton = document.querySelector('.search-button');
-            const searchContainer = document.querySelector('.search-container');
-            const searchInput = document.querySelector('.search-input');
 
+            // Barra de Pesquisa
+            const searchForm = document.querySelector('.search-container');
+            const searchButton = document.querySelector('.search-button');
+            const searchInput = document.querySelector('.search-input');
+            const searchContainer = searchForm;
+
+            if (searchInput.value.trim() !== "") {
+                searchContainer.classList.add('active');
+            }
             searchButton.addEventListener('click', function(event) {
-                event.preventDefault();
-                searchContainer.classList.toggle('active');
-                if (searchContainer.classList.contains('active')) {
+                const isActive = searchContainer.classList.contains('active');
+                const isEmpty = searchInput.value.trim() === "";
+                if (!isActive) {
+                    event.preventDefault(); // Impede o envio
+                    searchContainer.classList.add('active');
                     searchInput.focus();
+                } 
+                else if (isActive && isEmpty) {
+                    event.preventDefault(); // Impede o envio
+                    searchContainer.classList.remove('active');
                 }
             });
-        });
+
+            searchForm.addEventListener('submit', function(event) {
+                const isEmpty = searchInput.value.trim() === "";
+                if (isEmpty) {
+                    event.preventDefault(); 
+                    window.location.href = 'loja.php';
+                }
+            });
+
+            
+            searchInput.addEventListener('input', function() {
+                const termo = searchInput.value.trim();
+                const urlAtual = new URL(window.location.href);
+                if (termo === "" && urlAtual.searchParams.has('q')) {
+                    window.location.href = 'loja.php';
+                }
+            });
+
+
+            // Engrenagem admin 
+            const adminButton = document.getElementById('admin-menu-button');
+            if (adminButton) {
+                adminButton.addEventListener('click', function(event) {
+                    event.preventDefault(); 
+                    const dropdown = document.getElementById('admin-menu-dropdown');
+                    dropdown.classList.toggle('show');
+                });
+            }
+
+            window.addEventListener('click', function(event) {
+                if (!event.target.closest('#admin-menu-button')) {
+                    const dropdowns = document.querySelectorAll('.admin-dropdown-content');
+                    dropdowns.forEach(dropdown => {
+                        if (dropdown.classList.contains('show')) {
+                            dropdown.classList.remove('show');
+                        }
+                    });
+                }
+            });
+
+        }); 
+
+        // Carrossel 
+        function scrollCarrossel(direction, carrosselId) {
+            const carrossel = document.getElementById(carrosselId);
+            const itemWidth = carrossel.querySelector('.carrossel-item').offsetWidth + 30;
+            carrossel.scrollBy({
+                left: itemWidth * direction,
+                behavior: 'smooth'
+            });
+        }
     </script>
 
 </body>

@@ -8,7 +8,6 @@ if ($conn->connect_error) {
     die("Conexão falhou: " . $conn->connect_error);
 }
 
-// ADICIONADO: Inicia a sessão para "lembrar" do utilizador ligado
 session_start();
 if (!isset($_GET['id'])) {
     die("Produto não especificado.");
@@ -336,10 +335,12 @@ $produto = $result->fetch_assoc();
             <a href="loja.php" class="logo">Perigo <span>Tech</span></a>
             <nav class="main-nav">
                 <span>
-                    <a href="loja.php#prod_destaq">Produtos em Destaque</a>
-                    <a href="loja.php#perif">Periféricos</a>
-                    <a href="loja.php#pc_completo">PCs Completos</a>
-                    <a href="loja.php#">Início</a>
+                <a href="loja.php#">Início</a>
+                <a href="loja.php#prod_destaq"> Em Destaque</a>
+                <a href="loja.php#perif">Periféricos</a>
+                <a href="loja.php#pc_completo">PCs</a>
+                <a href="loja.php#fontes">Fontes</a>
+                <a href="loja.php#placas">Placas</a>
                 </span>
             </nav>
             <div class="header-icons">
@@ -449,3 +450,4 @@ $produto = $result->fetch_assoc();
 </body>
 
 </html>
+

@@ -39,7 +39,7 @@ CREATE TABLE `cadastro_tech` (
   `email` varchar(110) NOT NULL,
   `telefone` varchar(15) NOT NULL,
   `data_nasc` date NOT NULL,
-  `endereco` varchar(45) NOT NULL,
+  `endereco` varchar(200) NOT NULL,
   `sexo` varchar(15) NOT NULL,
   `cep` varchar(15) NOT NULL,
   `senha` varchar(45) NOT NULL,
@@ -52,8 +52,8 @@ CREATE TABLE `cadastro_tech` (
 --
 
 INSERT INTO `cadastro_tech` (`idusuarios`, `nome`, `cpf`, `email`, `telefone`, `data_nasc`, `endereco`, `sexo`, `cep`, `senha`, `login`, `nome_mae`) VALUES
-(31, 'admin', '170.385.747-01', 'admin@admin.com', '(21) 99802-7990', '2025-09-19', 'Rua Alto Parnaiba, Campo Grande, Rio de Janei', 'Masculino', '23015210', 'admin', 'admin', 'admin'),
-(32, 'lojapc', '170.385.747-01', 'lojapc@gmail.com', '(21) 99802-7990', '2025-09-10', 'Rua Alto Parnaiba, Campo Grande, Rio de Janei', 'Masculino', '23015210', '1234', 'lojapc', 'monique');
+(31, 'admin', '170.385.747-01', 'admin@admin.com', '(21) 99802-7990', '2025-09-19', 'Rua Alto Parnaiba, Campo Grande, Rio de Janeiro', 'Masculino', '23015210', 'admin', 'admin', 'admin'),
+(32, 'lojapc', '170.385.747-01', 'lojapc@gmail.com', '(21) 99802-7990', '2025-09-10', 'Rua Alto Parnaiba, Campo Grande, Rio de Janeiro', 'Masculino', '23015210', '1234', 'lojapc', 'monique');
 
 -- --------------------------------------------------------
 
@@ -62,7 +62,7 @@ INSERT INTO `cadastro_tech` (`idusuarios`, `nome`, `cpf`, `email`, `telefone`, `
 --
 
 CREATE TABLE `produtos` (
-  `id_prod` int PRIMARY KEY AUTO_INCREMENT NOT NULL,
+  `id_prod` int PRIMARY KEY AUTO_INCREMENT,
   `nomeprod` varchar(255) NOT NULL,
   `categorias` varchar(100) NOT NULL,
   `descricao` text NOT NULL,
@@ -75,7 +75,7 @@ CREATE TABLE `produtos` (
 --
 
 INSERT INTO `produtos` (`nomeprod`, `categorias`, `descricao`, `preco`, `img`) VALUES
-('Placa de Vídeo RTX 5080', 'Placas de Vídeo', 'A nova RTX 5080 oferece um salto de performance geracional com a arquitetura de última geração da NVIDIA. Ideal para jogos em 4K com Ray Tracing no máximo e para criadores de conteúdo que exigem velocidade.', 7999.90, 'rtx_5080.png'),
+('Placa de Vídeo RTX 5080', 'Placas de Vídeo2', 'A nova RTX 5080 oferece um salto de performance geracional com a arquitetura de última geração da NVIDIA. Ideal para jogos em 4K com Ray Tracing no máximo e para criadores de conteúdo que exigem velocidade.', 7999.90, 'rtx_5080.png'),
 ('Processador Core i9 15900K', 'Processadores', 'O processador Core i9 15900K é a escolha definitiva para entusiastas e gamers que buscam o máximo de desempenho. Com seus múltiplos núcleos e altas frequências, ele encara qualquer tarefa pesada sem dificuldades.', 3899.90, 'i9.webp'),
 ('SSD NVMe 2TB SuperSpeed', 'Armazenamento', 'Elimine as telas de carregamento com o SSD NVMe de 2TB. Com velocidades de leitura e escrita ultrarrápidas, seus jogos e programas carregarão em um piscar de olhos.', 1199.90, 'ssd_nvme.png'),
 ('Memória RAM DDR5 32GB (2x16)', 'Memória RAM', 'Este kit de 32GB (2x16GB) de memória RAM DDR5 é perfeito para multitarefa e jogos de alta performance. A tecnologia DDR5 garante maior largura de banda e eficiência para o seu sistema.', 899.90, 'memoria_ram.png'),
@@ -94,7 +94,12 @@ INSERT INTO `produtos` (`nomeprod`, `categorias`, `descricao`, `preco`, `img`) V
 ('Fonte Aerocool KCAS 500W, 80 Plus Bronze, PFC Ativo', 'Fontes', 'Compacta e eficiente, a Fonte Aerocool KCAS 500W oferece desempenho estável para computadores de entrada e intermediários. Ideal para quem busca segurança e economia.', 229.90, 'fonte2.png'),
 ('Fonte Corsair CV550, 550W, 80 Plus Bronze, PFC Ativo', 'Fontes', 'A Corsair CV550 entrega 550W de potência real com certificação 80 Plus Bronze. Confiabilidade e baixo ruído para setups gamers e de produtividade.', 319.90, 'fonte3.png'),
 ('Fonte Redragon RGPS 600W, 80 Plus Bronze, PFC Ativo', 'Fontes', 'Robusta e eficiente, a Fonte Redragon RGPS 600W é perfeita para gamers exigentes. Com certificação 80 Plus Bronze e cabos organizados, garante potência com estilo.', 359.90, 'fonte4.png'),
-('Fonte EVGA 700W White, 80 Plus White, PFC Ativo', 'Fontes', 'Para quem precisa de energia confiável em configurações mais exigentes, a Fonte EVGA 700W White oferece alta potência com excelente custo-benefício.', 419.90, 'fonte5.png');
+('Fonte EVGA 700W White, 80 Plus White, PFC Ativo', 'Fontes', 'Para quem precisa de energia confiável em configurações mais exigentes, a Fonte EVGA 700W White oferece alta potência com excelente custo-benefício.', 419.90, 'fonte5.png')
+('Placa de Vídeo ASUS Dual GeForce GTX 1650, 4GB GDDR6', 'Placas de Vídeo2', 'A ASUS Dual GTX 1650 oferece ótimo desempenho gráfico para jogos em Full HD. Com design compacto e refrigeração eficiente, é ideal para quem busca custo-benefício e confiabilidade.', 999.90, 'gpu1.png'),
+('Placa de Vídeo Gigabyte Radeon RX 6600 Eagle, 8GB GDDR6', 'Placas de Vídeo2', 'Com alto desempenho e excelente eficiência energética, a RX 6600 Eagle é perfeita para jogos modernos em 1080p e 1440p. Ideal para quem busca desempenho sólido sem gastar muito.', 1599.90, 'gpu2.png'),
+('Placa de Vídeo MSI GeForce RTX 3060 Ventus 2X, 12GB GDDR6', 'Placas de Vídeo2', 'A RTX 3060 da MSI entrega potência para jogos exigentes e tarefas de criação. Equipada com DLSS e Ray Tracing, oferece gráficos incríveis e excelente refrigeração.', 2299.90, 'gpu3.png'),
+('Placa de Vídeo Zotac Gaming GeForce RTX 4060 Twin Edge, 8GB GDDR6', 'Placas de Vídeo2', 'Compacta, silenciosa e poderosa, a RTX 4060 Twin Edge é ideal para gamers que buscam desempenho de nova geração com eficiência e ótimo custo-benefício.', 2599.90, 'gpu4.png'),
+('Placa de Vídeo Gigabyte GeForce RTX 4070 Ti Eagle OC, 12GB GDDR6X', 'Placas de Vídeo2', 'Com desempenho extremo e design imponente, a RTX 4070 Ti Eagle OC é voltada para entusiastas e criadores. Oferece Ray Tracing avançado e excelente resfriamento.', 5199.90, 'gpu5.png');
 
 
 --

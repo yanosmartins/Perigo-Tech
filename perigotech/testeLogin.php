@@ -29,7 +29,7 @@
              $_SESSION['login'] = $login;
              $_SESSION['senha'] = $senha;
              if ($user['login'] === 'admin' && $user['senha'] === 'admin') {
-                 header('Location: sistema.php');
+                 header('Location: loja.php');
                  exit();
              } else {
                  header('Location: 2fa.php');
