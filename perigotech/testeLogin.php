@@ -1,41 +1,39 @@
 <?php
 session_start();
+include_once('config.php'); // conexão com o banco
 
 if (isset($_POST['submit']) && !empty($_POST['login']) && !empty($_POST['senha'])) {
 
-    include_once('config.php');
     $login = $_POST['login'];
     $senha = $_POST['senha'];
 
+    // Consulta o usuário no banco
+    $stmt = $conexao->prepare("SELECT * FROM cadastro_tech WHERE login = ? AND senha = ?");
+    $stmt->bind_param("ss", $login, $senha);
+    $stmt->execute();
+    $result = $stmt->get_result();
 
-    $sql = "SELECT * FROM usuarios WHERE login = '$login' and senha = '$senha'";
-    
-    $result = $conexao->query($sql);
-
-    unset($_SESSION['senha']);
-    if (mysqli_num_rows($result) < 1) {
-        echo "Login inválido! ";
-        unset($_SESSION['login']);
-        header('Location: login.php');
+    if ($result->num_rows < 1) {
+        // Usuário não cadastrado
+        header('Location: login.php?erro=nao_cadastrado');
         exit();
     } else {
         $user = $result->fetch_assoc();
-        $_SESSION['id'] = $user['id'];
-        $_SESSION['nome'] = $user['nome'];
-        $_SESSION['login'] = $login;
 
-        if ($user['tipo'] == 'master') {
-            $_SESSION['admin'] = true;
-            // header('Location: 2fa.php');
-            // exit();
-        } else {
-            $_SESSION['admin'] = false;
-            // header('Location: 2fa.php');
-            // exit();
-        }
+        // Define variáveis de sessão
+        $_SESSION['id'] = $user['idusuarios'];
+        $_SESSION['nome'] = $user['nome'];
+        $_SESSION['login'] = $user['login'];
+        $_SESSION['tipo_user'] = $user['tipo_user'];
+        $_SESSION['log_registrado'] = false; // flag para impedir log duplicado
+
+        // Redireciona para o 2FA
         header('Location: 2fa.php');
+        exit();
     }
 } else {
-    echo "Login inválido! ";
-    header('Location: login.php');
+
+    header('Location: login.php?erro=1');
+    exit();
 }
+?>
