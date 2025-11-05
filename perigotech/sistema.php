@@ -1,6 +1,6 @@
 <?php
-session_start();
 include_once('config.php');
+session_start();
 
 $admin_users = ['admin', 'master'];
 if (!isset($_SESSION['login']) || empty($_SESSION['login'])) {
@@ -14,7 +14,19 @@ if (!in_array($_SESSION['login'], $admin_users)) {
 }
 $usuario = htmlspecialchars($_SESSION['login'], ENT_QUOTES, 'UTF-8');
 
-$sql = "SELECT * FROM cadastro_tech";
+// ===== FILTROS =====
+$filtro_id = isset($_GET['id']) ? trim($_GET['id']) : '';
+$filtro_nome = isset($_GET['nome']) ? trim($_GET['nome']) : '';
+
+$sql = "SELECT * FROM usuarios WHERE 1=1";
+if ($filtro_id !== '') {
+    $sql .= " AND id = " . intval($filtro_id);
+}
+if ($filtro_nome !== '') {
+    $nomeEscapado = $conexao->real_escape_string($filtro_nome);
+    $sql .= " AND nome LIKE '%$nomeEscapado%'";
+}
+
 $result = $conexao->query($sql);
 ?>
 <!DOCTYPE html>
@@ -25,158 +37,116 @@ $result = $conexao->query($sql);
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css">
 <title>Sistema</title>
 <style>
-    
-    * {
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
-        font-family: 'Poppins', sans-serif;
-    }
-
-    html, body {
-        width: 100%;
-        height: 100%;
-    }
-
-    body {
-        background-color: #1e1e1e;
-        color: #fff;
-        display: flex;
-        flex-direction: column;
-        justify-content: flex-start;
-        align-items: center;
-        padding: 10px;
-        overflow: auto;
-    }
-
-    h1 {
-        color: #ffa500;
-        margin-bottom: 5px;
-    }
-
-    p {
-        margin-bottom: 10px;
-        font-size: 1.1rem;
-    }
-
-    a {
-        color: #ff9900;
-        text-decoration: none;
-        font-weight: bold;
-        transition: 0.3s;
-    }
-
-    a:hover {
-        color: #ffb347;
-    }
-
-    
-    .container {
-        flex: 1;
-        width: 60%;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-    }
-
-    table {
-        width: 100%;
-        height: 100%;
-        border-collapse: collapse;
-        background-color: #2e2e2e;
-        border: 2px solid #ff9900;
-    }
-
-    table thead tr {
-        background-color: #ff9900;
-        color: #1e1e1e;
-    }
-
-    table th, table td {
-        padding: 10px;
-        text-align: center;
-        border: 1px solid #ffa500;
-        word-wrap: break-word;
-    }
-
-    table tbody tr:nth-child(even) {
-        background-color: #3a3a3a;
-    }
-
-    table tbody tr:hover {
-        background-color: #ffb347;
-        color: #1e1e1e;
-    }
-
-    table td strong {
-        color: #ffa500;
-    }
-
-    
-    table tbody {
-        height: calc(100% - 40px); 
-    }
-
+/* (mantém teu CSS original) */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Poppins', sans-serif;
+}
+body {
+    background-color: #1e1e1e;
+    color: #fff;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 10px;
+}
+h1 { color: #ffa500; margin-bottom: 5px; }
+a { color: #ff9900; text-decoration: none; font-weight: bold; transition: 0.3s; }
+a:hover { color: #ffb347; }
+.container { width: 90%; margin-top: 20px; }
+table { width: 100%; border-collapse: collapse; background-color: #2e2e2e; border: 2px solid #ff9900; }
+table thead tr { background-color: #ff9900; color: #1e1e1e; }
+table th, table td { padding: 10px; text-align: center; border: 1px solid #ffa500; word-wrap: break-word; }
+table tbody tr:nth-child(even) { background-color: #3a3a3a; }
+table tbody tr:hover { background-color: #ffb347; color: #1e1e1e; }
+.filter-form {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 15px;
+    justify-content: center;
+}
+.filter-form input {
+    padding: 5px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+}
+.filter-form button {
+    background-color: #ff7300;
+    border: none;
+    color: white;
+    padding: 6px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+}
 </style>
 </head>
 <body>
-    <h1>Bem-vindo ao Sistema</h1>
-    <p>Olá, <?php echo $usuario; ?>! Você está logado no sistema.</p>
-    <p><a href="logout.php">Sair</a></p>
-    <p><a href="loja.php">Voltar</a></p>
+<h1>Bem-vindo ao Sistema</h1>
+<p>Olá, <?php echo $usuario; ?>! Você está logado no sistema.</p>
+<p><a href="logout.php">Sair</a> | <a href="loja.php">Voltar</a></p>
 
-    <div class="container">
-        <table>
-            <thead>
+<div class="container">
+    <!-- 🔍 FILTROS -->
+    <form method="GET" class="filter-form">
+        <input type="text" name="id" placeholder="Filtrar por ID" value="<?= htmlspecialchars($filtro_id) ?>">
+        <input type="text" name="nome" placeholder="Filtrar por Nome" value="<?= htmlspecialchars($filtro_nome) ?>">
+        <button type="submit">Filtrar</button>
+        <a href="admin.php" class="btn btn-secondary">Limpar</a>
+    </form>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Código</th>
+                <th>Nome</th>
+                <th>CPF</th>
+                <th>Email</th>
+                <th>Telefone</th>
+                <th>Endereço</th>
+                <th>Data Nasc</th>
+                <th>Sexo</th>
+                <th>CEP</th>
+                <th>Login</th>
+                <th>Senha</th>
+                <th>Nome Mãe</th>
+                <th>Ativo</th>
+                <th>Ações</th>
+            </tr>
+        </thead>
+        <tbody>
+            <?php while($user = mysqli_fetch_assoc($result)): ?>
                 <tr>
-                    <th>idusuarios</th>
-                    <th>nome</th>
-                    <th>cpf</th>
-                    <th>email</th>
-                    <th>telefone</th>
-                    <th>endereco</th>
-                    <th>data_nasc</th>
-                    <th>sexo</th>
-                    <th>cep</th>
-                    <th>login</th>
-                    <th>senha</th>
-                    <th>nome_mae</th>
-                    <th>Editar</th>
+                    <td><?= $user['id'] ?></td>
+                    <td><?= htmlspecialchars($user['nome']) ?></td>
+                    <td><?= htmlspecialchars($user['cpf']) ?></td>
+                    <td><?= htmlspecialchars($user['email']) ?></td>
+                    <td><?= htmlspecialchars($user['telefone']) ?></td>
+                    <td><?= htmlspecialchars(mb_strimwidth($user['endereco'], 0, 30, "...")) ?></td>
+                    <td><?= htmlspecialchars(date('d/m/Y', strtotime($user['data_nascimento']))) ?></td>
+                    <td><?= htmlspecialchars($user['sexo']) ?></td>
+                    <td><?= htmlspecialchars($user['cep']) ?></td>
+                    <td><?= htmlspecialchars($user['login']) ?></td>
+                    <td><?= htmlspecialchars($user['senha']) ?></td>
+                    <td><?= htmlspecialchars($user['nome_mae']) ?></td>
+                    <td>
+                        <a href="toggleAtivo.php?id=<?= $user['id'] ?>&ativo=<?= $user['status'] ? 0 : 1 ?>" 
+                           class="btn btn-sm <?= $user['status'] ? 'btn-success' : 'btn-secondary' ?>">
+                           <?= $user['status'] ? 'Ativo' : 'Inativo' ?>
+                        </a>
+                    </td>
+                    <td>
+                        <a class="btn btn-sm btn-primary" href="edit.php?id=<?= $user['id'] ?>">Editar</a>
+                        <a class="btn btn-sm btn-warning" href="limparSenha.php?id=<?= $user['id'] ?>"
+                           onclick="return confirm('Deseja limpar a senha deste usuário?');">Limpar Senha</a>
+                        <a class="btn btn-sm btn-danger" href="delete.php?id=<?= $user['id'] ?>"
+                           onclick="return confirm('Tem certeza que deseja excluir este usuário?');">Excluir</a>
+                    </td>
                 </tr>
-            </thead>
-            <tbody>
-                <?php
-                while($user_data = mysqli_fetch_assoc($result)){
-                    echo "<tr>";
-                    echo "<td>".$user_data['idusuarios']."</td>";
-                    echo "<td>".$user_data['nome']."</td>";
-                    echo "<td>".$user_data['cpf']."</td>";
-                    echo "<td>".$user_data['email']."</td>";
-                    echo "<td>".$user_data['telefone']."</td>";
-                    echo "<td>".$user_data['endereco']."</td>";
-                    echo "<td>".$user_data['data_nasc']."</td>";
-                    echo "<td>".$user_data['sexo']."</td>";
-                    echo "<td>".$user_data['cep']."</td>";
-                    echo "<td>".$user_data['login']."</td>";
-                    echo "<td>".$user_data['senha']."</td>";
-                    echo "<td>".$user_data['nome_mae']."</td>";
-                    echo "<td>
-                        <a class='btn btn-sm btn-primary' href='edit.php?idusuarios=".$user_data['idusuarios']."'>
-                            <svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='currentColor' class='bi bi-pencil-fill' viewBox='0 0 16 16'>
-                                <path d='M12.854.146a.5.5 0 0 0-.707 0L10.5 1.793 14.207 5.5l1.647-1.646a.5.5 0 0 0 0-.708zm.646 6.061L9.793 2.5 3.293 9H3.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.207zm-7.468 7.468A.5.5 0 0 1 6 13.5V13h-.5a.5.5 0 0 1-.5-.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.5-.5V10h-.5a.5.5 0 0 1-.175-.032l-.179.178a.5.5 0 0 0-.11.168l-2 5a.5.5 0 0 0 .65.65l5-2a.5.5 0 0 0 .168-.11z'/>
-                            </svg>
-                        </a>
-                        <a class='btn btn-sm btn-danger' href='delete.php?idusuarios=".$user_data['idusuarios']."' onclick=\"return confirm('Tem certeza que deseja excluir este usuário?');\">
-                            <svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='currentColor' class='bi bi-trash-fill' viewBox='0 0 16 16'>
-                                <path d='M2.5 1a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1H3v9a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V4h.5a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H10a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1zm3 4a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 .5-.5M8 5a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7A.5.5 0 0 1 8 5m3 .5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 1 0'/>
-                            </svg>
-                        </a>
-                        </td>";
-                    echo "</tr>";
-                }
-                ?>
-            </tbody>
-        </table>
-    </div>
+            <?php endwhile; ?>
+        </tbody>
+    </table>
+</div>
 </body>
 </html>
