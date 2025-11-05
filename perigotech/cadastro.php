@@ -3,39 +3,47 @@ session_start();
 include_once('config.php');
 
 if (isset($_POST['submit'])) {
-    $nome           = $_POST['nome'];
-    $email          = $_POST['email'];
-    $telefone       = $_POST['telefone'];
-    $endereco       = $_POST['endereco'];
-    $data_nasc      = $_POST['datanascimento'];
-    $sexo           = $_POST['sexo'];
-    $cep            = $_POST['cep'];
-    $cpf            = $_POST['cpf'];
-    $login          = $_POST['login'];
-    $senha          = $_POST['senha'];
-    $nome_mae       = $_POST['nome_mae'];
-    
+    $nome        = $_POST['nome'] ?? '';
+    $email       = $_POST['email'] ?? '';
+    $telefone    = $_POST['telefone'] ?? '';
+    $endereco    = $_POST['endereco'] ?? '';
+    $data_nasc   = $_POST['datanascimento'] ?? '';
+    $sexo        = $_POST['sexo'] ?? '';
+    $cep         = $_POST['cep'] ?? '';
+    $cpf         = $_POST['cpf'] ?? '';
+    $login       = $_POST['login'] ?? '';
+    $senha       = $_POST['senha'] ?? '';
+    $nome_mae    = $_POST['nome_mae'] ?? '';
 
-    $sql = "INSERT INTO cadastro_tech 
-            (nome, email, telefone, endereco, data_nasc, sexo, cep, cpf, login, senha, nome_mae)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+    $sql = "INSERT INTO usuarios 
+          (nome, email, telefone, endereco, data_nascimento, sexo, cep, cpf, login, senha, nome_mae, tipo)
+          VALUES (
+            '$nome',
+            '$email',
+            '$telefone',
+            '$endereco',
+            '$data_nasc',
+            '$sexo',
+            '$cep',
+            '$cpf',
+            '$login',
+            '$senha',
+            '$nome_mae',
+            'comum'
+          )";
 
-    $stmt = $conexao->prepare($sql);
-    $stmt->bind_param(
-        "sssssssssss", 
-        $nome, $email, $telefone, $endereco, $data_nasc, $sexo, $cep, $cpf, $login, $senha, $nome_mae
-    );
-
-    if ($stmt->execute()) {
-        $_SESSION['msg'] = "Cadastro realizado com sucesso!";
-        header("Location: login.php");
-        exit;
-    } else {
-        $_SESSION['msg'] = "Erro ao cadastrar: " . $stmt->error;
-        header("Location: cadastro.php");
-        exit;
-    }
+  // Executar a query
+  if ($conexao->query($sql) === TRUE) {
+    $_SESSION['msg'] = "Cadastro realizado com sucesso!";
+    header("Location: login.php");
+    exit;
+  } else {
+    $_SESSION['msg'] = "Erro ao cadastrar: " . $conexao->error;
+    header("Location: cadastro.php");
+    exit;
+  }
 }
+
 ?>
 
 <!DOCTYPE html>
