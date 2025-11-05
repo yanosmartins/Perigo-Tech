@@ -7,32 +7,31 @@ if (isset($_POST['submit']) && !empty($_POST['login']) && !empty($_POST['senha']
     $login = $_POST['login'];
     $senha = $_POST['senha'];
 
-    // Consulta o usuário no banco
     $stmt = $conexao->prepare("SELECT * FROM cadastro_tech WHERE login = ? AND senha = ?");
     $stmt->bind_param("ss", $login, $senha);
     $stmt->execute();
     $result = $stmt->get_result();
 
     if ($result->num_rows < 1) {
-        // Usuário não cadastrado
-        header('Location: login.php?erro=nao_cadastrado');
+        // Usuário não cadastrado ou senha incorreta
+        header('Location: login.php?erro=1');
         exit();
     } else {
         $user = $result->fetch_assoc();
-
-        // Define variáveis de sessão
         $_SESSION['id'] = $user['idusuarios'];
         $_SESSION['nome'] = $user['nome'];
         $_SESSION['login'] = $user['login'];
+        $_SESSION['cpf'] = $user['cpf'];
         $_SESSION['tipo_user'] = $user['tipo_user'];
-        $_SESSION['log_registrado'] = false; // flag para impedir log duplicado
 
-        // Redireciona para o 2FA
+        // Inicializa variável de log
+        $_SESSION['log_registrado'] = false;
+
+        // Redireciona para 2FA
         header('Location: 2fa.php');
         exit();
     }
 } else {
-
     header('Location: login.php?erro=1');
     exit();
 }
