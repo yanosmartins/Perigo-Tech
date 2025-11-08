@@ -1,4 +1,13 @@
 <?php
+$host = "perigo-tech.cxk4sugqggtc.us-east-2.rds.amazonaws.com";
+$user = "admin";
+$password = "P1rucomLeucem1a";
+$dbname = "perigotech";
+$conn = new mysqli($host, $user, $password, $dbname);
+if ($conn->connect_error) {
+    die("Conexão falhou: " . $conn->connect_error);
+}
+
 session_start();
 
 if (!isset($_SESSION['nome'])) {
