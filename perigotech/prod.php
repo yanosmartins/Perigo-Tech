@@ -9,6 +9,13 @@ if ($conn->connect_error) {
 }
 
 session_start();
+
+$total_itens_carrinho = 0;
+if (isset($_SESSION['carrinho']) && !empty($_SESSION['carrinho'])) {
+    // Soma todas as quantidades de todos os produtos
+    $total_itens_carrinho = array_sum($_SESSION['carrinho']);
+}
+
 if (!isset($_GET['id'])) {
     die("Produto não especificado.");
 }
@@ -344,7 +351,7 @@ $produto = $result->fetch_assoc();
                 </span>
             </nav>
             <div class="header-icons">
-                <a href="carrinho.php" aria-label="Carrinho"><i class="fas fa-shopping-cart"></i> <span>0</span></a>
+                <a href="carrinho.php" aria-label="Carrinho"><i class="fas fa-shopping-cart"></i> <span><?php echo $total_itens_carrinho; ?></span></a>
                 <a href="#" aria-label="Login"><i class="fas fa-user"></i></a>
                 <?php if (isset($_SESSION['nome'])) : ?>
                     <span style="font-size: 1rem; font-weight: 700; color: #000; white-space: nowrap; margin-left: 15px;">
@@ -401,7 +408,15 @@ $produto = $result->fetch_assoc();
                         </div>
                     </div>
                     <p>Frete Grátis</p>
-                    <button class="btn-secondary">Adicionar ao Carrinho</button>
+                   <?php if (isset($_SESSION['nome'])) : ?>
+                        <form action="gerenciar_carrinho.php" method="POST">
+                            <input type="hidden" name="id_prod" value="<?php echo $produto['id_prod']; ?>">
+                            <input type="hidden" name="acao" value="adicionar">
+                            <button type="submit" class="btn-secondary">Adicionar ao Carrinho</button>
+                        </form>
+                    <?php else : ?>
+                        <a href="login.php" class="btn-secondary" style="text-align: center; display: block; text-decoration: none;">Adicionar ao Carrinho</a>
+                    <?php endif; ?>
                 </div>
             </div>
         </div>
@@ -437,15 +452,6 @@ $produto = $result->fetch_assoc();
             </div>
         </div>
     </footer>
-
-    <script>
-        const addToCartButtons = document.querySelectorAll('.btn-secondary');
-        addToCartButtons.forEach(button => {
-            button.addEventListener('click', function() {
-                alert('Produto adicionado ao carrinho!(teste)');
-            });
-        });
-    </script>
 
 </body>
 
