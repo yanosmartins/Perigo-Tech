@@ -1,8 +1,8 @@
 <?php
-$host = "localhost";
-$user = "root";
-$password = "";
-$dbname = "cadastro-tech";
+$host = "perigo-tech.cxk4sugqggtc.us-east-2.rds.amazonaws.com";
+$user = "admin";
+$password = "P1rucomLeucem1a";
+$dbname = "perigotech";
 $conn = new mysqli($host, $user, $password, $dbname);
 if ($conn->connect_error) {
     die("Conexão falhou: " . $conn->connect_error);
@@ -30,7 +30,7 @@ $produto = $result->fetch_assoc();
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><?php echo htmlspecialchars($produto['nomeprod']); ?> - Perigo Tech</title>
+    <title><?php echo htmlspecialchars($produto['nome']); ?> - Perigo Tech</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700;900&display=swap');
@@ -360,11 +360,11 @@ $produto = $result->fetch_assoc();
         <div class="container">
             <div class="produto-detalhe-wrapper">
                 <div class="produto-imagem">
-                    <img src="./img/<?php echo htmlspecialchars($produto['img']); ?>" alt="<?php echo htmlspecialchars($produto['nomeprod']); ?>">
+                    <img src="./img/<?php echo htmlspecialchars($produto['img']); ?>" alt="<?php echo htmlspecialchars($produto['nome']); ?>">
                 </div>
                 <div class="produto-info">
-                    <h1><?php echo htmlspecialchars($produto['nomeprod']); ?></h1>
-                    <p class="categoria"><?php echo htmlspecialchars($produto['categorias']); ?></p>
+                    <h1><?php echo htmlspecialchars($produto['nome']); ?></h1>
+                    <p class="categoria"><?php echo htmlspecialchars($produto['categoria']); ?></p>
                     <p class="descricao"><?php echo htmlspecialchars($produto['descricao']); ?></p>À vista
                     <div class="preco">R$ <?php echo number_format($produto['preco'], 2, ',', '.'); ?></div>
                     <div class="price-box">
