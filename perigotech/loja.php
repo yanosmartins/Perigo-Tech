@@ -9,6 +9,12 @@ if ($conn->connect_error) {
 }
 session_start();
 
+$total_itens_carrinho = 0;
+if (isset($_SESSION['carrinho']) && !empty($_SESSION['carrinho'])) {
+    // Soma todas as quantidades de todos os produtos
+    $total_itens_carrinho = array_sum($_SESSION['carrinho']);
+}
+
 $search_query = "";
 $search_term_sql = "";
 if (isset($_GET['q']) && !empty(trim($_GET['q']))) {
@@ -27,7 +33,11 @@ function renderProduto($row)
     echo '</a>';
 
     if (isset($_SESSION['nome'])) {
-        echo '<button class="btn-secondary btn-add-cart" data-id="' . $row['id_prod'] . '">Adicionar ao Carrinho</button>';
+        echo '<form action="gerenciar_carrinho.php" method="POST" style="margin: 0;">';
+        echo '  <input type="hidden" name="id_prod" value="' . $row['id_prod'] . '">';
+        echo '  <input type="hidden" name="acao" value="adicionar">';
+        echo '  <button type="submit" class="btn-secondary btn-add-cart">Adicionar ao Carrinho</button>';
+        echo '</form>';
     } else {
         echo '<a href="login.php" class="btn-secondary">Adicionar ao Carrinho</a>';
     }
@@ -598,7 +608,7 @@ function renderProduto($row)
                     <button type="submit" class="search-button" aria-label="Pesquisar"><i class="fas fa-search"></i></button>
                 </form>
                 
-                <a href="carrinho.php" aria-label="Carrinho"><i class="fas fa-shopping-cart"></i> <span>0</span></a>
+                <a href="carrinho.php" aria-label="Carrinho"><i class="fas fa-shopping-cart"></i> <span><?php echo $total_itens_carrinho; ?></span></a>
                 <?php if (isset($_SESSION['nome'])) : ?>
                     <span style="font-size: 1rem; font-weight: 700; color: #000; white-space: nowrap;">
                         <a href="#" aria-label="Minha Conta" title="Minha Conta"><i class="fas fa-user" style="margin-right: 15px;"></i></a>
@@ -834,16 +844,6 @@ function renderProduto($row)
                 icon.classList.toggle('fa-bars');
                 icon.classList.toggle('fa-times');
             });
-
-            // Adicionar ao Carrinho
-            const addToCartButtons = document.querySelectorAll('.btn-add-cart'); 
-            addToCartButtons.forEach(button => {
-                button.addEventListener('click', function() {
-                    const produtoId = this.dataset.id;
-                    alert('Produto ' + produtoId + ' adicionado ao carrinho! (Isso é uma demonstração)');
-                });
-            });
-
 
             // Barra de Pesquisa
             const searchForm = document.querySelector('.search-container');
