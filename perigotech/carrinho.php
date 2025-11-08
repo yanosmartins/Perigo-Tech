@@ -12,7 +12,6 @@ session_start();
 
 $total_itens_carrinho = 0;
 if (isset($_SESSION['carrinho']) && !empty($_SESSION['carrinho'])) {
-    // Soma todas as quantidades de todos os produtos
     $total_itens_carrinho = array_sum($_SESSION['carrinho']);
 }
 
@@ -532,3 +531,4 @@ if (!isset($_SESSION['nome'])) {
 </body>
 
 </html>
+
