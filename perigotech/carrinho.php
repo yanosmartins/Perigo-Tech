@@ -10,6 +10,12 @@ if ($conn->connect_error) {
 
 session_start();
 
+$total_itens_carrinho = 0;
+if (isset($_SESSION['carrinho']) && !empty($_SESSION['carrinho'])) {
+    // Soma todas as quantidades de todos os produtos
+    $total_itens_carrinho = array_sum($_SESSION['carrinho']);
+}
+
 if (!isset($_SESSION['nome'])) {
     header('Location: login.php');
     exit();
@@ -46,6 +52,17 @@ if (!isset($_SESSION['nome'])) {
             background-color: black;
             color: white;
             line-height: 1.6;
+
+            /* --- CORREÇÃO FOOTER FLUTUANTE --- */
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            /* --- FIM DA CORREÇÃO --- */
+        }
+
+        main {
+            /* --- CORREÇÃO FOOTER FLUTUANTE --- */
+            flex-grow: 1; /* Faz o <main> esticar e preencher o espaço */
         }
 
         html {
@@ -165,29 +182,6 @@ if (!isset($_SESSION['nome'])) {
             background-color: var(--primary-color);
         }
 
-        /* --- Seção Hero --- */
-        .hero {
-            background: linear-gradient(rgba(100, 100, 100, 0.8), rgba(0, 0, 0, 0.9));
-            height: 60vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            text-align: center;
-        }
-
-        .hero h1 {
-            font-size: 3rem;
-            font-weight: 900;
-            margin-bottom: 1rem;
-            color: white;
-        }
-
-        .hero p {
-            font-size: 1.2rem;
-            margin-bottom: 2rem;
-            color: white;
-        }
-
         /* --- Botões --- */
         .btn-primary {
             background-color: transparent;
@@ -198,8 +192,10 @@ if (!isset($_SESSION['nome'])) {
             font-weight: 700;
             cursor: pointer;
             transition: all 0.3s ease;
-            width: 20%;
+            width: auto;
             margin-top: 1rem;
+            text-decoration: none; 
+            display: inline-block;
         }
 
         .btn-primary:hover {
@@ -228,64 +224,7 @@ if (!isset($_SESSION['nome'])) {
             background-color: var(--primary-color);
             color: white;
         }
-
-        /* --- Seção de Produtos --- */
-        .product-section {
-            padding: 4rem 0;
-        }
-
-        .product-section h2 {
-            text-align: center;
-            font-size: 2.5rem;
-            margin-bottom: 2rem;
-            color: var(--primary-color);
-        }
-
-        .product-grid {
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 2rem;
-        }
-
-        .product-card {
-            background-color: var(--card-bg);
-            border-radius: 8px;
-            overflow: hidden;
-            text-align: center;
-            padding: 1.5rem;
-            border: 1px solid #333;
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-        }
-
-        .product-card:hover {
-            transform: translateY(-10px);
-            box-shadow: 0 10px 20px rgba(255, 0, 0, 0.2);
-        }
-
-        .product-card img {
-            max-width: 100%;
-            height: auto;
-            margin-bottom: 1rem;
-        }
-
-        .product-card h3 {
-            font-size: 1.2rem;
-            margin-bottom: 0.5rem;
-            color: white;
-        }
-
-        .product-card .product-category {
-            font-size: 0.9rem;
-            color: var(--text-muted);
-            margin-bottom: 1rem;
-        }
-
-        .product-card .product-price {
-            font-size: 1.5rem;
-            font-weight: 700;
-            color: var(--primary-color);
-        }
-
+        
         /* --- Rodapé --- */
         .main-footer {
             background-color: var(--card-bg);
@@ -353,110 +292,12 @@ if (!isset($_SESSION['nome'])) {
                 display: flex;
             }
 
-            .product-grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
-
             .footer-content {
                 grid-template-columns: repeat(3, 1fr);
                 text-align: left;
             }
         }
-
-        @media (min-width: 1024px) {
-            .product-grid {
-                grid-template-columns: repeat(4, 1fr);
-            }
-
-            .hero h1 {
-                font-size: 4rem;
-            }
-        }
-
-
-        .secao-carrossel {
-            position: relative;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            overflow: hidden;
-            width: 100%;
-        }
-
-        .carrossel-wrapper {
-            overflow: hidden;
-            padding-inline: 1px;
-            width: 100%;
-            min-width: 1250px;
-        }
-
-        .horizontal {
-            overflow-x: auto;
-            scroll-behavior: smooth;
-            padding: 20px;
-            gap: 30px;
-            display: flex;
-            flex-wrap: nowrap;
-        }
-
-        .horizontal::-webkit-scrollbar {
-            display: none;
-        }
-
-        .btn-carrossel {
-            background: none;
-            border: none;
-            color: #333;
-            font-size: 30px;
-            cursor: pointer;
-            padding: 0 10px;
-            transition: color 0.3s ease, transform 0.3s ease;
-            z-index: 10;
-        }
-
-        .btn-carrossel:hover {
-            color: #ff7300;
-            transform: scale(1.15);
-        }
-
-        .carrossel-item {
-            background-color: #292828ff;
-            border: none;
-            border-radius: 8px;
-            padding: 20px;
-            text-align: center;
-            flex-shrink: 0;
-            width: 280px;
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-            cursor: pointer;
-        }
-
-        .carrossel-item:hover {
-            transform: translateY(-5px);
-            box-shadow: -10px 0 15px rgba(197, 81, 14, 0.5), 10px 0 15px rgba(197, 81, 14, 0.5), 0 10px 15px rgba(197, 81, 14, 0.5);
-        }
-
-        .carrossel-item img {
-            max-width: 100%;
-            height: 200px;
-            object-fit: contain;
-            margin-bottom: 15px;
-        }
-
-        .produto-link {
-            display: block;
-            text-decoration: none;
-            color: inherit;
-        }
-
-        .produto-link:hover {
-            cursor: pointer;
-        }
-
-        .product-name {
-            color: inherit;
-        }
-
+        
         .cart {
             background: #1c1c1c;
             padding: 2rem;
@@ -507,14 +348,39 @@ if (!isset($_SESSION['nome'])) {
         }
 
         .cart-total {
-            text-align: right;
             margin-top: 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .total-finalizar {
+            text-align: right;
         }
 
         .cart-total h2 {
             margin-bottom: 1rem;
             color: var(--primary-color);
         }
+        
+        .btn-danger {
+            background-color: transparent;
+            color: #ff4d4d;
+            padding: 10px 20px;
+            border: 2px solid #ff4d4d;
+            border-radius: 5px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 4.7rem;
+            text-decoration: none;
+        }
+
+        .btn-danger:hover {
+            background-color: #ff4d4d;
+            color: white;
+        }
+
     </style>
 </head>
 
@@ -533,7 +399,7 @@ if (!isset($_SESSION['nome'])) {
                 </span>
             </nav>
             <div class="header-icons">
-                <a href="carrinho.php" aria-label="Carrinho"><i class="fas fa-shopping-cart"></i> <span>0</span></a>
+                <a href="carrinho.php" aria-label="Carrinho"><i class="fas fa-shopping-cart"></i> <span><?php echo $total_itens_carrinho; ?></span></a>
                 <a href="#" aria-label="Login"><i class="fas fa-user"></i></a>
                 <?php if (isset($_SESSION['nome'])) : ?>
                     <span style="font-size: 1rem; font-weight: 700; color: #000; white-space: nowrap; margin-left: 15px;">
@@ -555,24 +421,80 @@ if (!isset($_SESSION['nome'])) {
         </h1>
 
         <div class="cart">
-            <div class="cart-item">
-                <img src="./img/rtx_5080.png" alt="Produto" class="cart-img">
-                <div class="cart-details">
-                    <h3>Placa de Vídeo RTX 5080</h3>
-                    <p class="price">R$ 7.999,90</p>
-                    <div class="cart-actions">
-                        <button class="btn-secondary-menos">-</button>
-                        <span>1</span>
-                        <button class="btn-secondary-mais">+</button>
-                        <button class="btn-secondary remove">Remover</button>
+            <?php
+            $total_geral = 0;
+            
+            if (empty($_SESSION['carrinho'])) :
+            
+                echo '<p style="text-align: center; font-size: 1.2rem;">Seu carrinho está vazio.</p>';
+                echo '<div style="text-align: center; margin-top: 2rem;"><a href="loja.php" class="btn-primary" style="width: auto;">Voltar para a Loja</a></div>';
+            
+            else :
+            
+                $ids_produtos = implode(',', array_keys($_SESSION['carrinho']));
+                $sql = "SELECT * FROM produtos WHERE id_prod IN ($ids_produtos)";
+                $result = $conn->query($sql);
+                
+                if ($result->num_rows > 0) :
+                    while ($produto = $result->fetch_assoc()) :
+                        $id = $produto['id_prod'];
+                        $quantidade = $_SESSION['carrinho'][$id];
+                        $subtotal = $produto['preco'] * $quantidade;
+                        $total_geral += $subtotal;
+            ?>
+            
+                        <div class="cart-item">
+                            <img src="./img/<?php echo htmlspecialchars($produto['img']); ?>" alt="<?php echo htmlspecialchars($produto['nome']); ?>" class="cart-img">
+                            <div class="cart-details">
+                                <h3><?php echo htmlspecialchars($produto['nome']); ?></h3>
+                                <p class="price">R$ <?php echo number_format($produto['preco'], 2, ',', '.'); ?></p>
+                                
+                                <div class="cart-actions">
+                                    <form action="gerenciar_carrinho.php" method="POST" style="margin: 0;">
+                                        <input type="hidden" name="id_prod" value="<?php echo $id; ?>">
+                                        <input type="hidden" name="acao" value="remover_um">
+                                        <button type="submit" class="btn-secondary-menos">-</button>
+                                    </form>
+                                    
+                                    <span><?php echo $quantidade; ?></span>
+                                    
+                                    <form action="gerenciar_carrinho.php" method="POST" style="margin: 0;">
+                                        <input type="hidden" name="id_prod" value="<?php echo $id; ?>">
+                                        <input type="hidden" name="acao" value="adicionar">
+                                        <button type="submit" class="btn-secondary-mais">+</button>
+                                    </form>
+
+                                    <form action="gerenciar_carrinho.php" method="POST" style="margin: 0;">
+                                        <input type="hidden" name="id_prod" value="<?php echo $id; ?>">
+                                        <input type="hidden" name="acao" value="remover_produto">
+                                        <button type="submit" class="btn-secondary remove" style="margin-left: 15px;">Remover</button>
+                                    </form>
+                                </div>
+                            </div>
+                            <div class="cart-item-subtotal" style="text-align: right; min-width: 150px;">
+                                <p style="font-size: 0.9rem; color: #aaa;">Subtotal</p>
+                                <h4 style="color: var(--primary-color);">R$ <?php echo number_format($subtotal, 2, ',', '.'); ?></h4>
+                            </div>
+                        </div>
+
+            <?php
+                    endwhile;
+                endif;
+            ?>
+
+                <div class="cart-total">
+                    <form action="gerenciar_carrinho.php" method="POST" style="margin: 0;">
+                        <input type="hidden" name="acao" value="limpar">
+                        <button type="submit" class="btn-danger">Esvaziar Carrinho</button>
+                    </form>
+                    
+                    <div class="total-finalizar">
+                        <h2>Total: R$ <?php echo number_format($total_geral, 2, ',', '.'); ?></h2>
+                        <button class="btn-primary">Finalizar Compra</button>
                     </div>
                 </div>
-            </div>
-
-            <div class="cart-total">
-                <h2>Total: R$ 7.999,90</h2>
-                <button class="btn-primary">Finalizar Compra</button>
-            </div>
+            <?php endif;?>
+            
         </div>
     </main>
 
@@ -606,39 +528,6 @@ if (!isset($_SESSION['nome'])) {
             </div>
         </div>
     </footer>
-
-    <script>
-        // adicionar
-        const addToCartButtons = document.querySelectorAll('.btn-secondary-mais');
-        addToCartButtons.forEach(button => {
-            button.addEventListener('click', function() {
-                alert('Produto adicionado ao carrinho(teste)');
-            });
-        });
-
-        // remover unidade
-        const removeOneButtons = document.querySelectorAll('.btn-secondary-menos');
-        removeOneButtons.forEach(button => {
-            button.addEventListener('click', function() {
-                alert('Uma unidade do produto foi removida do carrinho(teste)');
-            });
-        });
-
-        // remover produto
-        const removeProductButtons = document.querySelectorAll('.btn-secondary.remove');
-        removeProductButtons.forEach(button => {
-            button.addEventListener('click', function() {
-                alert('Produto removido do carrinho(teste)');
-            });
-        });
-
-        const finalizePurchaseButton = document.querySelector('.btn-primary');
-        if (finalizePurchaseButton) {
-            finalizePurchaseButton.addEventListener('click', function() {
-                alert('Compra finalizada com sucesso(teste)');
-            });
-        }
-    </script>
 
 </body>
 
