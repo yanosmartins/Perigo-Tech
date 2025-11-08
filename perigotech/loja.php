@@ -1,12 +1,19 @@
 <?php
-include_once('config.php');
+$host = "perigo-tech.cxk4sugqggtc.us-east-2.rds.amazonaws.com";
+$user = "admin";
+$password = "P1rucomLeucem1a";
+$dbname = "perigotech";
+$conn = new mysqli($host, $user, $password, $dbname);
+if ($conn->connect_error) {
+    die("Conexão falhou: " . $conn->connect_error);
+}
 session_start();
 
 $search_query = "";
 $search_term_sql = "";
 if (isset($_GET['q']) && !empty(trim($_GET['q']))) {
     $search_query = trim($_GET['q']);
-    $search_term_sql = $conexao->real_escape_string($search_query);
+    $search_term_sql = $conn->real_escape_string($search_query);
 }
 
 function renderProduto($row)
@@ -612,7 +619,6 @@ function renderProduto($row)
                     </a>
                     <div id="admin-menu-dropdown" class="admin-dropdown-content">
                         <a href="sistema.php">Gerenciar Cadastros</a>
-                        <a href="log.php">Log</a>
                     </div>
                 </div>
                 <?php endif; ?>
@@ -650,7 +656,7 @@ function renderProduto($row)
                                        WHERE nome LIKE '%$search_term_sql%'
                                           OR categoria LIKE '%$search_term_sql%'";
                         
-                        $result_search = $conexao->query($sql_search);
+                        $result_search = $conn->query($sql_search);
                         
                         if ($result_search && $result_search->num_rows > 0) {
                             while ($row = $result_search->fetch_assoc()) {
@@ -674,9 +680,9 @@ function renderProduto($row)
                         <div class="carrossel-wrapper">
                             <div class="horizontal" id="carrossel-destaques">
                                 <?php
-                                $categoria_destaque = ['Placas de vídeo2', 'Processadores', 'Armazenamento', 'Memória RAM', 'Monitor'];
+                                $categoria_destaque = ['Placas de vídeo', 'Processadores', 'Armazenamento', 'Memória RAM', 'Monitor'];
                                 $sql = "SELECT * FROM produtos WHERE categoria IN ('" . implode("','", $categoria_destaque) . "')";
-                                $result = $conexao->query($sql);
+                                $result = $conn->query($sql);
                                 if ($result->num_rows > 0) {
                                     while ($row = $result->fetch_assoc()) renderProduto($row);
                                 } else {
@@ -699,7 +705,7 @@ function renderProduto($row)
                             <div class="horizontal" id="carrossel-perifericos">
                                 <?php
                                 $sql = "SELECT * FROM produtos WHERE categoria IN ('Microfones', 'Periféricos', 'Áudio', 'Pen Drive')";
-                                $result = $conexao->query($sql);
+                                $result = $conn->query($sql);
                                 if ($result->num_rows > 0) {
                                     while ($row = $result->fetch_assoc()) renderProduto($row);
                                 } else {
@@ -722,7 +728,7 @@ function renderProduto($row)
                             <div class="horizontal" id="carrossel-computadores">
                                 <?php
                                 $sql = "SELECT * FROM produtos WHERE categoria = 'Computadores'";
-                                $result = $conexao->query($sql);
+                                $result = $conn->query($sql);
                                 if ($result->num_rows > 0) {
                                     while ($row = $result->fetch_assoc()) renderProduto($row);
                                 } else {
@@ -745,7 +751,7 @@ function renderProduto($row)
                             <div class="horizontal" id="carrossel-fontes">
                                 <?php
                                 $sql = "SELECT * FROM produtos WHERE categoria = 'Fontes'";
-                                $result = $conexao->query($sql);
+                                $result = $conn->query($sql);
                                 if ($result->num_rows > 0) {
                                     while ($row = $result->fetch_assoc()) renderProduto($row);
                                 } else {
@@ -767,8 +773,8 @@ function renderProduto($row)
                         <div class="carrossel-wrapper">
                             <div class="horizontal" id="carrossel-placas">
                                 <?php
-                                $sql = "SELECT * FROM produtos WHERE categoria = 'Placas de vídeo'";
-                                $result = $conexao->query($sql);
+                                $sql = "SELECT * FROM produtos WHERE categoria = 'Placas de vídeo2'";
+                                $result = $conn->query($sql);
                                 if ($result->num_rows > 0) {
                                     while ($row = $result->fetch_assoc()) renderProduto($row);
                                 } else {
