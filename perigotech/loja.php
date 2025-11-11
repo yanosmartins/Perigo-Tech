@@ -11,7 +11,6 @@ session_start();
 
 $total_itens_carrinho = 0;
 if (isset($_SESSION['carrinho']) && !empty($_SESSION['carrinho'])) {
-    // Soma todas as quantidades de todos os produtos
     $total_itens_carrinho = array_sum($_SESSION['carrinho']);
 }
 
@@ -124,7 +123,7 @@ function renderProduto($row)
         .main-nav a {
             color: var(--text-muted);
             text-decoration: none;
-            margin: 0 15px;
+            margin: 0 13px;
             font-weight: 700;
             transition: color 0.3s ease;
         }
@@ -513,7 +512,7 @@ function renderProduto($row)
             cursor: pointer;
             color: var(--text-color); 
             font-size: 1.2rem;
-            margin-left: 1px; 
+            margin-left: -1px; 
             transition: color 0.3s ease;
         }
         .search-button:hover {
@@ -809,7 +808,7 @@ function renderProduto($row)
                     <div class="footer-section">
                         <h4>Links Rápidos</h4>
                         <ul>
-                            <li><a href="#">Sobre Nós</a></li>
+                            <li><a href="sobre.php">Sobre Nós</a></li>
                             <li><a href="#">Contato</a></li>
                             <li><a href="#">Política de Privacidade</a></li>
                             <li><a href="#">Termos de Serviço</a></li>
