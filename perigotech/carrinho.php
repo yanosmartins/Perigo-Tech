@@ -108,7 +108,7 @@ if (!isset($_SESSION['nome'])) {
         .main-nav a {
             color: var(--text-muted);
             text-decoration: none;
-            margin: 0 15px;
+            margin: 0 13px;
             font-weight: 700;
             transition: color 0.3s ease;
         }
