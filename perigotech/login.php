@@ -25,7 +25,7 @@ body {
   
 
 .container {
-  width: 50%;
+  width: 10%;
   height: 500px;
   display: flex;
   box-shadow: 5px 5px 18px rgba(0, 0, 0, 0.2);
@@ -83,7 +83,7 @@ form h1::after {
 }
 
 .input-box input {
-  width: 100%;
+  width: 79%;
   padding: 0.8rem 2.5rem 0.8rem 0.8rem;
   border: 1px solid #333;
   border-radius: 8px;
@@ -142,6 +142,7 @@ button.login {
 
 .login1{
   border: none;
+  margin-left: -5px;
 }
 
 .login1 a { 
