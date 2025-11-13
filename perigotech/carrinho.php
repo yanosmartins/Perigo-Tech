@@ -489,7 +489,7 @@ if (!isset($_SESSION['nome'])) {
                     
                     <div class="total-finalizar">
                         <h2>Total: R$ <?php echo number_format($total_geral, 2, ',', '.'); ?></h2>
-                        <button class="btn-primary">Finalizar Compra</button>
+                        <a href="checkout.php" class="btn-primary">Finalizar Compra</a>
                     </div>
                 </div>
             <?php endif;?>
