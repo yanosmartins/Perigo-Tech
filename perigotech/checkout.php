@@ -303,7 +303,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         h1, h2 {
             color: var(--primary-color);
             margin-bottom: 1.5rem;
+            margin-top: 70px;
         }
+
         .form-grupo {
             margin-bottom: 1.5rem;
         }
@@ -482,7 +484,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     </div>
                     <div class="form-grupo">
                         <label for="cep">CEP</label>
-                        <input type="text" id="cep" name="cep" required placeholder="00000-000">
+                        <input type="text" id="cep" name="cep" required placeholder="00000-000" maxlength="9" onkeyup="formatarCEP(this)">
                     </div>
                      <div class="form-grupo">
                         <label for="endereco">Endereço (Rua, Número, Bairro)</label>
@@ -492,7 +494,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <h2>2. Pagamento</h2>
                     <div class="form-grupo">
                         <label for="cartao">Número do Cartão</label>
-                        <input type="text" id="cartao" name="cartao" placeholder="0000 0000 0000 0000" required maxlength="16">
+                        <input type="text" id="cartao" name="cartao" placeholder="0000 0000 0000 0000" required maxlength="19" onkeyup="formatarCartao(this)">
                     </div>
                     <div class="form-grupo" style="display: flex; gap: 1rem;">
                         <div style="flex: 2;">
@@ -644,6 +646,48 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             
             input.value = v;
         }
+
+        function formatarCEP(input) {
+            let v = input.value;
+            v = v.replace(/\D/g, '');
+
+            if (v.length > 5){
+                v = v.substring(0, 5) + '-' + v.substring(5, 8);
+            }
+
+            input.value = v
+        }
+
+        document.getElementById('cep').addEventListener('blur', function() {
+        const cep = this.value.replace(/\D/g, '');
+        if (cep.length === 8) {
+            fetch(`https://viacep.com.br/ws/${cep}/json/`)
+                .then(response => response.json())
+                .then(data => {
+                    if (!data.erro) {
+                        document.getElementById('endereco').value =
+                            `${data.logradouro}, ${data.bairro}, ${data.localidade} - ${data.uf}`;
+                    } else {
+                        alert('CEP não encontrado.');
+                        document.getElementById('endereco').value = '';
+                    }
+                })
+                .catch(() => {
+                    alert('Erro ao buscar o CEP.');
+                });
+        }
+
+        function formatarCartao(input) {
+            let v = input.value;
+            v = v.replace(/\D/g, '');
+
+            v = v.replace(/(\d{1,4})/g,'$1 ');
+            v = v.trim();
+
+            input.value = v
+        }
+    });
+
     </script>
 </body>
 </html>
