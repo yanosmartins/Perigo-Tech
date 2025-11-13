@@ -264,7 +264,7 @@ body {
 
                     <div class="input-box">
                         <label for="cep">CEP</label>
-                        <input id="cep" name="cep" type="text" placeholder="Digite seu CEP" required />
+                        <input id="cep" name="cep" type="text" placeholder="Digite seu CEP" />
                     </div>
 
                     <div class="input-box">
@@ -290,12 +290,12 @@ body {
 
                     <div class="input-box">
                         <label for="datanascimento">Data de Nascimento</label>
-                        <input id="datanascimento" name="datanascimento" type="date" required />
+                        <input id="datanascimento" name="datanascimento" type="date" required maxlength="10"/>
                     </div>
 
                     <div class="input-box">
                         <label for="cpf">CPF</label>
-                        <input id="cpf" name="cpf" type="text" placeholder="000.000.000-00" required />
+                        <input id="cpf" name="cpf" type="text" placeholder="000.000.000-00" required maxlength="14"/>
                     </div>
                     
                     <div class="input-box">
