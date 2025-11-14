@@ -1,12 +1,24 @@
 <?php
-include_once('config.php');
+$host = "perigo-tech.cxk4sugqggtc.us-east-2.rds.amazonaws.com";
+$user = "admin";
+$password = "P1rucomLeucem1a";
+$dbname = "perigotech";
+$conn = new mysqli($host, $user, $password, $dbname);
+if ($conn->connect_error) {
+    die("Conexão falhou: " . $conn->connect_error);
+}
 session_start();
+
+$total_itens_carrinho = 0;
+if (isset($_SESSION['carrinho']) && !empty($_SESSION['carrinho'])) {
+    $total_itens_carrinho = array_sum($_SESSION['carrinho']);
+}
 
 $search_query = "";
 $search_term_sql = "";
 if (isset($_GET['q']) && !empty(trim($_GET['q']))) {
     $search_query = trim($_GET['q']);
-    $search_term_sql = $conexao->real_escape_string($search_query);
+    $search_term_sql = $conn->real_escape_string($search_query);
 }
 
 function renderProduto($row)
@@ -20,7 +32,11 @@ function renderProduto($row)
     echo '</a>';
 
     if (isset($_SESSION['nome'])) {
-        echo '<button class="btn-secondary btn-add-cart" data-id="' . $row['id_prod'] . '">Adicionar ao Carrinho</button>';
+        echo '<form action="gerenciar_carrinho.php" method="POST" style="margin: 0;">';
+        echo '  <input type="hidden" name="id_prod" value="' . $row['id_prod'] . '">';
+        echo '  <input type="hidden" name="acao" value="adicionar">';
+        echo '  <button type="submit" class="btn-secondary btn-add-cart">Adicionar ao Carrinho</button>';
+        echo '</form>';
     } else {
         echo '<a href="login.php" class="btn-secondary">Adicionar ao Carrinho</a>';
     }
@@ -107,7 +123,7 @@ function renderProduto($row)
         .main-nav a {
             color: var(--text-muted);
             text-decoration: none;
-            margin: 0 15px;
+            margin: 0 13px;
             font-weight: 700;
             transition: color 0.3s ease;
         }
@@ -496,7 +512,7 @@ function renderProduto($row)
             cursor: pointer;
             color: var(--text-color); 
             font-size: 1.2rem;
-            margin-left: 1px; 
+            margin-left: -1px; 
             transition: color 0.3s ease;
         }
         .search-button:hover {
@@ -591,7 +607,7 @@ function renderProduto($row)
                     <button type="submit" class="search-button" aria-label="Pesquisar"><i class="fas fa-search"></i></button>
                 </form>
                 
-                <a href="carrinho.php" aria-label="Carrinho"><i class="fas fa-shopping-cart"></i> <span>0</span></a>
+                <a href="carrinho.php" aria-label="Carrinho"><i class="fas fa-shopping-cart"></i> <span><?php echo $total_itens_carrinho; ?></span></a>
                 <?php if (isset($_SESSION['nome'])) : ?>
                     <span style="font-size: 1rem; font-weight: 700; color: #000; white-space: nowrap;">
                         <a href="#" aria-label="Minha Conta" title="Minha Conta"><i class="fas fa-user" style="margin-right: 15px;"></i></a>
@@ -612,7 +628,6 @@ function renderProduto($row)
                     </a>
                     <div id="admin-menu-dropdown" class="admin-dropdown-content">
                         <a href="sistema.php">Gerenciar Cadastros</a>
-                        <a href="log.php">Log</a>
                     </div>
                 </div>
                 <?php endif; ?>
@@ -650,7 +665,7 @@ function renderProduto($row)
                                        WHERE nome LIKE '%$search_term_sql%'
                                           OR categoria LIKE '%$search_term_sql%'";
                         
-                        $result_search = $conexao->query($sql_search);
+                        $result_search = $conn->query($sql_search);
                         
                         if ($result_search && $result_search->num_rows > 0) {
                             while ($row = $result_search->fetch_assoc()) {
@@ -674,9 +689,9 @@ function renderProduto($row)
                         <div class="carrossel-wrapper">
                             <div class="horizontal" id="carrossel-destaques">
                                 <?php
-                                $categoria_destaque = ['Placas de vídeo2', 'Processadores', 'Armazenamento', 'Memória RAM', 'Monitor'];
+                                $categoria_destaque = ['Placas de vídeo', 'Processadores', 'Armazenamento', 'Memória RAM', 'Monitor'];
                                 $sql = "SELECT * FROM produtos WHERE categoria IN ('" . implode("','", $categoria_destaque) . "')";
-                                $result = $conexao->query($sql);
+                                $result = $conn->query($sql);
                                 if ($result->num_rows > 0) {
                                     while ($row = $result->fetch_assoc()) renderProduto($row);
                                 } else {
@@ -699,7 +714,7 @@ function renderProduto($row)
                             <div class="horizontal" id="carrossel-perifericos">
                                 <?php
                                 $sql = "SELECT * FROM produtos WHERE categoria IN ('Microfones', 'Periféricos', 'Áudio', 'Pen Drive')";
-                                $result = $conexao->query($sql);
+                                $result = $conn->query($sql);
                                 if ($result->num_rows > 0) {
                                     while ($row = $result->fetch_assoc()) renderProduto($row);
                                 } else {
@@ -722,7 +737,7 @@ function renderProduto($row)
                             <div class="horizontal" id="carrossel-computadores">
                                 <?php
                                 $sql = "SELECT * FROM produtos WHERE categoria = 'Computadores'";
-                                $result = $conexao->query($sql);
+                                $result = $conn->query($sql);
                                 if ($result->num_rows > 0) {
                                     while ($row = $result->fetch_assoc()) renderProduto($row);
                                 } else {
@@ -745,7 +760,7 @@ function renderProduto($row)
                             <div class="horizontal" id="carrossel-fontes">
                                 <?php
                                 $sql = "SELECT * FROM produtos WHERE categoria = 'Fontes'";
-                                $result = $conexao->query($sql);
+                                $result = $conn->query($sql);
                                 if ($result->num_rows > 0) {
                                     while ($row = $result->fetch_assoc()) renderProduto($row);
                                 } else {
@@ -767,8 +782,8 @@ function renderProduto($row)
                         <div class="carrossel-wrapper">
                             <div class="horizontal" id="carrossel-placas">
                                 <?php
-                                $sql = "SELECT * FROM produtos WHERE categoria = 'Placas de vídeo'";
-                                $result = $conexao->query($sql);
+                                $sql = "SELECT * FROM produtos WHERE categoria = 'Placas de vídeo2'";
+                                $result = $conn->query($sql);
                                 if ($result->num_rows > 0) {
                                     while ($row = $result->fetch_assoc()) renderProduto($row);
                                 } else {
@@ -793,7 +808,7 @@ function renderProduto($row)
                     <div class="footer-section">
                         <h4>Links Rápidos</h4>
                         <ul>
-                            <li><a href="#">Sobre Nós</a></li>
+                            <li><a href="sobre.php">Sobre Nós</a></li>
                             <li><a href="#">Contato</a></li>
                             <li><a href="#">Política de Privacidade</a></li>
                             <li><a href="#">Termos de Serviço</a></li>
@@ -828,16 +843,6 @@ function renderProduto($row)
                 icon.classList.toggle('fa-bars');
                 icon.classList.toggle('fa-times');
             });
-
-            // Adicionar ao Carrinho
-            const addToCartButtons = document.querySelectorAll('.btn-add-cart'); 
-            addToCartButtons.forEach(button => {
-                button.addEventListener('click', function() {
-                    const produtoId = this.dataset.id;
-                    alert('Produto ' + produtoId + ' adicionado ao carrinho! (Isso é uma demonstração)');
-                });
-            });
-
 
             // Barra de Pesquisa
             const searchForm = document.querySelector('.search-container');

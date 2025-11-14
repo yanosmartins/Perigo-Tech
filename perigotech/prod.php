@@ -1,14 +1,20 @@
 <?php
-$host = "localhost";
-$user = "root";
-$password = "";
-$dbname = "cadastro-tech";
+$host = "perigo-tech.cxk4sugqggtc.us-east-2.rds.amazonaws.com";
+$user = "admin";
+$password = "P1rucomLeucem1a";
+$dbname = "perigotech";
 $conn = new mysqli($host, $user, $password, $dbname);
 if ($conn->connect_error) {
     die("Conexão falhou: " . $conn->connect_error);
 }
 
 session_start();
+
+$total_itens_carrinho = 0;
+if (isset($_SESSION['carrinho']) && !empty($_SESSION['carrinho'])) {
+    $total_itens_carrinho = array_sum($_SESSION['carrinho']);
+}
+
 if (!isset($_GET['id'])) {
     die("Produto não especificado.");
 }
@@ -30,7 +36,7 @@ $produto = $result->fetch_assoc();
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><?php echo htmlspecialchars($produto['nomeprod']); ?> - Perigo Tech</title>
+    <title><?php echo htmlspecialchars($produto['nome']); ?> - Perigo Tech</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700;900&display=swap');
@@ -54,6 +60,14 @@ $produto = $result->fetch_assoc();
             background-color: black;
             color: white;
             line-height: 1.6;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+        
+        main {
+
+            flex-grow: 1;
         }
 
         .container {
@@ -92,9 +106,19 @@ $produto = $result->fetch_assoc();
         .main-nav a {
             color: var(--text-muted);
             text-decoration: none;
-            margin: 0 15px;
+            margin: 0 13px;
             font-weight: 700;
             transition: color 0.3s ease;
+        }
+
+        .main-nav {
+            display: none;
+        }
+        
+        @media (min-width: 768px) {
+            .main-nav {
+                display: flex;
+            }
         }
 
         .main-nav a:hover {
@@ -139,12 +163,22 @@ $produto = $result->fetch_assoc();
         }
 
         .produto-imagem img {
-            max-width: 650px;
-            max-height: 600px;
+            max-width: 100%;
+            height: auto;
             border-radius: 5px;
             background: white;
             padding: 10px;
+            display: block;
+            margin: 0 auto;
         }
+        
+        @media (min-width: 768px) {
+            .produto-imagem img {
+                max-width: 650px;
+                max-height: 600px;
+            }
+        }
+
 
         .produto-info h1 {
             font-size: 2rem;
@@ -153,12 +187,13 @@ $produto = $result->fetch_assoc();
 
         .produto-info .categoria {
             font-size: 1rem;
-            color: #ffffff;
+            color: #bbbbbb;
             margin-bottom: 1rem;
         }
 
         .produto-info .descricao {
             margin-bottom: 1.5rem;
+            color: #dddddd;
         }
 
         .produto-info .preco {
@@ -265,22 +300,16 @@ $produto = $result->fetch_assoc();
                 max-width: 600px;
             }
         }
-
-        /* Para celulares */
+        
         @media (max-width: 768px) {
             .produto-imagem img {
                 max-width: 550px;
             }
         }
 
-        /* Para celulares bem pequenos */
         @media (max-width: 580px) {
             .produto-imagem img {
                 max-width: 360px;
-            }
-
-            .price-box {
-                left: -740px;
             }
         }
 
@@ -291,14 +320,13 @@ $produto = $result->fetch_assoc();
             background: #000000ff;
             border: 2px solid #ff7300;
             text-align: center;
-            transform: scale(0.86);
-            transform-origin: top left;
             transition: transform 0.3s ease, box-shadow 0.3s ease;
             cursor: pointer;
         }
 
-        .price-box p {
-            margin: 2px 0;
+
+        .price-box > p {
+            margin: 2px 0 10px 0;
             font-size: 0.85rem;
             color: #ffffff;
             font-weight: 500;
@@ -307,7 +335,6 @@ $produto = $result->fetch_assoc();
         .price-box:hover {
             box-shadow: -10px 0 15px rgba(197, 81, 14, 0.5), 10px 0 15px rgba(197, 81, 14, 0.5), 0 10px 15px rgba(197, 81, 14, 0.5);
         }
-
 
         .parcelas-container {
             display: flex;
@@ -325,6 +352,38 @@ $produto = $result->fetch_assoc();
             font-size: 1rem;
             color: #ffffff;
         }
+
+        .especificacoes-wrapper {
+            margin: 20px 0;
+            margin-bottom: 80px;
+            padding: 15px;
+            border-radius: 10px;
+            background: #000000ff;
+            border: 2px solid #ff7300;
+            text-align: center; 
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            cursor: pointer;
+        }
+
+        .especificacoes-wrapper:hover {
+            box-shadow: -10px 0 15px rgba(197, 81, 14, 0.5), 10px 0 15px rgba(197, 81, 14, 0.5), 0 10px 15px rgba(197, 81, 14, 0.5);
+        }
+
+        .especificacoes-wrapper h2 {
+            margin: 2px 0 15px 0;
+            font-size: 0.85rem;
+            color: #ffffff;
+            font-weight: 500;
+        }
+
+        .especificacoes-wrapper p {
+            font-size: 1rem;
+            color: #ffffff;
+            text-align: left;
+            line-height: 1.8;
+        }
+
+
     </style>
 </head>
 
@@ -344,7 +403,7 @@ $produto = $result->fetch_assoc();
                 </span>
             </nav>
             <div class="header-icons">
-                <a href="carrinho.php" aria-label="Carrinho"><i class="fas fa-shopping-cart"></i> <span>0</span></a>
+                <a href="carrinho.php" aria-label="Carrinho"><i class="fas fa-shopping-cart"></i> <span><?php echo $total_itens_carrinho; ?></span></a>
                 <a href="#" aria-label="Login"><i class="fas fa-user"></i></a>
                 <?php if (isset($_SESSION['nome'])) : ?>
                     <span style="font-size: 1rem; font-weight: 700; color: #000; white-space: nowrap; margin-left: 15px;">
@@ -360,13 +419,14 @@ $produto = $result->fetch_assoc();
         <div class="container">
             <div class="produto-detalhe-wrapper">
                 <div class="produto-imagem">
-                    <img src="./img/<?php echo htmlspecialchars($produto['img']); ?>" alt="<?php echo htmlspecialchars($produto['nomeprod']); ?>">
+                    <img src="./img/<?php echo htmlspecialchars($produto['img']); ?>" alt="<?php echo htmlspecialchars($produto['nome']); ?>">
                 </div>
                 <div class="produto-info">
-                    <h1><?php echo htmlspecialchars($produto['nomeprod']); ?></h1>
-                    <p class="categoria"><?php echo htmlspecialchars($produto['categorias']); ?></p>
+                    <h1><?php echo htmlspecialchars($produto['nome']); ?></h1>
+                    <p class="categoria"><?php echo htmlspecialchars($produto['categoria']); ?></p>
                     <p class="descricao"><?php echo htmlspecialchars($produto['descricao']); ?></p>À vista
                     <div class="preco">R$ <?php echo number_format($produto['preco'], 2, ',', '.'); ?></div>
+                    
                     <div class="price-box">
                         <p>Parcelamento</p>
                         <?php
@@ -377,12 +437,9 @@ $produto = $result->fetch_assoc();
                         <div class="parcelas-container">
                             <?php
                             for ($i = 1; $i <= $maxSemJuros; $i++) {
-                                // calcula valor sem juros
                                 $valorSemJuros = $preco / $i;
-
-                                // calcula valor com juros, se houver
                                 if (($i + 6) <= $maxParcelas) {
-                                    $juros = 3 + (($i + 6 - 7) * 0.5); // 7x = 3%, 8x = 3,5% ...
+                                    $juros = 3 + (($i + 6 - 7) * 0.5);
                                     $valorComJuros = ($preco * (1 + $juros / 100)) / ($i + 6);
                                     $textoComJuros = "com juros";
                                 } else {
@@ -400,11 +457,29 @@ $produto = $result->fetch_assoc();
                             ?>
                         </div>
                     </div>
+
                     <p>Frete Grátis</p>
-                    <button class="btn-secondary">Adicionar ao Carrinho</button>
+                   <?php if (isset($_SESSION['nome'])) : ?>
+                        <form action="gerenciar_carrinho.php" method="POST">
+                            <input type="hidden" name="id_prod" value="<?php echo $produto['id_prod']; ?>">
+                            <input type="hidden" name="acao" value="adicionar">
+                            <button type="submit" class="btn-secondary">Adicionar ao Carrinho</button>
+                        </form>
+                    <?php else : ?>
+                        <a href="login.php" class="btn-secondary" style="text-align: center; display: block; text-decoration: none;">Adicionar ao Carrinho</a>
+                    <?php endif; ?>
                 </div>
             </div>
-        </div>
+            
+            <?php 
+            if (!empty($produto['especificacoes'])) : 
+            ?>
+                <div class="especificacoes-wrapper"> 
+                    <h2>Especificações Técnicas</h2>
+                    <p><?php echo nl2br(htmlspecialchars($produto['especificacoes'])); ?></p>
+                </div>
+            <?php endif; ?>
+            </div>
     </main>
 
     <footer class="main-footer">
@@ -438,16 +513,6 @@ $produto = $result->fetch_assoc();
         </div>
     </footer>
 
-    <script>
-        const addToCartButtons = document.querySelectorAll('.btn-secondary');
-        addToCartButtons.forEach(button => {
-            button.addEventListener('click', function() {
-                alert('Produto adicionado ao carrinho!(teste)');
-            });
-        });
-    </script>
-
 </body>
 
 </html>
-
