@@ -14,6 +14,60 @@ if (!in_array($_SESSION['login'], $admin_users)) {
 }
 $usuario = htmlspecialchars($_SESSION['login'], ENT_QUOTES, 'UTF-8');
 
+// ================== AÇÕES ==================
+if (isset($_GET['action'])) {
+    $id = isset($_POST['id']) ? intval($_POST['id']) : 0;
+
+    if ($id > 0) {
+        switch ($_POST['action']) {
+            // 🟢 Ativar/Inativar
+            case 'toggle':
+                $ativo = isset($_POST['ativo']) && $_POST['ativo'] == 1 ? 1 : 0;
+                $stmt = $conexao->prepare("UPDATE usuarios SET status=? WHERE id=?");
+                $stmt->bind_param('ii', $ativo, $id);
+                $stmt->execute();
+                $stmt->close();
+                header("Location: sistema.php");
+                exit();
+
+            // 🟡 Limpar Senha
+            case 'clearpass':
+                $stmt = $conexao->prepare("UPDATE usuarios SET senha='' WHERE id=?");
+                $stmt->bind_param('i', $id);
+                $stmt->execute();
+                $stmt->close();
+                header("Location: sistema.php");
+                exit();
+
+                case 'delete':
+                    // $stmt = $conexao->prepare("DELETE FROM usuarios WHERE id=?");
+                    // $stmt->bind_param('i', $id);
+                    // $stmt->execute();
+                    // $stmt->close();
+                    header("Location: delete.php");
+                    exit();
+        }
+    }
+}
+
+// ================== EDIÇÃO ==================
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['editar'])) {
+    $id = intval($_POST['id']);
+    $nome = trim($_POST['nome']);
+    $email = trim($_POST['email']);
+    $telefone = trim($_POST['telefone']);
+    $endereco = trim($_POST['endereco']);
+
+    $stmt = $conexao->prepare("UPDATE usuarios SET nome=?, email=?, telefone=?, endereco=? WHERE id=?");
+    $stmt->bind_param("ssssi", $nome, $email, $telefone, $endereco, $id);
+    $stmt->execute();
+    $stmt->close();
+
+    header("Location: sistema.php");
+    exit();
+}
+
+
 // ===== FILTROS =====
 $filtro_id = isset($_GET['id']) ? trim($_GET['id']) : '';
 $filtro_nome = isset($_GET['nome']) ? trim($_GET['nome']) : '';
@@ -30,6 +84,7 @@ if ($filtro_nome !== '') {
 $result = $conexao->query($sql);
 ?>
 <!DOCTYPE html>
+
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
@@ -93,7 +148,7 @@ table tbody tr:hover { background-color: #ffb347; color: #1e1e1e; }
         <input type="text" name="id" placeholder="Filtrar por ID" value="<?= htmlspecialchars($filtro_id) ?>">
         <input type="text" name="nome" placeholder="Filtrar por Nome" value="<?= htmlspecialchars($filtro_nome) ?>">
         <button type="submit">Filtrar</button>
-        <a href="admin.php" class="btn btn-secondary">Limpar</a>
+        <a href="sistema.php" class="btn btn-secondary">Limpar</a>
     </form>
 
     <table>
@@ -111,7 +166,7 @@ table tbody tr:hover { background-color: #ffb347; color: #1e1e1e; }
                 <th>Login</th>
                 <th>Senha</th>
                 <th>Nome Mãe</th>
-                <th>Ativo</th>
+                <!-- <th>Ativo</th> -->
                 <th>Ações</th>
             </tr>
         </thead>
@@ -130,16 +185,15 @@ table tbody tr:hover { background-color: #ffb347; color: #1e1e1e; }
                     <td><?= htmlspecialchars($user['login']) ?></td>
                     <td><?= htmlspecialchars($user['senha']) ?></td>
                     <td><?= htmlspecialchars($user['nome_mae']) ?></td>
+
                     <td>
-                        <a href="toggleAtivo.php?id=<?= $user['id'] ?>&ativo=<?= $user['status'] ? 0 : 1 ?>" 
-                           class="btn btn-sm <?= $user['status'] ? 'btn-success' : 'btn-secondary' ?>">
-                           <?= $user['status'] ? 'Ativo' : 'Inativo' ?>
-                        </a>
-                    </td>
-                    <td>
-                        <a class="btn btn-sm btn-primary" href="edit.php?id=<?= $user['id'] ?>">Editar</a>
-                        <a class="btn btn-sm btn-warning" href="limparSenha.php?id=<?= $user['id'] ?>"
-                           onclick="return confirm('Deseja limpar a senha deste usuário?');">Limpar Senha</a>
+                        <!-- 🟦 Botão de edição abre um formulário modal simples -->
+                        <button class="btn btn-sm btn-primary" 
+                            onclick="editarUsuario(<?= $user['id'] ?>, '<?= htmlspecialchars($user['nome'], ENT_QUOTES) ?>', '<?= htmlspecialchars($user['email'], ENT_QUOTES) ?>', '<?= htmlspecialchars($user['telefone'], ENT_QUOTES) ?>', '<?= htmlspecialchars($user['endereco'], ENT_QUOTES) ?>')">
+                            Editar
+                        </button>
+
+                    
                         <a class="btn btn-sm btn-danger" href="delete.php?id=<?= $user['id'] ?>"
                            onclick="return confirm('Tem certeza que deseja excluir este usuário?');">Excluir</a>
                     </td>
@@ -148,5 +202,54 @@ table tbody tr:hover { background-color: #ffb347; color: #1e1e1e; }
         </tbody>
     </table>
 </div>
+
+<!-- 🟢 Modal de Edição -->
+<div class="modal fade" id="editModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog">
+    <form method="POST" class="modal-content bg-dark text-light">
+      <div class="modal-header">
+        <h5 class="modal-title">Editar Usuário</h5>
+        <button type="button" class="btn-close bg-light" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <input type="hidden" name="id" id="edit-id">
+        <div class="mb-2">
+          <label>Nome:</label>
+          <input type="text" class="form-control" name="nome" id="edit-nome" required>
+        </div>
+        <div class="mb-2">
+          <label>Email:</label>
+          <input type="email" class="form-control" name="email" id="edit-email" required>
+        </div>
+        <div class="mb-2">
+          <label>Telefone:</label>
+          <input type="text" class="form-control" name="telefone" id="edit-telefone">
+        </div>
+        <div class="mb-2">
+          <label>Endereço:</label>
+          <input type="text" class="form-control" name="endereco" id="edit-endereco">
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="submit" name="editar" class="btn btn-success">Salvar Alterações</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+function editarUsuario(id, nome, email, telefone, endereco) {
+    document.getElementById('edit-id').value = id;
+    document.getElementById('edit-nome').value = nome;
+    document.getElementById('edit-email').value = email;
+    document.getElementById('edit-telefone').value = telefone;
+    document.getElementById('edit-endereco').value = endereco;
+
+    var modal = new bootstrap.Modal(document.getElementById('editModal'));
+    modal.show();
+}
+</script>
+
 </body>
 </html>

@@ -22,7 +22,7 @@ $campo = $_SESSION['2fa_pergunta'];
 
 // Busca dados do usuário
 $id = $_SESSION['id'];
-$stmt = $conexao->prepare("SELECT cpf, endereco, nome_mae FROM cadastro_tech WHERE idusuarios = ?");
+$stmt = $conexao->prepare("SELECT cpf, endereco, nome_mae FROM usuarios WHERE id = ?");
 $stmt->bind_param("i", $id);
 $stmt->execute();
 $result = $stmt->get_result();

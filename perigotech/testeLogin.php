@@ -7,7 +7,7 @@ if (isset($_POST['submit']) && !empty($_POST['login']) && !empty($_POST['senha']
     $login = $_POST['login'];
     $senha = $_POST['senha'];
 
-    $stmt = $conexao->prepare("SELECT * FROM cadastro_tech WHERE login = ? AND senha = ?");
+    $stmt = $conexao->prepare("SELECT * FROM usuarios WHERE login = ? AND senha = ?");
     $stmt->bind_param("ss", $login, $senha);
     $stmt->execute();
     $result = $stmt->get_result();
@@ -18,11 +18,11 @@ if (isset($_POST['submit']) && !empty($_POST['login']) && !empty($_POST['senha']
         exit();
     } else {
         $user = $result->fetch_assoc();
-        $_SESSION['id'] = $user['idusuarios'];
+        $_SESSION['id'] = $user['id'];
         $_SESSION['nome'] = $user['nome'];
         $_SESSION['login'] = $user['login'];
         $_SESSION['cpf'] = $user['cpf'];
-        $_SESSION['tipo_user'] = $user['tipo_user'];
+        $_SESSION['tipo'] = $user['tipo'];
 
         // Inicializa variável de log
         $_SESSION['log_registrado'] = false;

@@ -1,15 +1,15 @@
 <?php
-if(!empty($_GET['idusuarios'])) {
+if(!empty($_GET['id'])) {
     include_once("config.php");
 
-    $id = intval($_GET['idusuarios']); // segurança contra SQL Injection
+    $id = intval($_GET['id']); // segurança contra SQL Injection
 
     // Verifica se o ID existe
-    $sqlSelect = "SELECT * FROM cadastro_tech WHERE idusuarios=$id";
+    $sqlSelect = "SELECT * FROM usuarios WHERE id=$id";
     $result = $conexao->query($sqlSelect);
 
     if($result && $result->num_rows > 0) {
-        $sqlDelete = "DELETE FROM cadastro_tech WHERE idusuarios=$id";
+        $sqlDelete = "DELETE FROM usuarios WHERE id=$id";
         $resultDelete = $conexao->query($sqlDelete);
     }
 
