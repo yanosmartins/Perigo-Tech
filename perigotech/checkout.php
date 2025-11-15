@@ -174,6 +174,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 background-color: var(--primary-color);
                 color: white;
                 padding: 12px 25px;
+                margin: 5px;
                 text-decoration: none;
                 border-radius: 5px;
                 font-weight: 700;
@@ -272,6 +273,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <h1>Pedido Confirmado!</h1>
                 <p>Obrigado pela sua compra, <?php echo $nome_usuario; ?>!</p>
                 <a href="loja.php" class="btn-primary">Continuar Comprando</a>
+                <a href="loja.php" class="btn-primary">Ver Status</a>
             </div>
         </main>
 
