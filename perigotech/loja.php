@@ -128,6 +128,10 @@ function renderProduto($row)
             transition: color 0.3s ease;
         }
 
+        .main-nav a[href="modeloBD.php"]{
+            font-size: 17px;
+        }
+
         .main-nav a:hover {
             color: #994907ff;
         }
@@ -613,10 +617,12 @@ function renderProduto($row)
                         <a href="#" aria-label="Minha Conta" title="Minha Conta"><i class="fas fa-user" style="margin-right: 15px;"></i></a>
                         Olá, <?php echo htmlspecialchars($_SESSION['nome']); ?>!
                     </span>
+                    <nav class="main-nav"><a href="modeloBD.php">Modelo do BD</a></nav>
                     <a href="logout.php" aria-label="Sair" title="Sair"><i class="fas fa-sign-out-alt"></i></a>
                 <?php else : ?>
                     <a href="login.php" aria-label="Login"><i class="fas fa-user"></i></a>
                     <a href="login.php" style="font-size: 1rem; font-weight: 700; white-space: nowrap;">Entrar/Cadastrar</a>
+                    <nav class="main-nav"><a href="modeloBD.php">Modelo do BD</a></nav>
                 <?php endif; ?>
                 <?php
                 $admin_users = ['admin', 'master'];
@@ -628,6 +634,7 @@ function renderProduto($row)
                     </a>
                     <div id="admin-menu-dropdown" class="admin-dropdown-content">
                         <a href="sistema.php">Gerenciar Cadastros</a>
+                        <a href="log.php">Tela log</a>
                     </div>
                 </div>
                 <?php endif; ?>
