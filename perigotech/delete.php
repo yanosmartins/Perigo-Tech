@@ -2,9 +2,7 @@
 if(!empty($_GET['id'])) {
     include_once("config.php");
 
-    $id = intval($_GET['id']); // segurança contra SQL Injection
-
-    // Verifica se o ID existe
+    $id = intval($_GET['id']);
     $sqlSelect = "SELECT * FROM usuarios WHERE id=$id";
     $result = $conexao->query($sqlSelect);
 
