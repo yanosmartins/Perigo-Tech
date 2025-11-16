@@ -51,17 +51,13 @@ if (!isset($_SESSION['nome'])) {
             background-color: black;
             color: white;
             line-height: 1.6;
-
-            /* --- CORREÇÃO FOOTER FLUTUANTE --- */
             display: flex;
             flex-direction: column;
             min-height: 100vh;
-            /* --- FIM DA CORREÇÃO --- */
         }
 
         main {
-            /* --- CORREÇÃO FOOTER FLUTUANTE --- */
-            flex-grow: 1; /* Faz o <main> esticar e preencher o espaço */
+            flex-grow: 1;
         }
 
         html {
@@ -69,7 +65,7 @@ if (!isset($_SESSION['nome'])) {
         }
 
         .container {
-            max-width: 1200px;
+            max-width: 1310px;
             margin: 0 auto;
             padding: 0 20px;
         }
