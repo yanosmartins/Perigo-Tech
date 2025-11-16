@@ -1,44 +1,74 @@
 <?php
 include_once 'config.php';
 
-if(isset($_POST['update'])) {    
+if (isset($_POST['update'])) {
 
-    $idusuarios = intval($_POST['idusuarios']); 
-    $nome = mysqli_real_escape_string($conexao, $_POST['nome']);
-    $email = mysqli_real_escape_string($conexao, $_POST['email']);
-    $telefone = mysqli_real_escape_string($conexao, $_POST['telefone']);
-    $endereco = mysqli_real_escape_string($conexao, $_POST['endereco']);
-    $login = mysqli_real_escape_string($conexao, $_POST['login']);
-    $senha = mysqli_real_escape_string($conexao, $_POST['senha']);
-    $nome_mae = mysqli_real_escape_string($conexao, $_POST['nome_mae']);
-    $cep = mysqli_real_escape_string($conexao, $_POST['cep']);
-    $cpf = mysqli_real_escape_string($conexao, $_POST['cpf']);
-    $data_nasc = mysqli_real_escape_string($conexao, $_POST['data_nasc']);
-    $sexo = mysqli_real_escape_string($conexao, $_POST['sexo']);
+    $id = intval($_POST['id']);
+    $nome = $_POST['nome'];
+    $email = $_POST['email'];
+    $telefone = $_POST['telefone'];
+    $endereco = $_POST['endereco'];
+    $login = $_POST['login'];
+    $senha_plana = $_POST['senha'];
+    $nome_mae = $_POST['nome_mae'];
+    $cep = $_POST['cep'];
+    $cpf = $_POST['cpf'];
+    $data_nascimento = $_POST['data_nascimento'];
+    $sexo = $_POST['sexo'];
 
-    $sqlupdate = "
-        UPDATE cadastro_tech 
-        SET nome='$nome',
-            email='$email',
-            telefone='$telefone',
-            endereco='$endereco',
-            login='$login',
-            senha='$senha',
-            nome_mae='$nome_mae',
-            cep='$cep',
-            cpf='$cpf',
-            data_nasc='$data_nasc',
-            sexo='$sexo'
-        WHERE idusuarios='$idusuarios'
-    ";
+    if (!empty($senha_plana)) {
+        $senha_hash = password_hash($senha_plana, PASSWORD_DEFAULT);
+        $sql = "UPDATE usuarios 
+                SET nome=?, email=?, telefone=?, endereco=?, login=?, senha=?, 
+                    nome_mae=?, cep=?, cpf=?, data_nascimento=?, sexo=?
+                WHERE id=?";
 
-    $result = $conexao->query($sqlupdate);
+        $stmt = $conexao->prepare($sql);
+        $stmt->bind_param(
+            'sssssssssssi',
+            $nome,
+            $email,
+            $telefone,
+            $endereco,
+            $login,
+            $senha_hash,
+            $nome_mae,
+            $cep,
+            $cpf,
+            $data_nascimento,
+            $sexo,
+            $id
+        );
+    } else {
+        $sql = "UPDATE usuarios 
+                SET nome=?, email=?, telefone=?, endereco=?, login=?, 
+                    nome_mae=?, cep=?, cpf=?, data_nascimento=?, sexo=?
+                WHERE id=?";
 
-    if($result) {
+        $stmt = $conexao->prepare($sql);
+        $stmt->bind_param(
+            'ssssssssssi',
+            $nome,
+            $email,
+            $telefone,
+            $endereco,
+            $login,
+            $nome_mae,
+            $cep,
+            $cpf,
+            $data_nascimento,
+            $sexo,
+            $id
+        );
+    }
+
+    if ($stmt->execute()) {
         header("Location: sistema.php");
         exit;
     } else {
-        echo "Erro ao atualizar: " . $conexao->error;
+        echo "Erro ao atualizar: " . $stmt->error;
     }
+} else {
+    header("Location: sistema.php");
+    exit;
 }
-?>
