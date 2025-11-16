@@ -183,7 +183,7 @@ table tbody tr:hover { background-color: #ffb347; color: #1e1e1e; }
                     <td><?= htmlspecialchars($user['sexo']) ?></td>
                     <td><?= htmlspecialchars($user['cep']) ?></td>
                     <td><?= htmlspecialchars($user['login']) ?></td>
-                    <td><?= htmlspecialchars($user['senha']) ?></td>
+                    <td>********</td>
                     <td><?= htmlspecialchars($user['nome_mae']) ?></td>
 
                     <td>
