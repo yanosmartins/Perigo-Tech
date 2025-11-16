@@ -12,38 +12,51 @@ if (isset($_POST['submit'])) {
     $cep         = $_POST['cep'] ?? '';
     $cpf         = $_POST['cpf'] ?? '';
     $login       = $_POST['login'] ?? '';
-    $senha       = $_POST['senha'] ?? '';
+    $senha_plana = $_POST['senha'] ?? '';
     $nome_mae    = $_POST['nome_mae'] ?? '';
-
+    $senha_hash = password_hash($senha_plana, PASSWORD_DEFAULT);
+    
     $sql = "INSERT INTO usuarios 
-          (nome, email, telefone, endereco, data_nascimento, sexo, cep, cpf, login, senha, nome_mae, tipo)
-          VALUES (
-            '$nome',
-            '$email',
-            '$telefone',
-            '$endereco',
-            '$data_nasc',
-            '$sexo',
-            '$cep',
-            '$cpf',
-            '$login',
-            '$senha',
-            '$nome_mae',
-            'comum'
-          )";
+              (nome, email, telefone, endereco, data_nascimento, sexo, cep, cpf, login, senha, nome_mae, tipo)
+              VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'comum')";
 
-  // Executar a query
-  if ($conexao->query($sql) === TRUE) {
-    $_SESSION['msg'] = "Cadastro realizado com sucesso!";
-    header("Location: login.php");
-    exit;
-  } else {
-    $_SESSION['msg'] = "Erro ao cadastrar: " . $conexao->error;
-    header("Location: cadastro.php");
-    exit;
-  }
+    $stmt = $conexao->prepare($sql);
+
+    if ($stmt === false) {
+        $_SESSION['msg'] = "Erro ao preparar a query: " . $conexao->error;
+        header("Location: cadastro.php");
+        exit;
+    }
+
+    $stmt->bind_param(
+        'sssssssssss',
+        $nome,
+        $email,
+        $telefone,
+        $endereco,
+        $data_nasc,
+        $sexo,
+        $cep,
+        $cpf,
+        $login,
+        $senha_hash,
+        $nome_mae
+    );
+
+    if ($stmt->execute()) {
+        $_SESSION['msg'] = "Cadastro realizado com sucesso!";
+        header("Location: login.php");
+        exit;
+    } else {
+        if ($conexao->errno == 1062) {
+             $_SESSION['msg'] = "Erro: O Login ou CPF/Email informado já existe.";
+        } else {
+             $_SESSION['msg'] = "Erro ao cadastrar: " . $stmt->error;
+        }
+        header("Location: cadastro.php");
+        exit;
+    }
 }
-
 ?>
 
 <!DOCTYPE html>
