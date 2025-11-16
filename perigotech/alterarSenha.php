@@ -2,12 +2,10 @@
 session_start();
 include_once('config.php');
 
-
-if (!isset($_SESSION['idusuarios']) || !isset($_SESSION['nome'])) {
+if (!isset($_SESSION['id']) || !isset($_SESSION['nome'])) {
     header("Location: login.php");
     exit();
 }
-
 
 $erro = '';
 $sucesso = '';
@@ -24,23 +22,24 @@ if (isset($_POST['alterar'])) {
         $erro = "A nova senha e a confirmação não coincidem!";
     } else {
         
-        $id = $_SESSION['idusuarios'];
-        $sql = "SELECT senha FROM cadastro_tech WHERE idusuarios = ?";
+        $id = $_SESSION['id'];
+        $sql = "SELECT senha FROM usuarios WHERE id = ?";
         $stmt = $conexao->prepare($sql);
         $stmt->bind_param("i", $id);
         $stmt->execute();
-        $stmt->bind_result($senha_hash);
+        $stmt->bind_result($senha_hash_banco);
         $stmt->fetch();
         $stmt->close();
 
-        
-        if ($senha_atual !== $senha_hash) {
+        if (!password_verify($senha_atual, $senha_hash_banco)) {
             $erro = "Senha atual incorreta!";
         } else {
             
-            $sql = "UPDATE cadastro_tech SET senha = ? WHERE idusuarios = ?";
+            $nova_senha_hash = password_hash($nova_senha, PASSWORD_DEFAULT);
+            $sql = "UPDATE usuarios SET senha = ? WHERE id = ?";
             $stmt = $conexao->prepare($sql);
-            $stmt->bind_param("si", $nova_senha, $id);
+            $stmt->bind_param("si", $nova_senha_hash, $id); 
+            
             if ($stmt->execute()) {
                 $sucesso = "Senha alterada com sucesso!";
             } else {
@@ -59,6 +58,7 @@ if (isset($_POST['alterar'])) {
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Alterar Senha</title>
 <style>
+
 body {
     background-image: url(img/Gemini_Generated_Image_km51uskm51uskm51.png );
     font-family: 'Poetsen One', sans-serif;
