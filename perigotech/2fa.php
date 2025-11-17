@@ -23,8 +23,7 @@ $campo = $_SESSION['2fa_pergunta'];
 
 // Busca dados do usuário
 $id = $_SESSION['id'];
-// Certifique-se que está usando a tabela 'usuarios' (consistente com testeLogin.php)
-$stmt = $conexao->prepare("SELECT cpf, endereco, nome_mae FROM usuarios WHERE id = ?"); 
+$stmt = $conexao->prepare("SELECT cpf, endereco, nome_mae FROM usuarios WHERE id = ?");
 $stmt->bind_param("i", $id);
 $stmt->execute();
 $result = $stmt->get_result();
@@ -54,18 +53,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         unset($_SESSION['2fa_pergunta']);
         unset($_SESSION['2fa_tentativas']);
 
-        if (isset($_SESSION['tipo']) && $_SESSION['tipo'] === 'master') { 
+        if (isset($_SESSION['tipo']) && $_SESSION['tipo'] === 'master') {
             header('Location: sistema.php');
         } else {
             header('Location: loja.php');
         }
         exit();
-
     } else {
-        $_SESSION['2fa_tentativas']++; 
+        $_SESSION['2fa_tentativas']++;
 
         if ($_SESSION['2fa_tentativas'] >= 3) {
-            
+
             unset($_SESSION['id']);
             unset($_SESSION['nome']);
             unset($_SESSION['login']);
@@ -77,7 +75,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             header('Location: login.php?erro=3');
             exit();
-
         } else {
             $tentativas_restantes = 3 - $_SESSION['2fa_tentativas'];
             $erro = "Resposta incorreta. Você tem mais $tentativas_restantes tentativa(s).";
@@ -154,9 +151,36 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <?php endif; ?>
         <form method="POST">
             <label for="<?= $campo ?>"><?= $perguntas[$campo] ?></label>
-            <input type="text" name="<?= $campo ?>" id="<?= $campo ?>" required>
+
+            <input type="text" name="<?= $campo ?>" id="<?= $campo ?>" required
+                <?php if ($campo === 'cpf'): ?>
+                maxlength="14"
+                <?php endif; ?>>
             <button type="submit">Confirmar</button>
         </form>
     </div>
+
+    <script>
+        function mascaraCPF(valor) {
+            return valor
+                .replace(/\D/g, '')
+                .replace(/(\d{3})(\d)/, '$1.$2')
+                .replace(/(\d{3})(\d)/, '$1.$2')
+                .replace(/(\d{3})(\d{1,2})$/, '$1-$2');
+        }
+
+        const campoAtual = '<?php echo $campo; ?>';
+
+        if (campoAtual === 'cpf') {
+            const inputCPF = document.getElementById('cpf');
+
+            if (inputCPF) {
+                inputCPF.addEventListener('input', function(e) {
+                    e.target.value = mascaraCPF(e.target.value);
+                });
+            }
+        }
+    </script>
 </body>
+
 </html>
