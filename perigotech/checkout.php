@@ -459,6 +459,42 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     display: flex;
                 }
             }
+            
+            /* ADDED: Styles for JS messages */
+            #mensagem {
+                display: none; /* Começa invisível */
+                padding: 14px 18px;
+                margin-top: 12px;
+                font-size: 15px;
+                font-weight: 600;
+                border-radius: 6px;
+                text-align: left;
+            }
+
+            .alert-erro {
+                background: #ff4d4d;
+                color: #fff;
+                border-left: 6px solid #8b0000;
+            }
+
+            .alert-sucesso {
+                background: #00c851;
+                color: #fff;
+                border-left: 6px solid #02571b;
+            }
+            
+            /* Animation for fade out (copied from cadastro.php context) */
+            @keyframes sumirSozinho {
+                0% { opacity: 0; transform: translateY(-6px); }
+                10% { opacity: 1; transform: translateY(0); }
+                90% { opacity: 1; transform: translateY(0); }
+                100% { opacity: 0; transform: translateY(-6px); pointer-events: none; }
+            }
+            
+            .com-timer {
+                animation: sumirSozinho 10s forwards;
+            }
+            /* END ADDED STYLES */
 
             .checkout-wrapper {
                 display: flex;
@@ -726,9 +762,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <a href="carrinho.php" aria-label="Carrinho"><i class="fas fa-shopping-cart"></i>
                         <span><?php echo $total_itens_carrinho; ?></span></a>
                     <a href="#" aria-label="Login"><i class="fas fa-user"></i></a>
-                    <?php if (isset($_SESSION['nome'])): ?>
+                    <?php if (isset($_SESSION['login'])): ?>
                         <span style="font-size: 1rem; font-weight: 700; color: #000; white-space: nowrap; margin-left: 15px;">
-                            Olá, <?php echo htmlspecialchars($_SESSION['nome']); ?>!
+                            Olá, <?php echo htmlspecialchars($_SESSION['login']); ?>!
                         </span>
                         <a href="logout.php" aria-label="Sair" title="Sair"><i class="fas fa-sign-out-alt"></i></a>
                     <?php endif; ?>
@@ -738,7 +774,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         <main class="container">
             <h1>Finalizar Compra</h1>
-            <form action="checkout.php" method="POST">
+            <p id="mensagem" aria-live="polite"></p> <form action="checkout.php" method="POST">
                 <div class="checkout-wrapper">
 
                     <section class="form-section">
@@ -898,6 +934,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 const parcelasInputs = document.querySelectorAll('input[name="parcela_opcao"]');
                 const cepInput = document.getElementById('cep');
                 const enderecoInput = document.getElementById('endereco');
+                const telefoneInput = document.getElementById('telefone');
+                const telFixoInput = document.getElementById('telFixo');
+
+                window.mostrarMensagem = function (texto, tipo) {
+                    const mensagem = document.getElementById('mensagem');
+                    if (!mensagem) return; 
+                    
+                    mensagem.textContent = texto;
+                    mensagem.className = ''; 
+                    void mensagem.offsetWidth; 
+                    mensagem.classList.add(tipo, 'com-timer');
+                    mensagem.style.display = 'block';
+                };
+
+
                 parcelasInputs.forEach(input => {
                     input.addEventListener('change', () => {
                         if (input.checked && totalDisplay) {
@@ -918,6 +969,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     input.value = v;
                 };
 
+                window.formatarCartao = function (input) {
+                    if (!input) return;
+                    let v = input.value.replace(/\D/g, '');
+
+                    v = v.match(/.{1,4}/g)?.join(' ') || v;
+                    input.value = v.trim();
+                };
+
                 window.formatarCEP = function (input) {
                     if (!input) return;
                     let v = input.value.replace(/\D/g, '');
@@ -928,35 +987,34 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                     input.value = v;
                 };
+                
 
                 if (cepInput) {
                     cepInput.addEventListener('blur', () => {
                         const cep = cepInput.value.replace(/\D/g, '');
-                        if (cep.length === 8) {
-                            fetch(`https://viacep.com.br/ws/${cep}/json/`)
-                                .then(response => response.json())
-                                .then(data => {
-                                    if (!data.erro && enderecoInput) {
-                                        enderecoInput.value = `${data.logradouro}, ${data.bairro}, ${data.localidade} - ${data.uf}`;
-                                    } else {
-                                        alert('CEP não encontrado.');
-                                        if (enderecoInput) enderecoInput.value = '';
-                                    }
-                                })
-                                .catch(() => {
-                                    alert('Erro ao buscar o CEP.');
-                                });
+                        
+                        if (cep.length !== 8) {
+                            mostrarMensagem('⚠ Por favor, insira um CEP válido com 8 dígitos.', 'alert-erro');
+                            return;
                         }
+
+                        fetch(`https://viacep.com.br/ws/${cep}/json/`)
+                            .then(response => response.json())
+                            .then(data => {
+                                if (!data.erro && enderecoInput) {
+                                    enderecoInput.value = `${data.logradouro}, ${data.bairro}, ${data.localidade} - ${data.uf}`;
+                                    mostrarMensagem('✔ Endereço encontrado com sucesso!', 'alert-sucesso');
+                                } else {
+                                    mostrarMensagem('⚠ CEP não encontrado.', 'alert-erro');
+                                    if (enderecoInput) enderecoInput.value = '';
+                                }
+                            })
+                            .catch(() => {
+                                mostrarMensagem('⚠ Erro ao buscar o CEP.', 'alert-erro');
+                                if (enderecoInput) enderecoInput.value = '';
+                            });
                     });
                 }
-
-                window.formatarCartao = function (input) {
-                    if (!input) return;
-                    let v = input.value.replace(/\D/g, '');
-
-                    v = v.match(/.{1,4}/g)?.join(' ') || v;
-                    input.value = v.trim();
-                };
             });
         </script>
 
