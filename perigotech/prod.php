@@ -405,9 +405,9 @@ $produto = $result->fetch_assoc();
             <div class="header-icons">
                 <a href="carrinho.php" aria-label="Carrinho"><i class="fas fa-shopping-cart"></i> <span><?php echo $total_itens_carrinho; ?></span></a>
                 <a href="#" aria-label="Login"><i class="fas fa-user"></i></a>
-                <?php if (isset($_SESSION['nome'])) : ?>
+                <?php if (isset($_SESSION['login'])) : ?>
                     <span style="font-size: 1rem; font-weight: 700; color: #000; white-space: nowrap; margin-left: 15px;">
-                        Olá, <?php echo htmlspecialchars($_SESSION['nome']); ?>!
+                        Olá, <?php echo htmlspecialchars($_SESSION['login']); ?>!
                     </span>
                     <a href="logout.php" aria-label="Sair" title="Sair"><i class="fas fa-sign-out-alt"></i></a>
                 <?php endif; ?>
