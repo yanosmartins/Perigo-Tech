@@ -305,101 +305,104 @@ body {
     </div>
     
 <script>
-    const form = document.getElementById('cadastroForm');
-    const mensagem = document.getElementById('mensagem');
+const form = document.getElementById('cadastroForm');
+const mensagem = document.getElementById('mensagem');
 
-    function avisar(texto, tipo) {
-        mensagem.textContent = texto;
-        mensagem.className = tipo;
-        mensagem.style.display = 'block';
+function mostrarMensagem(texto, tipo) {
+    mensagem.textContent = texto;
+    mensagem.className = tipo;
+    mensagem.style.display = 'block';
+}
+
+// ---------------- MÁSCARAS ----------------
+
+function aplicarMascaraCPF(valor) {
+    return valor
+        .replace(/\D/g, '')
+        .replace(/(\d{3})(\d)/, '$1.$2')
+        .replace(/(\d{3})(\d)/, '$1.$2')
+        .replace(/(\d{3})(\d{1,2})$/, '$1-$2');
+}
+
+function aplicarMascaraCelular(valor) {
+    valor = valor.replace(/\D/g, '');
+    if (valor.length > 11) valor = valor.slice(0, 11);
+    valor = valor.replace(/^(\d{2})(\d)/g, '($1) $2');
+    valor = valor.replace(/(\d{5})(\d)/, '$1-$2');
+    return valor;
+}
+
+function aplicarMascaraFixo(valor) {
+    valor = valor.replace(/\D/g, '');
+    if (valor.length > 10) valor = valor.slice(0, 10);
+    valor = valor.replace(/^(\d{2})(\d)/g, '($1) $2');
+    valor = valor.replace(/(\d{4})(\d)/, '$1-$2');
+    return valor;
+}
+
+function aplicarMascaraCEP(valor) {
+    return valor.replace(/\D/g, '').replace(/(\d{5})(\d)/, '$1-$2');
+}
+
+function aplicarMascaraData(valor) {
+    return valor
+        .replace(/\D/g, '')
+        .replace(/(\d{2})(\d)/, '$1/$2')
+        .replace(/(\d{2})(\d{1,4})$/, '$1/$2');
+}
+
+// Aplicação das Máscaras 
+document.getElementById('cpf').addEventListener('input', e => {
+    e.target.value = aplicarMascaraCPF(e.target.value);
+});
+
+document.getElementById('telefone').addEventListener('input', e => {
+    e.target.value = aplicarMascaraCelular(e.target.value);
+});
+
+document.getElementById('telFixo').addEventListener('input', e => {
+    e.target.value = aplicarMascaraFixo(e.target.value);
+});
+
+document.getElementById('cep').addEventListener('input', e => {
+    e.target.value = aplicarMascaraCEP(e.target.value);
+});
+
+
+// ---------------- Consulta CEP ----------------
+
+document.getElementById('cep').addEventListener('blur', function () {
+    const cep = this.value.replace(/\D/g, '');
+
+    if (cep.length !== 8) {
+        mostrarMensagem("⚠ Por favor, insira um CEP válido com 8 dígitos.", "alert-erro");
+        return;
     }
 
-    form.addEventListener('submit', function(e) {
-        const senha = document.getElementById('senha').value;
-        const confirmaSenha = document.getElementById('confirmaSenha').value;
+    fetch(`https://viacep.com.br/ws/${cep}/xml/`)
+        .then(response => response.text())
+        .then(xmlString => {
+            const xml = new DOMParser().parseFromString(xmlString, "application/xml");
 
-        if (senha !== confirmaSenha) {
-            e.preventDefault(); 
-            avisar('⚠ As senhas não coincidem.', 'alert-erro');
-            return;
-        }
+            if (xml.getElementsByTagName("erro")[0]) {
+                mostrarMensagem("⚠ CEP não encontrado.", "alert-erro");
+                return;
+            }
 
-        avisar('✔ Cadastro realizado com sucesso!', 'alert-sucesso');
-    });
+            const logradouro = xml.querySelector("logradouro")?.textContent || "";
+            const bairro = xml.querySelector("bairro")?.textContent || "";
+            const localidade = xml.querySelector("localidade")?.textContent || "";
+            const uf = xml.querySelector("uf")?.textContent || "";
 
-    form.addEventListener('reset', function() {
-        mensagem.style.display = 'none';
-    });
+            document.getElementById('endereco').value =
+                `${logradouro}, ${bairro}, ${localidade} - ${uf}`;
 
-    function mascaraCPF(valor) {
-        return valor
-            .replace(/\D/g, '')
-            .replace(/(\d{3})(\d)/, '$1.$2')
-            .replace(/(\d{3})(\d)/, '$1.$2')
-            .replace(/(\d{3})(\d{1,2})$/, '$1-$2');
-    }
-
-    function mascaraTelCelular(valor) {
-        valor = valor.replace(/\D/g, '');
-        if (valor.length > 11) valor = valor.slice(0, 11);
-        valor = valor.replace(/^(\d{2})(\d)/g, '($1) $2');
-        valor = valor.replace(/(\d{5})(\d)/, '$1-$2');
-        return valor;
-    }
-
-    function mascaraTelFixo(valor) {
-        valor = valor.replace(/\D/g, '');
-        if (valor.length > 10) valor = valor.slice(0, 10);
-        valor = valor.replace(/^(\d{2})(\d)/g, '($1) $2');
-        valor = valor.replace(/(\d{4})(\d)/, '$1-$2');
-        return valor;
-    }
-
-    document.getElementById('cpf').addEventListener('input', function(e) {
-        e.target.value = mascaraCPF(e.target.value);
-    });
-
-    document.getElementById('telefone').addEventListener('input', function(e) {
-        e.target.value = mascaraTelCelular(e.target.value);
-    });
-
-    document.getElementById('telFixo').addEventListener('input', function(e) {
-        e.target.value = mascaraTelFixo(e.target.value);
-    });
-
-    document.getElementById('cep').addEventListener('blur', function() {
-        const cep = this.value.replace(/\D/g, '');
-
-        if (cep.length !== 8) {
-            avisar('⚠ Por favor, insira um CEP válido de 8 dígitos.', 'alert-erro');
-            return;
-        }
-
-        fetch(`https://viacep.com.br/ws/${cep}/xml/`)
-            .then(response => response.text())
-            .then(xmlString => {
-                const xml = new DOMParser().parseFromString(xmlString, "application/xml");
-
-                if (xml.getElementsByTagName("erro")[0]) {
-                    avisar('⚠ CEP não encontrado.', 'alert-erro');
-                    document.getElementById('endereco').value = '';
-                    return;
-                }
-
-                const logradouro = xml.getElementsByTagName("logradouro")[0]?.textContent || '';
-                const bairro = xml.getElementsByTagName("bairro")[0]?.textContent || '';
-                const cidade = xml.getElementsByTagName("localidade")[0]?.textContent || '';
-                const uf = xml.getElementsByTagName("uf")[0]?.textContent || '';
-
-                document.getElementById('endereco').value =
-                    `${logradouro}, ${bairro}, ${cidade} - ${uf}`;
-
-                avisar('✔ Endereço encontrado!', 'alert-sucesso');
-            })
-            .catch(() => {
-                avisar('⚠ Erro ao buscar o CEP. Tente novamente.', 'alert-erro');
-            });
-    });
+            mostrarMensagem("✔ Endereço encontrado com sucesso!", "alert-sucesso");
+        })
+        .catch(() => {
+            mostrarMensagem("⚠ Erro ao consultar o CEP. Tente novamente.", "alert-erro");
+        });
+});
 </script>
 </body>
 </html>
