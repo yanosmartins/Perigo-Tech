@@ -15,7 +15,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     unset($_SESSION['carrinho']);
     $total_itens_carrinho = 0;
 
-    ?>
+?>
     <!DOCTYPE html>
     <html lang="pt-BR">
 
@@ -308,9 +308,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     </html>
 
-    <?php
+<?php
     exit();
-
 } else {
 
     if (!isset($_SESSION['nome'])) {
@@ -337,7 +336,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     $total_itens_carrinho = array_sum($_SESSION['carrinho']);
 
-    ?>
+?>
     <!DOCTYPE html>
     <html lang="pt-BR">
 
@@ -459,10 +458,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     display: flex;
                 }
             }
-            
-            /* ADDED: Styles for JS messages */
+
             #mensagem {
-                display: none; /* Começa invisível */
+                display: none;
                 padding: 14px 18px;
                 margin-top: 12px;
                 font-size: 15px;
@@ -482,19 +480,33 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 color: #fff;
                 border-left: 6px solid #02571b;
             }
-            
-            /* Animation for fade out (copied from cadastro.php context) */
+
             @keyframes sumirSozinho {
-                0% { opacity: 0; transform: translateY(-6px); }
-                10% { opacity: 1; transform: translateY(0); }
-                90% { opacity: 1; transform: translateY(0); }
-                100% { opacity: 0; transform: translateY(-6px); pointer-events: none; }
+                0% {
+                    opacity: 0;
+                    transform: translateY(-6px);
+                }
+
+                10% {
+                    opacity: 1;
+                    transform: translateY(0);
+                }
+
+                90% {
+                    opacity: 1;
+                    transform: translateY(0);
+                }
+
+                100% {
+                    opacity: 0;
+                    transform: translateY(-6px);
+                    pointer-events: none;
+                }
             }
-            
+
             .com-timer {
                 animation: sumirSozinho 10s forwards;
             }
-            /* END ADDED STYLES */
 
             .checkout-wrapper {
                 display: flex;
@@ -526,7 +538,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 margin-bottom: 1.5rem;
             }
 
-            main h1{
+            main h1 {
                 margin-top: 70px;
             }
 
@@ -719,6 +731,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 color: var(--text-muted);
                 text-decoration: none;
             }
+
             .footer-section a {
                 color: var(--text-muted);
                 text-decoration: none;
@@ -774,7 +787,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         <main class="container">
             <h1>Finalizar Compra</h1>
-            <p id="mensagem" aria-live="polite"></p> <form action="checkout.php" method="POST">
+            <p id="mensagem" aria-live="polite"></p>
+            <form action="checkout.php" method="POST">
                 <div class="checkout-wrapper">
 
                     <section class="form-section">
@@ -821,12 +835,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             while ($produto = $result_carrinho->fetch_assoc()):
                                 $id = $produto['id_prod'];
                                 $quantidade = $_SESSION['carrinho'][$id];
-                                ?>
+                        ?>
                                 <div class="resumo-item">
                                     <span><?php echo $quantidade; ?>x <?php echo htmlspecialchars($produto['nome']); ?></span>
                                     <strong>R$ <?php echo number_format($produto['preco'] * $quantidade, 2, ',', '.'); ?></strong>
                                 </div>
-                                <?php
+                        <?php
                             endwhile;
                         endif;
                         ?>
@@ -937,13 +951,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 const telefoneInput = document.getElementById('telefone');
                 const telFixoInput = document.getElementById('telFixo');
 
-                window.mostrarMensagem = function (texto, tipo) {
+                window.mostrarMensagem = function(texto, tipo) {
                     const mensagem = document.getElementById('mensagem');
-                    if (!mensagem) return; 
-                    
+                    if (!mensagem) return;
+
                     mensagem.textContent = texto;
-                    mensagem.className = ''; 
-                    void mensagem.offsetWidth; 
+                    mensagem.className = '';
+                    void mensagem.offsetWidth;
                     mensagem.classList.add(tipo, 'com-timer');
                     mensagem.style.display = 'block';
                 };
@@ -958,7 +972,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     });
                 });
 
-                window.formatarData = function (input) {
+                window.formatarData = function(input) {
                     if (!input) return;
                     let v = input.value.replace(/\D/g, '');
 
@@ -969,7 +983,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     input.value = v;
                 };
 
-                window.formatarCartao = function (input) {
+                window.formatarCartao = function(input) {
                     if (!input) return;
                     let v = input.value.replace(/\D/g, '');
 
@@ -977,7 +991,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     input.value = v.trim();
                 };
 
-                window.formatarCEP = function (input) {
+                window.formatarCEP = function(input) {
                     if (!input) return;
                     let v = input.value.replace(/\D/g, '');
 
@@ -987,12 +1001,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                     input.value = v;
                 };
-                
+
 
                 if (cepInput) {
                     cepInput.addEventListener('blur', () => {
                         const cep = cepInput.value.replace(/\D/g, '');
-                        
+
                         if (cep.length !== 8) {
                             mostrarMensagem('⚠ Por favor, insira um CEP válido com 8 dígitos.', 'alert-erro');
                             return;
@@ -1021,6 +1035,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     </body>
 
     </html>
-    <?php
+<?php
 }
 ?>
