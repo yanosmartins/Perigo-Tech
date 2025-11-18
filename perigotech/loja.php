@@ -612,10 +612,10 @@ function renderProduto($row)
                 </form>
                 
                 <a href="carrinho.php" aria-label="Carrinho"><i class="fas fa-shopping-cart"></i> <span><?php echo $total_itens_carrinho; ?></span></a>
-                <?php if (isset($_SESSION['nome'])) : ?>
+                <?php if (isset($_SESSION['login'])) : ?>
                     <span style="font-size: 1rem; font-weight: 700; color: #000; white-space: nowrap;">
                         <a href="#" aria-label="Minha Conta" title="Minha Conta"><i class="fas fa-user" style="margin-right: 15px;"></i></a>
-                        Olá, <?php echo htmlspecialchars($_SESSION['nome']); ?>!
+                        Olá, <?php echo htmlspecialchars($_SESSION['login']); ?>!
                     </span>
                     <nav class="main-nav"><a href="modeloBD.php">Modelo do BD</a></nav>
                     <a href="logout.php" aria-label="Sair" title="Sair"><i class="fas fa-sign-out-alt"></i></a>
