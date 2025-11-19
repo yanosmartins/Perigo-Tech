@@ -121,10 +121,10 @@ require_once "config.php";
 
     <!-- cadastro_tech -->
     <div class="box">
-        <div class="title">cadastro_tech</div>
+        <div class="title">Usuários</div>
 <pre>
 +---------------------------+
-|      cadastro_tech       |
+|      usuarios            |
 +---------------------------+
 | idusuarios (PK)          |
 | nome                     |
@@ -132,12 +132,12 @@ require_once "config.php";
 | email                    |
 | telefone                 |
 | data_nasc                |
-| endereco                |
+| endereco                 |
 | sexo                     |
 | cep                      |
 | senha                    |
 | login                    |
-| nome_mae                |
+| nome_mae                 |
 +---------------------------+
 </pre>
     </div>
@@ -161,16 +161,16 @@ require_once "config.php";
 
     <!-- auth_logs -->
     <div class="box">
-        <div class="title">auth_logs</div>
+        <div class="title">Auth_Logs</div>
 <pre>
 +---------------------------+
 |        auth_logs         |
 +---------------------------+
 | id (PK)                  |
-| usuario_nome            |
-| usuario_cpf             |
-| segundo_fator           |
-| data_login              |
+| usuario_nome             |
+| usuario_cpf              |
+| segundo_fator            |
+| data_login               |
 +---------------------------+
 </pre>
     </div>
@@ -183,3 +183,4 @@ PerigoTech © 2025 — Banco de Dados
 
 </body>
 </html>
+
