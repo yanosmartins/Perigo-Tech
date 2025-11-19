@@ -30,13 +30,12 @@ if (isset($_POST['submit']) && !empty($_POST['login']) && !empty($_POST['senha']
             exit();
 
         } else {
-            // Senha incorreta
+
             header('Location: login.php?erro=1');
             exit();
         }
 
     } else {
-        // Usuário (login) não encontrado
         header('Location: login.php?erro=1');
         exit();
     }
