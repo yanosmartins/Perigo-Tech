@@ -54,6 +54,8 @@ function renderProduto($row)
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Perigo Tech - A sua loja de peças de PC</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+</div>
+
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700;900&display=swap');
 
@@ -587,7 +589,8 @@ function renderProduto($row)
           visibility: visible;
           transform: translateY(0);
         }
-    </style>
+   
+   </style>
 </head>
 
 <body>
@@ -612,17 +615,17 @@ function renderProduto($row)
                 </form>
                 
                 <a href="carrinho.php" aria-label="Carrinho"><i class="fas fa-shopping-cart"></i> <span><?php echo $total_itens_carrinho; ?></span></a>
-                <?php if (isset($_SESSION['login'])) : ?>
+                <?php if (isset($_SESSION['nome'])) : ?>
                     <span style="font-size: 1rem; font-weight: 700; color: #000; white-space: nowrap;">
                         <a href="#" aria-label="Minha Conta" title="Minha Conta"><i class="fas fa-user" style="margin-right: 15px;"></i></a>
-                        Olá, <?php echo htmlspecialchars($_SESSION['login']); ?>!
+                        Olá, <?php echo htmlspecialchars($_SESSION['nome']); ?>!
                     </span>
-                    <nav class="main-nav"><a href="modeloBD.php">Modelo do BD</a></nav>
+                    
                     <a href="logout.php" aria-label="Sair" title="Sair"><i class="fas fa-sign-out-alt"></i></a>
                 <?php else : ?>
                     <a href="login.php" aria-label="Login"><i class="fas fa-user"></i></a>
                     <a href="login.php" style="font-size: 1rem; font-weight: 700; white-space: nowrap;">Entrar/Cadastrar</a>
-                    <nav class="main-nav"><a href="modeloBD.php">Modelo do BD</a></nav>
+                    
                 <?php endif; ?>
                 <?php
                 $admin_users = ['admin', 'master'];
@@ -635,6 +638,7 @@ function renderProduto($row)
                     <div id="admin-menu-dropdown" class="admin-dropdown-content">
                         <a href="sistema.php">Gerenciar Cadastros</a>
                         <a href="log.php">Tela log</a>
+                        <a href="telabd.php">Modelo BD</a>
                     </div>
                 </div>
                 <?php endif; ?>
