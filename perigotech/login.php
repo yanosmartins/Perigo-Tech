@@ -1,3 +1,15 @@
+<?php
+session_start();
+$msg_erro = "";
+
+if (isset($_GET['erro'])) {
+    if ($_GET['erro'] == '1') {
+        $msg_erro = "Login ou senha incorretos. Tente novamente.";
+    } elseif ($_GET['erro'] == '3') {
+        $msg_erro = "3 tentativas de 2FA falharam. Por favor, realize o login novamente.";
+    }
+}
+?>
 <!DOCTYPE html>
 <html lang="pt-br">
 
@@ -22,44 +34,18 @@
       background-attachment: fixed;
     }
 
-
-
-    .container {
-      width: 10%;
-      height: 500px;
-      display: flex;
-      box-shadow: 5px 5px 18px rgba(0, 0, 0, 0.2);
-      border-radius: 20px;
-      overflow: hidden;
-      background: #fff;
-    }
-
-    /* Área da imagem (lado esquerdo) */
-    .form-image {
-      width: 50%;
-      height: 100%;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      overflow: hidden;
-    }
-
-    /* A imagem se adapta sem distorcer */
-    .form-image img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      /* cobre toda a área */
-      border-radius: 0;
-      /* remove borda arredondada para encaixar */
-    }
-
     .container {
       width: 350px;
       padding: 2rem;
       background: rgba(255, 255, 255, 0.9);
       box-shadow: 5px 5px 18px rgba(0, 0, 0, 0.2);
       border-radius: 20px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .form-image {
+      display: none;
     }
 
     form h1 {
@@ -79,14 +65,29 @@
       border-radius: 5px;
     }
 
+    .erro-msg {
+        background-color: #ffe0e0;
+        color: #d8000c;
+        border: 1px solid #d8000c;
+        padding: 10px;
+        border-radius: 5px;
+        margin-bottom: 1.5rem;
+        text-align: center;
+        font-size: 0.9rem;
+        font-weight: bold;
+        width: 100%;
+        box-sizing: border-box;
+    }
+
     .input-box {
       position: relative;
       margin-bottom: 1.2rem;
     }
 
     .input-box input {
-      width: 79%;
+      width: 100%;
       padding: 0.8rem 2.5rem 0.8rem 0.8rem;
+      box-sizing: border-box;
       border: 1px solid #333;
       border-radius: 8px;
       font-size: 0.95rem;
@@ -113,10 +114,17 @@
 
     .lembrar-senha {
       display: flex;
-      justify-content: space-between;
+      justify-content: center;
       align-items: center;
       font-size: 0.85rem;
       margin-bottom: 1.5rem;
+    }
+
+    .lembrar-senha button {
+        background: none;
+        border: none;
+        cursor: pointer;
+        padding: 0;
     }
 
     .lembrar-senha a {
@@ -144,49 +152,29 @@
 
     .login1 {
       border: none;
-      margin-left: -5px;
+      width: 92%;
+      margin-top: 10px;
     }
 
     .login1 a {
       width: 100%;
       background: #ff8c00;
       color: #fff;
-      padding: 0.2rem;
+      padding: 0.9rem;
       border: none;
       border-radius: 8px;
       font-size: 1rem;
       font-weight: 600;
       cursor: pointer;
       text-decoration: none;
-      color: white;
       display: flex;
       justify-content: center;
       align-items: center;
-
+      transition: background 0.3s;
     }
-
-    button.login:hover {
-      background: #c27524;
-    }
-
-    /* Dark mode opcional */
-    body.dark {
-      background: #222;
-    }
-
-    body.dark .container {
-      background: #333;
-      color: #fff;
-    }
-
-    body.dark input {
-      border-color: #555;
-      background: #444;
-      color: #fff;
-    }
-
-    body.dark button.login {
-      background: #ff8c00;
+    
+    .login1 a:hover, button.login:hover {
+        background: #c27524;
     }
 
     @media screen and (max-width: 400px) {
@@ -195,32 +183,19 @@
         padding: 1.5rem;
       }
     }
-
-    @media screen and (max-width: 900px) {
-      .form-image {
-        display: none;
-        /* Esconde a imagem no mobile */
-      }
-
-      .container {
-        width: 90%;
-        height: auto;
-      }
-    }
   </style>
 </head>
 
 <body>
-  <div class="form-image">
-    <img src="img/ChatGPT Image 12_09_2025, 18_41_39.png" alt="Imagem login" />
-  </div>
-
-
   <main class="container">
-
     <form action="testeLogin.php" method="POST" id="form-login">
       <h1>LOGIN</h1>
 
+      <?php if (!empty($msg_erro)): ?>
+          <div class="erro-msg">
+              <?php echo $msg_erro; ?>
+          </div>
+      <?php endif; ?>
       <div class="input-box">
         <input id="login" name="login" type="text" placeholder="login" required />
         <i class="bx bxs-user"></i>
@@ -232,17 +207,17 @@
       </div>
 
       <div class="lembrar-senha">
-        <button><a onclick="abrirEsqueciSenha()">Esqueci a Senha</button></a>
-
+        <button type="button" onclick="abrirEsqueciSenha()"><a>Esqueci a Senha</a></button>
       </div>
 
-      <button type="submit" name="submit" class="login">ENVIAR</button>
-      <br> <br>
-      <button class="login1"><a href="cadastro.php">CADASTRA-SE</a> </button>
+      <button type="submit" name="submit" class="login">ENTRAR</button>
+      
+      <div class="login1">
+          <a href="cadastro.php">CADASTRE-SE</a>
+      </div>
 
     </form>
   </main>
-
 
 </body>
 <script>
@@ -252,7 +227,6 @@
     const left = (screen.width / 2) - (width / 2);
     const top = (screen.height / 2) - (height / 2)
     window.open('esqueciSenha.php', 'esqueciaenha', `width=${width},height=${height},top=${top},left=${left},resizable=yes,scrollbars=yes`);
-
   }
 </script>
 
