@@ -144,7 +144,7 @@ require_once "config.php";
 
     <!-- produtos -->
     <div class="box">
-        <div class="title">produtos</div>
+        <div class="title">Produtos</div>
 <pre>
 +---------------------------+
 |         produtos         |
@@ -183,4 +183,5 @@ PerigoTech © 2025 — Banco de Dados
 
 </body>
 </html>
+
 
