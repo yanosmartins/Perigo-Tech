@@ -5,7 +5,7 @@ include_once('config.php');
 function validaCPF($cpf)
 {
     $cpf = preg_replace('/[^0-9]/is', '', $cpf);
-
+     
     if (strlen($cpf) != 11) return false;
     if (preg_match('/(\d)\1{10}/', $cpf)) return false;
 
@@ -28,11 +28,10 @@ if (isset($_SESSION['msg'])) {
 }
 
 if (isset($_POST['submit'])) {
-
     $nome          = $_POST['nome'] ?? '';
     $email         = $_POST['email'] ?? '';
     $telefone      = $_POST['telefone'] ?? '';
-    $telFixo       = $_POST['telFixo'] ?? '';
+    $telFixo       = $_POST['telFixo'] ?? ''; 
     $endereco      = $_POST['endereco'] ?? '';
     $data_nasc     = $_POST['datanascimento'] ?? '';
     $sexo          = $_POST['sexo'] ?? '';
@@ -42,10 +41,9 @@ if (isset($_POST['submit'])) {
     $senha_plana   = $_POST['senha'] ?? '';
     $confirmaSenha = $_POST['confirmaSenha'] ?? '';
     $nome_mae      = $_POST['nome_mae'] ?? '';
-
     $erros = [];
 
-    if (empty($nome) || empty($login) || empty($senha_plana) || empty($email) || empty($endereco) || empty($telefone) || empty($data_nasc) || empty($sexo) || empty($cep) || empty($cpf) || empty($nome_mae)) {
+    if (empty($nome) || empty($login) || empty($senha_plana) || empty($email) || empty($endereco) || empty($telefone) || empty($data_nasc) || empty($sexo) || empty($cep) || empty($cpf) || empty($nome_mae) ) {
         $erros[] = "Preencha todos os campos obrigatórios.";
     }
 
@@ -91,12 +89,10 @@ if (isset($_POST['submit'])) {
         header("Location: cadastro.php");
         exit;
     } else {
-
+        
         $senha_hash = password_hash($senha_plana, PASSWORD_DEFAULT);
-
         $telefone_limpo = preg_replace('/[^0-9]/', '', $telefone);
-        $telFixo_limpo = preg_replace('/[^0-9]/', '', $telFixo);
-
+        
         $sql = "INSERT INTO usuarios 
                 (nome, email, telefone, endereco, data_nascimento, sexo, cep, cpf, login, senha, nome_mae, tipo)
                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'comum')";
@@ -110,18 +106,9 @@ if (isset($_POST['submit'])) {
         }
 
         $stmt->bind_param(
-            "sssssssssss",
-            $nome,
-            $email,
-            $telefone_limpo,
-            $endereco,
-            $data_nasc,
-            $sexo,
-            $cep,
-            $cpf,
-            $login,
-            $senha_hash,
-            $nome_mae
+            "sssssssssss", 
+            $nome, $email, $telefone_limpo, $endereco, $data_nasc, $sexo, 
+            $cep, $cpf, $login, $senha_hash, $nome_mae
         );
 
         if ($stmt->execute()) {
@@ -148,6 +135,7 @@ if (isset($_POST['submit'])) {
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1.0" />
     <title>Cadastro</title>
+    <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet" />
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700;900&display=swap');
 
@@ -155,137 +143,56 @@ if (isset($_POST['submit'])) {
             padding: 0;
             margin: 0;
             box-sizing: border-box;
-            font-family: "Poetsen One", sans-serif;
+            font-family: "Roboto", sans-serif;
         }
 
         body {
-            width: 100%;
-            height: 100vh;
+            min-height: 100vh;
             display: flex;
             justify-content: center;
             align-items: center;
-            background-image: url(img/Gemini_Generated_Image_km51uskm51uskm51.png );
+            background-image: url(img/Gemini_Generated_Image_km51uskm51uskm51.png);
             background-size: cover;
             background-position: center;
             background-repeat: no-repeat;
+            background-attachment: fixed;
+            padding: 20px;
         }
 
         .container {
-            width: 75%;
-            height: 95vh;
-            display: flex;
-            box-shadow: 5px 5px 18px rgba(255, 255, 255, 0.866);
-            border-radius: 30px;
-            overflow: hidden;
-        }
-
-        .form-image {
-            width: 50%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            background-color: transparent;
-            padding: 1rem;
-        }
-
-        .form-image img {
             width: 100%;
-            height: 100%;
-            object-fit: cover;
-            border-radius: 30px 0 0 30px;
-        }
-
-        .form {
-            width: 50%;
-            background-color: #dad5d5df;
+            max-width: 800px;
+            background: rgba(255, 255, 255, 0.95);
+            box-shadow: 5px 5px 18px rgba(0, 0, 0, 0.2);
+            border-radius: 20px;
             padding: 2rem;
             display: flex;
             flex-direction: column;
-            justify-content: center;
-            align-items: center;
         }
 
         .form-header {
             margin-bottom: 2rem;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
+            text-align: center;
+        }
+
+        .form-header h1 {
+            margin-bottom: 0.5rem;
+            color: #333;
             position: relative;
+            display: inline-block;
         }
 
         .form-header h1::after {
-            content: '';
+            content: "";
             display: block;
-            width: 5rem;
-            height: 0.3rem;
-            background-color: #ff8c00;
-            margin: 0 auto;
-            border-radius: 10px;
-        }
-
-        .login-button {
-            display: flex;
-            align-items: center;
-        }
-
-        .login-button button {
-            border: none;
-            background-color: #ff8c00;
-            padding: 0.5rem 1rem;
-            border-radius: 9px;
-            margin-left: 1rem;
-            cursor: pointer;
-            color: #fff;
-            font-weight: 550;
-        }
-
-        .login-button button:hover {
-            background-color: #c27524;
-        }
-
-        .input-group {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: space-between;
-            gap: 1rem;
-        }
-
-        .input-box {
-            margin-bottom: 1.1rem;
-            width: 45%;
-            display: flex;
-            flex-direction: column;
-        }
-
-        .input-box input {
-            padding: 0.4rem;
-            border: 1px solid #000;
+            width: 60px;
+            height: 3px;
+            background: #ff8c00;
+            margin: 0.5rem auto 0;
             border-radius: 5px;
-            outline: none;
-            font-size: 0.9rem;
-            transition: 0.3s;
         }
 
-        .input-box input:hover {
-            background-color: rgba(220, 169, 110, 0.2);
-        }
-
-        .input-box input:focus-visible {
-            outline: 1px solid #ff8c00;
-        }
-
-        .input-box label,
-        .gender-title h6 {
-            font-size: 0.9rem;
-            font-weight: 500;
-            color: #000;
-        }
-
-        .input-box input::placeholder {
-            font-size: 0.8rem;
-            color: #1f1616ae;
-        }
-
+        /* Mensagem de Erro (Igual ao Login) */
         .erro-backend {
             background-color: #ffe0e0;
             color: #d8000c;
@@ -295,82 +202,133 @@ if (isset($_POST['submit'])) {
             margin-bottom: 1.5rem;
             text-align: left;
             font-size: 0.9rem;
+            font-weight: bold;
+        }
+
+        /* Mensagens JS */
+        #mensagem {
+            display: none;
+            padding: 10px;
+            margin-top: 15px;
+            border-radius: 5px;
+            text-align: center;
+            font-weight: bold;
+        }
+
+        .alert-erro { background: #ff4d4d; color: #fff; }
+        .alert-sucesso { background: #00c851; color: #fff; }
+
+        .input-group {
+            display: grid;
+            grid-template-columns: 1fr 1fr; 
+            gap: 1.5rem;
+        }
+
+        .input-box {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .input-box label {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 5px;
+        }
+
+        .input-box input {
+            padding: 0.8rem;
+            border: 1px solid #333;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            outline: none;
+            transition: border 0.3s, background 0.3s;
             width: 100%;
         }
 
-        #mensagem {
-            display: none;
-            padding: 14px 18px;
-            margin-top: 12px;
-            font-size: 15px;
+        .input-box input:focus {
+            border-color: #ff8c00;
+        }
+
+        .input-box input:hover {
+            background: rgba(220, 169, 110, 0.2);
+        }
+
+        .Sexo {
+            grid-column: span 2;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-top: 5px;
+        }
+        .Sexo label { font-weight: 600; color: #333; margin-right: 10px;}
+        
+        .botoes-acao {
+            margin-top: 2rem;
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+        }
+
+        button {
+            padding: 0.9rem 2rem;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
             font-weight: 600;
-            border-radius: 6px;
+            cursor: pointer;
+            transition: background 0.3s, transform 0.2s;
+            width: 48%;
         }
 
-        @keyframes sumirSozinho {
-            0% {
-                opacity: 0;
-                transform: translateY(-6px);
-            }
-
-            10% {
-                opacity: 1;
-                transform: translateY(0);
-            }
-
-            90% {
-                opacity: 1;
-                transform: translateY(0);
-            }
-
-            100% {
-                opacity: 0;
-                transform: translateY(-6px);
-                pointer-events: none;
-            }
-        }
-
-        .com-timer {
-            animation: sumirSozinho 10s forwards;
-        }
-
-        .alert-erro {
-            background: #ff4d4d;
+        button[name="submit"] {
+            background: #ff8c00;
             color: #fff;
-            border-left: 6px solid #8b0000;
         }
 
-        .alert-sucesso {
-            background: #00c851;
+        button[name="submit"]:hover {
+            background: #c27524;
+        }
+
+        button[type="reset"] {
+            background: #555;
             color: #fff;
-            border-left: 6px solid #02571b;
         }
 
-        @media screen and (max-width: 1330px) {
-            .form-image {
-                display: none;
-            }
+        button[type="reset"]:hover {
+            background: #333;
+        }
+        
+        .link-login {
+            text-align: center;
+            margin-top: 1.5rem;
+        }
+        .link-login a {
+            color: #ff8c00;
+            text-decoration: none;
+            font-weight: bold;
+        }
+        .link-login a:hover {
+            text-decoration: underline;
+        }
 
+        /* Responsividade */
+        @media screen and (max-width: 700px) {
+            .input-group {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+            .Sexo {
+                grid-column: span 1;
+            }
             .container {
-                width: 60%;
+                padding: 1.5rem;
             }
-
-            .form {
+            button {
                 width: 100%;
-                border-radius: 30px;
             }
-        }
-
-        @media screen and (max-width: 500px) {
-            .container {
-                width: 90%;
-                height: auto;
-                margin: 2rem 0;
+            .botoes-acao {
                 flex-direction: column;
-            }
-
-            .input-box {
-                width: 100%;
             }
         }
     </style>
@@ -378,101 +336,97 @@ if (isset($_POST['submit'])) {
 
 <body>
     <div class="container">
-        <div class="form-image">
-            <img src="img/Gemini_Generated_Image_km51uskm51uskm51.png" alt="Imagem login" />
+        <div class="form-header">
+            <h1>CADASTRE-SE</h1>
         </div>
 
-        <div class="form">
-            <form id="cadastroForm" action="cadastro.php" method="POST">
-                <div class="form-header">
-                    <div class="title">
-                        <h1>CADASTRE-SE</h1>
-                    </div>
+        <form id="cadastroForm" action="cadastro.php" method="POST">
+            
+            <?php if (!empty($mensagem_erro)): ?>
+                <div class="erro-backend">
+                    <?php echo $mensagem_erro; ?>
+                </div>
+            <?php endif; ?>
 
-                    <div class="login-button">
-                        <button type="submit" name="submit">ENVIAR</button>
-                        <button type="reset">LIMPAR</button>
-                    </div>
+            <div class="input-group">
+                <div class="input-box">
+                    <label for="nome">Nome Completo</label>
+                    <input id="nome" name="nome" type="text" placeholder="Digite seu nome completo" required />
                 </div>
 
-                <?php if (!empty($mensagem_erro)): ?>
-                    <div class="erro-backend">
-                        <strong>Atenção:</strong><br>
-                        <?php echo $mensagem_erro; ?>
-                    </div>
-                <?php endif; ?>
-
-                <div class="input-group">
-                    <div class="input-box">
-                        <label for="nome">Nome Completo</label>
-                        <input id="nome" name="nome" type="text" placeholder="Digite seu nome completo" required />
-                    </div>
-
-                    <div class="input-box">
-                        <label for="email">Email</label>
-                        <input id="email" name="email" type="email" placeholder="Digite seu email" required />
-                    </div>
-
-                    <div class="input-box">
-                        <label for="senha">Senha</label>
-                        <input id="senha" name="senha" type="password" placeholder="Digite sua senha" required />
-                    </div>
-
-                    <div class="input-box">
-                        <label for="confirmaSenha">Confirmar Senha</label>
-                        <input id="confirmaSenha" name="confirmaSenha" type="password" placeholder="Confirme sua senha" required />
-                    </div>
-
-                    <div class="input-box">
-                        <label for="login">Login</label>
-                        <input id="login" name="login" type="text" placeholder="Crie seu Login" required />
-                    </div>
-
-                    <div class="input-box">
-                        <label for="cep">CEP</label>
-                        <input id="cep" name="cep" type="text" placeholder="Digite seu CEP" required maxlength="9" />
-                    </div>
-
-                    <div class="input-box">
-                        <label for="telefone">Telefone Celular</label>
-                        <input id="telefone" name="telefone" type="tel" placeholder="+55 (99) 99999-9999" required value="+55 (" />
-                    </div>
-
-                    <div class="input-box">
-                        <label for="endereco">Endereço Completo</label>
-                        <input id="endereco" name="endereco" type="text" placeholder="Digite seu endereço" required />
-                    </div>
-
-                    <div class="input-box">
-                        <label for="telFixo">Telefone Fixo</label>
-                        <input id="telFixo" name="telFixo" type="tel" placeholder="+55 (99) 9999-9999" value="+55 (" />
-                    </div>
-
-                    <div class="Sexo">
-                        <label>Sexo</label><br />
-                        <input type="radio" id="sexoM" name="sexo" value="Masculino" required /> Masculino
-                        <input type="radio" id="sexoF" name="sexo" value="Feminino" /> Feminino
-                    </div>
-
-                    <div class="input-box">
-                        <label for="datanascimento">Data de Nascimento</label>
-                        <input id="datanascimento" name="datanascimento" type="date" required max="<?php echo date('Y-m-d'); ?>" />
-                    </div>
-
-                    <div class="input-box">
-                        <label for="cpf">CPF</label>
-                        <input id="cpf" name="cpf" type="text" placeholder="000.000.000-00" required maxlength="14" />
-                    </div>
-
-                    <div class="input-box">
-                        <label for="nome_mae">Nome da sua mãe</label>
-                        <input id="nome_mae" name="nome_mae" type="text" placeholder="Nome da sua mãe" required />
-                    </div>
+                <div class="input-box">
+                    <label for="email">Email</label>
+                    <input id="email" name="email" type="email" placeholder="Digite seu email" required />
                 </div>
 
-                <p id="mensagem" aria-live="polite"></p>
-            </form>
-        </div>
+                <div class="input-box">
+                    <label for="login">Login (6 letras)</label>
+                    <input id="login" name="login" type="text" placeholder="Crie seu Login" required maxlength="6" />
+                </div>
+
+                <div class="input-box">
+                    <label for="cpf">CPF</label>
+                    <input id="cpf" name="cpf" type="text" placeholder="000.000.000-00" required maxlength="14" />
+                </div>
+                
+                <div class="input-box">
+                    <label for="senha">Senha (8 letras)</label>
+                    <input id="senha" name="senha" type="password" placeholder="Digite sua senha" required maxlength="8" />
+                </div>
+
+                <div class="input-box">
+                    <label for="confirmaSenha">Confirmar Senha</label>
+                    <input id="confirmaSenha" name="confirmaSenha" type="password" placeholder="Confirme sua senha" required maxlength="8" />
+                </div>
+
+                <div class="input-box">
+                    <label for="cep">CEP</label>
+                    <input id="cep" name="cep" type="text" placeholder="Digite seu CEP" required maxlength="9" />
+                </div>
+
+                <div class="input-box">
+                    <label for="endereco">Endereço Completo</label>
+                    <input id="endereco" name="endereco" type="text" placeholder="Rua, Bairro, Cidade - UF" required />
+                </div>
+
+                <div class="input-box">
+                    <label for="telefone">Celular</label>
+                    <input id="telefone" name="telefone" type="tel" placeholder="+55 (99) 99999-9999" required value="+55 (" />
+                </div>
+
+                <div class="input-box">
+                    <label for="telFixo">Telefone Fixo</label>
+                    <input id="telFixo" name="telFixo" type="tel" placeholder="+55 (99) 9999-9999" value="+55 (" />
+                </div>
+
+                <div class="input-box">
+                    <label for="datanascimento">Data de Nascimento</label>
+                    <input id="datanascimento" name="datanascimento" type="date" required max="<?php echo date('Y-m-d'); ?>" />
+                </div>
+
+                <div class="input-box">
+                    <label for="nome_mae">Nome da Mãe</label>
+                    <input id="nome_mae" name="nome_mae" type="text" placeholder="Nome da sua mãe" required />
+                </div>
+
+                <div class="Sexo">
+                    <label>Sexo:</label>
+                    <input type="radio" id="sexoM" name="sexo" value="Masculino" required /> <label for="sexoM">Masculino</label>
+                    <input type="radio" id="sexoF" name="sexo" value="Feminino" /> <label for="sexoF">Feminino</label>
+                </div>
+            </div>
+
+            <p id="mensagem" aria-live="polite"></p>
+
+            <div class="botoes-acao">
+                <button type="reset">LIMPAR</button>
+                <button type="submit" name="submit">ENVIAR</button>
+            </div>
+            
+            <div class="link-login">
+                Já tem conta? <a href="login.php">Faça Login</a>
+            </div>
+        </form>
     </div>
 
     <script>
@@ -487,31 +441,31 @@ if (isset($_POST['submit'])) {
             mensagem.style.display = 'block';
         }
 
-        // MÁSCARAS 
+        // ---------------- MÁSCARAS ----------------
 
         function aplicarMascaraCPF(valor) {
             return valor.replace(/\D/g, '').replace(/(\d{3})(\d)/, '$1.$2').replace(/(\d{3})(\d)/, '$1.$2').replace(/(\d{3})(\d{1,2})$/, '$1-$2');
         }
 
         function aplicarMascaraCelular(valor) {
-            let digitos = valor.replace(/\D/g, '').replace(/^55/, '');
+            let digitos = valor.replace(/\D/g, '').replace(/^55/, ''); 
             if (digitos.length > 11) digitos = digitos.slice(0, 11);
-
+            
             let formatado = digitos;
             if (digitos.length > 1) formatado = formatado.replace(/^(\d{2})(\d)/g, '($1) $2');
             if (formatado.length > 9) formatado = formatado.replace(/(\d{5})(\d)/, '$1-$2');
-
-            return "+55 " + formatado;
+            
+            return "+55 " + formatado; 
         }
 
         function aplicarMascaraFixo(valor) {
-
             let digitos = valor.replace(/\D/g, '').replace(/^55/, '');
             if (digitos.length > 10) digitos = digitos.slice(0, 10);
-
+            
             let formatado = digitos;
             if (digitos.length > 1) formatado = formatado.replace(/^(\d{2})(\d)/g, '($1) $2');
             if (formatado.length > 8) formatado = formatado.replace(/(\d{4})(\d)/, '$1-$2');
+            
             return "+55 " + formatado;
         }
 
@@ -522,18 +476,13 @@ if (isset($_POST['submit'])) {
         document.getElementById('cpf').addEventListener('input', e => {
             e.target.value = aplicarMascaraCPF(e.target.value);
         });
-
+        
         document.addEventListener('DOMContentLoaded', function() {
             const telefoneInput = document.getElementById('telefone');
             const telFixoInput = document.getElementById('telFixo');
-
-            if (telefoneInput) {
-                telefoneInput.value = aplicarMascaraCelular(telefoneInput.value);
-            }
-
-            if (telFixoInput) {
-                telFixoInput.value = aplicarMascaraFixo(telFixoInput.value);
-            }
+            
+            if (telefoneInput) telefoneInput.value = aplicarMascaraCelular(telefoneInput.value);
+            if (telFixoInput) telFixoInput.value = aplicarMascaraFixo(telFixoInput.value);
         });
 
         document.getElementById('telefone').addEventListener('input', e => {
@@ -546,7 +495,7 @@ if (isset($_POST['submit'])) {
             e.target.value = aplicarMascaraCEP(e.target.value);
         });
 
-        // Consulta CEP 
+        // ---------------- Consulta CEP ----------------
         document.getElementById('cep').addEventListener('blur', function() {
             const cep = this.value.replace(/\D/g, '');
             if (cep.length !== 8) {
@@ -559,7 +508,7 @@ if (isset($_POST['submit'])) {
                     const xml = new DOMParser().parseFromString(xmlString, "application/xml");
                     if (xml.getElementsByTagName("erro")[0]) {
                         mostrarMensagem("⚠ CEP não encontrado.", "alert-erro");
-                        document.getElementById('endereco').value = '';
+                        document.getElementById('endereco').value = ''; 
                         return;
                     }
                     const logradouro = xml.querySelector("logradouro")?.textContent || "";
@@ -571,10 +520,9 @@ if (isset($_POST['submit'])) {
                 })
                 .catch(() => {
                     mostrarMensagem("⚠ Erro ao consultar o CEP. Tente novamente.", "alert-erro");
-                    document.getElementById('endereco').value = '';
+                    document.getElementById('endereco').value = ''; 
                 });
         });
     </script>
 </body>
-
 </html>
