@@ -16,7 +16,6 @@ if (isset($_POST['alterar'])) {
         $erro = "As senhas não coincidem!";
     } else {
 
-        // --- CORREÇÃO 1: Usar a tabela 'usuarios' ---
         $sql = "SELECT id FROM usuarios WHERE login = ?";
         $stmt = $conexao->prepare($sql);
         $stmt->bind_param("s", $login);
@@ -29,14 +28,11 @@ if (isset($_POST['alterar'])) {
             $stmt->fetch();
             $stmt->close();
 
-            // --- CORREÇÃO 2: Usar password_hash() ---
             $nova_senha_hash = password_hash($nova_senha, PASSWORD_DEFAULT);
 
-            // --- CORREÇÃO 3: Usar 'usuarios' e 'id' ---
             $sql_update = "UPDATE usuarios SET senha = ? WHERE id = ?";
             $stmt_update = $conexao->prepare($sql_update);
 
-            // Salva o HASH, não a senha pura
             $stmt_update->bind_param("si", $nova_senha_hash, $id);
 
             if ($stmt_update->execute()) {
@@ -60,7 +56,6 @@ if (isset($_POST['alterar'])) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Alterar Senha</title>
     <style>
-        /* (Seu CSS está OK) */
         body {
             background-image: url(img/Gemini_Generated_Image_km51uskm51uskm51.png );
             font-family: 'Poetsen One', sans-serif;
