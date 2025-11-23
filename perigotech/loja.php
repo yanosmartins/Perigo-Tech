@@ -40,9 +40,8 @@ function renderProduto($row)
     } else {
         echo '<a href="login.php" class="btn-secondary">Adicionar ao Carrinho</a>';
     }
-    
+
     echo '</article>';
-    
 }
 ?>
 
@@ -54,50 +53,7 @@ function renderProduto($row)
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Perigo Tech - A sua loja de peças de PC</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
-
-</div>
-
     <style>
-    /* --- MENU FLUTUANTE FIXO E SEMPRE ABERTO --- */
-
-.float-menu {
-    position: fixed;
-    right: 20px;
-    bottom: 20px;
-    z-index: 2000;
-}
-
-.float-options {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-
-    opacity: 1 !important;
-    visibility: visible !important;
-    transform: translateY(0) !important;
-}
-
-.float-options button {
-    padding: 10px 15px;
-    background-color: var(--card-bg);
-    border: 1px solid #333;
-    border-radius: 8px;
-    color: var(--text-color);
-    font-weight: 700;
-    cursor: pointer;
-    transition: background 0.3s;
-}
-
-.float-options button:hover {
-    background: var(--primary-color);
-    color: white;
-}
-
-/* Remove qualquer elemento relacionado ao botão antigo */
-.float-btn {
-    display: none !important;
-}
-
         @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700;900&display=swap');
 
         * {
@@ -113,17 +69,58 @@ function renderProduto($row)
             --text-color: #000000;
             --text-muted: #111111;
             --accent-color: #ff7300;
+            
+            /* Variáveis de Tema */
+            --body-bg: black;
+            --body-text: white;
+            --item-bg: #292828ff; 
+            --item-text: white;
         }
 
+        /* --- Estilos do Modo Claro --- */
+        body.light-mode {
+            --body-bg: #ffffff;
+            --body-text: #000000;
+            --card-bg: #e0e0e0;
+            --text-color: #000000;
+            --item-bg: #e0e0e0;
+            --item-text: #000000;
+            --text-muted: #333333;
+        }
+        
+        body.light-mode .product-name,
+        body.light-mode .hero h1,
+        body.light-mode .hero p, 
+        body.light-mode .product-card h3 {
+            color: #000000;
+        }
+
+        body.light-mode .main-header {
+            background-color: #e0e0e0;
+            border-bottom: 1px solid #ccc;
+        }
+        
+        body.light-mode .main-nav a {
+            color: #000;
+        }
+
+        /* Correção da Tela Preta Lateral */
         body {
             font-family: 'Roboto', sans-serif;
-            background-color: black;
-            color: white;
+            background-color: var(--body-bg);
+            color: var(--body-text);
             line-height: 1.6;
+            transition: background-color 0.3s, color 0.3s;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            overflow-x: hidden; /* Impede rolagem lateral indesejada */
+            width: 100%;
         }
 
         html {
             scroll-behavior: smooth;
+            overflow-x: hidden;
         }
 
         .container {
@@ -132,7 +129,7 @@ function renderProduto($row)
             padding: 0 20px;
         }
 
-        /* --- Cabeçalho --- */
+        /* Cabeçalho */
         .main-header {
             background-color: var(--card-bg);
             padding: 1rem 0;
@@ -140,12 +137,14 @@ function renderProduto($row)
             position: sticky;
             top: 0;
             z-index: 1000;
+            width: 100%;
         }
 
         .main-header .container {
             display: flex;
             justify-content: space-between;
             align-items: center;
+            flex-wrap: nowrap; /* Garante que não quebre linha no header */
         }
 
         .logo {
@@ -153,6 +152,7 @@ function renderProduto($row)
             font-weight: 900;
             color: var(--text-color);
             text-decoration: none;
+            white-space: nowrap;
         }
 
         .logo span {
@@ -161,17 +161,26 @@ function renderProduto($row)
 
         .main-nav {
             display: none;
+            gap: 15px;
+        }
+
+        /* Breakpoint aumentado para tablets usarem menu mobile e não quebrar layout */
+        @media (min-width: 992px) {
+            .main-nav {
+                display: flex;
+            }
         }
 
         .main-nav a {
             color: var(--text-muted);
             text-decoration: none;
-            margin: 0 13px;
+            margin: 0 10px;
             font-weight: 700;
             transition: color 0.3s ease;
+            white-space: nowrap;
         }
 
-        .main-nav a[href="modeloBD.php"]{
+        .main-nav a[href="modeloBD.php"] {
             font-size: 17px;
         }
 
@@ -179,12 +188,23 @@ function renderProduto($row)
             color: #994907ff;
         }
 
+        .header-icons {
+            display: flex;
+            align-items: center;
+            gap: 10px; /* Reduzi o gap para caber melhor no mobile */
+        }
+
         .header-icons a {
             color: var(--text-color);
             text-decoration: none;
             font-size: 1.2rem;
-            margin-left: 20px;
+            margin-left: 10px; /* Reduzi a margem */
             position: relative;
+        }
+
+        /* Ajuste específico para o ícone do usuário/admin não colar */
+        .admin-menu-container {
+            margin-left: 10px;
         }
 
         .header-icons a span {
@@ -207,19 +227,31 @@ function renderProduto($row)
             display: block;
             background: none;
             border: none;
-            color: white;
+            color: var(--text-color);
             font-size: 1.5rem;
             cursor: pointer;
+            margin-left: 15px;
         }
 
-        /* --- Menu Mobile --- */
+        @media (min-width: 992px) {
+            .mobile-menu-icon {
+                display: none;
+            }
+        }
+
+        /* Menu Mobile */
         .mobile-nav {
             display: none;
             flex-direction: column;
             background-color: var(--card-bg);
-            position: sticky;
-            top: 70px;
+            position: fixed;
+            top: 70px; /* Altura aproximada do header */
+            left: 0;
+            width: 100%;
             z-index: 999;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+            max-height: 80vh;
+            overflow-y: auto;
         }
 
         .mobile-nav.active {
@@ -232,13 +264,13 @@ function renderProduto($row)
             padding: 15px 20px;
             border-bottom: 1px solid #333;
             text-align: center;
+            font-weight: bold;
         }
 
         .mobile-nav a:hover {
-            background-color: var(--primary-color);
+            background-color: rgba(0, 0, 0, 0.1);
         }
 
-        /* --- Seção Hero --- */
         .hero {
             background: linear-gradient(rgba(100, 100, 100, 0.8), rgba(0, 0, 0, 0.9));
             height: 60vh;
@@ -246,6 +278,7 @@ function renderProduto($row)
             align-items: center;
             justify-content: center;
             text-align: center;
+            width: 100%;
         }
 
         .hero h1 {
@@ -298,11 +331,12 @@ function renderProduto($row)
             display: block;
             text-decoration: none;
             text-align: center;
-}
+        }
 
-        /* --- Seção de Produtos --- */
+        /* Seção de Produtos */
         .product-section {
             padding: 4rem 0;
+            width: 100%;
         }
 
         .product-section h2 {
@@ -317,7 +351,19 @@ function renderProduto($row)
             grid-template-columns: 1fr;
             gap: 2rem;
         }
-        
+
+        @media (min-width: 768px) {
+            .product-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (min-width: 1024px) {
+            .product-grid {
+                grid-template-columns: repeat(4, 1fr);
+            }
+        }
+
         .product-grid .carrossel-item {
             cursor: default;
         }
@@ -352,16 +398,14 @@ function renderProduto($row)
 
         .product-card .product-category {
             font-size: 0.9rem;
-            color: #ff7300!important;
+            color: var(--text-muted);
             margin-bottom: 1rem;
-            -webkit-text-fill-color: #ff7300 !important; /* Força em navegadores WebKit */
         }
 
         .product-card .product-price {
             font-size: 1.5rem;
             font-weight: 700;
-            color: #ff7300!important;
-            -webkit-text-fill-color: #ff7300 !important; /* Força em navegadores WebKit */
+            color: var(--primary-color);
         }
 
         /* --- Rodapé --- */
@@ -369,6 +413,7 @@ function renderProduto($row)
             background-color: var(--card-bg);
             padding: 3rem 0 1rem;
             border-top: 1px solid #333;
+            width: 100%;
         }
 
         .footer-content {
@@ -377,6 +422,13 @@ function renderProduto($row)
             gap: 2rem;
             text-align: center;
             margin-bottom: 2rem;
+        }
+
+        @media (min-width: 768px) {
+            .footer-content {
+                grid-template-columns: repeat(3, 1fr);
+                text-align: left;
+            }
         }
 
         .footer-section h4 {
@@ -421,37 +473,6 @@ function renderProduto($row)
             color: var(--text-muted);
         }
 
-        /* --- Media Queries (Responsividade) --- */
-        @media (min-width: 768px) {
-            .mobile-menu-icon {
-                display: none;
-            }
-
-            .main-nav {
-                display: flex;
-            }
-
-            .product-grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
-
-            .footer-content {
-                grid-template-columns: repeat(3, 1fr);
-                text-align: left;
-            }
-        }
-
-        @media (min-width: 1024px) {
-            .product-grid {
-                grid-template-columns: repeat(4, 1fr);
-            }
-
-            .hero h1 {
-                font-size: 4rem;
-            }
-        }
-
-
         .secao-carrossel {
             position: relative;
             display: flex;
@@ -465,7 +486,6 @@ function renderProduto($row)
             overflow: hidden;
             padding-inline: 1px;
             width: 100%;
-            min-width: 1250px;
         }
 
         .horizontal {
@@ -492,13 +512,17 @@ function renderProduto($row)
             z-index: 10;
         }
 
+        body.light-mode .btn-carrossel {
+            color: #000;
+        }
+
         .btn-carrossel:hover {
             color: #ff7300;
             transform: scale(1.15);
         }
 
         .carrossel-item {
-            background-color: #292828ff;
+            background-color: var(--item-bg);
             border: none;
             border-radius: 8px;
             padding: 20px;
@@ -532,19 +556,12 @@ function renderProduto($row)
         }
 
         .product-name {
-            color: #ff7300;
+            color: var(--item-text);
             font-size: 1.1rem;
             min-height: 4.5em;
             display: flex;
             align-items: center;
             justify-content: center;
-        }
-
-
-        .header-icons {
-            display: flex;
-            align-items: center;
-            gap: 15px;
         }
 
         .search-container {
@@ -559,13 +576,14 @@ function renderProduto($row)
             border: none;
             padding: 0;
             cursor: pointer;
-            color: var(--text-color); 
+            color: var(--text-color);
             font-size: 1.2rem;
-            margin-left: -1px; 
+            margin-left: -1px;
             transition: color 0.3s ease;
         }
+
         .search-button:hover {
-             color: #994907ff;
+            color: #994907ff;
         }
 
         .search-input {
@@ -598,415 +616,83 @@ function renderProduto($row)
         }
 
         .admin-menu-container {
-          position: relative;
-          display: inline-block;
-        }
-        .admin-dropdown-content {
-          opacity: 0;
-          visibility: hidden;
-          transform: translateY(-10px);
-          transition: opacity 0.3s ease, transform 0.4s ease, visibility 0.3s;
-          position: absolute;
-          background-color: #1a1a1aff;
-          min-width: 180px;
-          box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.5);
-          z-index: 1001;
-          left: 0;
-          top: 30px;
-          border-radius: 5px;
-        }
-        .admin-dropdown-content a {
-          color: #ff7300; 
-          padding: 12px 16px;
-          text-decoration: none;
-          display: block;
-          font-size: 0.9rem;
-          white-space: nowrap;
-        }
-        .admin-dropdown-content a:hover {
-          background-color: #181818ff;
-          border-radius: 5px;
-        }
-        .admin-dropdown-content.show {
-          opacity: 1;
-          visibility: visible;
-          transform: translateY(0);
-        }
-   
-
-        @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700;900&display=swap');
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        :root {
-            --primary-color: #ad6224ff;
-            --card-bg: #ff7300ff;
-            --text-color: #000000;
-            --text-muted: #111111;
-            --accent-color: #ff7300;
-        }
-
-        body {
-            font-family: 'Roboto', sans-serif;
-            background-color: black;
-            color: white;
-            line-height: 1.6;
-            display: flex;
-            flex-direction: column;
-            min-height: 100vh;
-        }
-        
-        main {
-
-            flex-grow: 1;
-        }
-
-        .container {
-            max-width: 1310px;
-            margin: 0 auto;
-            padding: 0 20px;
-        }
-
-        /* --- Cabeçalho --- */
-        .main-header {
-            background-color: var(--card-bg);
-            padding: 1rem 0;
-            border-bottom: 1px solid #333;
-            position: sticky;
-            top: 0;
-            z-index: 1000;
-        }
-
-        .main-header .container {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .logo {
-            font-size: 1.8rem;
-            font-weight: 900;
-            color: var(--text-color);
-            text-decoration: none;
-        }
-
-        .logo span {
-            color: var(--primary-color);
-        }
-
-        .main-nav a {
-            color: var(--text-muted);
-            text-decoration: none;
-            margin: 0 13px;
-            font-weight: 700;
-            transition: color 0.3s ease;
-        }
-
-        .main-nav {
-            display: none;
-        }
-        
-        @media (min-width: 768px) {
-            .main-nav {
-                display: flex;
-            }
-        }
-
-        .main-nav a:hover {
-            color: #994907ff;
-        }
-
-        .header-icons {
-            display: flex;
-            align-items: center;
-        }
-
-        .header-icons a {
-            color: var(--text-color);
-            text-decoration: none;
-            font-size: 1.2rem;
-            margin-left: 31px;
             position: relative;
+            display: inline-block;
         }
 
-        .header-icons a span {
+        .admin-dropdown-content {
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-10px);
+            transition: opacity 0.3s ease, transform 0.4s ease, visibility 0.3s;
             position: absolute;
-            top: -8px;
-            right: -10px;
-            background-color: var(--accent-color);
-            color: white;
-            font-size: 0.7rem;
-            border-radius: 50%;
-            padding: 2px 5px;
-        }
-
-        .header-icons :hover {
-            color: #994907ff;
-            transition: color 0.3s ease;
-        }
-
-        /* --- Detalhe Produto --- */
-        .produto-detalhe-wrapper {
-            display: flex;
-            flex-direction: column;
-            gap: 2rem;
-            padding: 3rem 0;
-        }
-
-        .produto-imagem img {
-            max-width: 100%;
-            height: auto;
+            background-color: #1a1a1aff;
+            min-width: 180px;
+            box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.5);
+            z-index: 1001;
+            left: -120px; /* Ajuste para não vazar a tela */
+            top: 30px;
             border-radius: 5px;
-            background: white;
-            padding: 10px;
-            display: block;
-            margin: 0 auto;
-        }
-        
-        @media (min-width: 768px) {
-            .produto-imagem img {
-                max-width: 650px;
-                max-height: 600px;
-            }
         }
 
-
-        .produto-info h1 {
-            font-size: 2rem;
-            margin-bottom: 1rem;
-        }
-
-        .produto-info .categoria {
-            font-size: 1rem;
-            color: #bbbbbb;
-            margin-bottom: 1rem;
-        }
-
-        .produto-info .descricao {
-            margin-bottom: 1.5rem;
-            color: #dddddd;
-        }
-
-        .produto-info .preco {
-            font-size: 1.8rem;
-            font-weight: 700;
-            color: var(--primary-color);
-            margin-bottom: 1rem;
-        }
-
-        .btn-secondary {
-            background-color: transparent;
-            color: var(--primary-color);
-            padding: 10px 20px;
-            border: 2px solid var(--primary-color);
-            border-radius: 5px;
-            font-weight: 700;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            width: 100%;
-            margin-top: 2rem;
-        }
-
-        .btn-secondary:hover {
-            background-color: var(--primary-color);
-            color: white;
-        }
-
-        /* --- Rodapé --- */
-        .main-footer {
-            background-color: var(--card-bg);
-            padding: 3rem 0 1rem;
-            border-top: 1px solid #333;
-        }
-
-        .footer-content {
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 2rem;
-            text-align: center;
-            margin-bottom: 2rem;
-        }
-
-        .footer-section h4 {
-            font-size: 1.2rem;
-            margin-bottom: 1rem;
-            color: var(--primary-color);
-        }
-
-        .footer-section {
-            color: #000000;
-        }
-
-        .footer-section ul {
-            list-style: none;
-        }
-
-        .footer-section ul li a {
-            color: var(--text-muted);
-            text-decoration: none;
-            transition: color 0.3s ease;
-        }
-
-        .footer-section ul li a:hover {
-            color: var(--primary-color);
-        }
-
-        .social-icons a {
-            color: var(--text-color);
-            font-size: 1.5rem;
-            margin: 0 10px;
-        }
-
-        .social-icons :hover {
-            color: #994907ff;
-            transition: color 0.3s ease;
-        }
-
-        .footer-bottom {
-            text-align: center;
-            padding-top: 1rem;
-            border-top: 1px solid #333;
-            color: var(--text-muted);
-        }
-
-        /* --- Responsividade --- */
-        @media (min-width: 768px) {
-            .produto-detalhe-wrapper {
-                flex-direction: row;
-            }
-
-            .produto-imagem,
-            .produto-info {
-                flex: 1;
-            }
-
-            .footer-content {
-                grid-template-columns: repeat(3, 1fr);
-                text-align: left;
-            }
-        }
-
-        @media (max-width: 1024px) {
-            .produto-imagem img {
-                max-width: 600px;
-            }
-        }
-        
-        @media (max-width: 768px) {
-            .produto-imagem img {
-                max-width: 550px;
-            }
-        }
-
-        @media (max-width: 580px) {
-            .produto-imagem img {
-                max-width: 360px;
-            }
-        }
-
-        .price-box {
-            margin: 20px 0;
-            padding: 15px;
-            border-radius: 10px;
-            background: #000000ff;
-            border: 2px solid #ff7300;
-            text-align: center;
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-            cursor: pointer;
-        }
-
-
-        .price-box > p {
-            margin: 2px 0 10px 0;
-            font-size: 0.85rem;
+        .admin-dropdown-content a {
             color: #ff7300;
-            font-weight: 500;
+            padding: 12px 16px;
+            text-decoration: none;
+            display: block;
+            font-size: 0.9rem;
+            white-space: nowrap;
         }
 
-        .price-box:hover {
-            box-shadow: -10px 0 15px rgba(197, 81, 14, 0.5), 10px 0 15px rgba(197, 81, 14, 0.5), 0 10px 15px rgba(197, 81, 14, 0.5);
+        .admin-dropdown-content a:hover {
+            background-color: #181818ff;
+            border-radius: 5px;
         }
 
-        .parcelas-container {
+        .admin-dropdown-content.show {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+
+        /* --- MENU DE ACESSIBILIDADE FLUTUANTE --- */
+        .accessibility-menu {
+            position: fixed;
+            bottom: 40px; /* Aumentado para não colar */
+            right: 20px;
+            background: rgba(0, 0, 0, 0.8);
+            padding: 10px;
+            border-radius: 8px;
+            border: 1px solid var(--primary-color);
+            z-index: 2000;
             display: flex;
             flex-direction: column;
-            gap: 8px;
+            gap: 5px;
+            backdrop-filter: blur(5px);
         }
 
-        .parcelas-linha {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .parcelas-linha span {
-            font-size: 1rem;
-            color: #ffffff;
-        }
-
-        .especificacoes-wrapper {
-            margin: 20px 0;
-            margin-bottom: 80px;
-            padding: 15px;
-            border-radius: 10px;
-            background: #000000ff;
-            border: 2px solid #ff7300;
-            text-align: center; 
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        .accessibility-btn {
+            background: transparent;
+            border: 1px solid #fff;
+            color: #fff;
+            padding: 5px 10px;
+            border-radius: 4px;
             cursor: pointer;
+            font-size: 0.8rem;
+            font-weight: bold;
         }
 
-        .especificacoes-wrapper:hover {
-            box-shadow: -10px 0 15px rgba(197, 81, 14, 0.5), 10px 0 15px rgba(197, 81, 14, 0.5), 0 10px 15px rgba(197, 81, 14, 0.5);
+        .accessibility-btn:hover {
+            background: var(--primary-color);
+            border-color: var(--primary-color);
         }
 
-        .especificacoes-wrapper h2 {
-            margin: 2px 0 15px 0;
-            font-size: 0.85rem;
-            color: #ffffff;
-            font-weight: 500;
-        }
-
-        .especificacoes-wrapper p {
-            font-size: 1rem;
-            color: #ffffff;
-            text-align: left;
-            line-height: 1.8;
-        }
-
-#site-content .product-price {
-    color: #ff7300 !important;
-    -webkit-text-fill-color: #ff7300 !important;
-}
-.main-footer {
-    background: #ff7300 !important;  /* fundo laranja */
-    color: #000000 !important;       /* texto preto */
-}
-
-.main-footer * {
-    color: #000000 !important;       /* força texto preto para todos os elementos dentro */
-}
-
-</style>
+    </style>
 </head>
 
-
 <body>
-<!-- MENU FLUTUANTE SEMPRE ABERTO -->
-<div class="float-menu always-open">
-    <div class="float-options show">
-        <button id="toggle-theme">🌗 Tema</button>
-        <button id="increase-font">A+</button>
-        <button id="decrease-font">A-</button>
-    </div>
-</div>
 
-</header>
- <header class="main-header fixed-header">
+    <header class="main-header">
         <div class="container">
             <a href="loja.php" class="logo">Perigo <span>Tech</span></a>
             <nav class="main-nav">
@@ -1019,39 +705,45 @@ function renderProduto($row)
             </nav>
 
             <div class="header-icons">
-                
+
                 <form action="loja.php" method="GET" class="search-container">
                     <input type="text" name="q" value="<?php echo htmlspecialchars($search_query); ?>" class="search-input" placeholder="Pesquisar...">
                     <button type="submit" class="search-button" aria-label="Pesquisar"><i class="fas fa-search"></i></button>
                 </form>
-                
+
                 <a href="carrinho.php" aria-label="Carrinho"><i class="fas fa-shopping-cart"></i> <span><?php echo $total_itens_carrinho; ?></span></a>
-                <?php if (isset($_SESSION['nome'])) : ?>
-                    <span style="font-size: 1rem; font-weight: 700; color: #000; white-space: nowrap;">
-                        <a href="#" aria-label="Minha Conta" title="Minha Conta"><i class="fas fa-user" style="margin-right: 15px;"></i></a>
-                        Olá, <?php echo htmlspecialchars($_SESSION['nome']); ?>!
+                
+                <?php if (isset($_SESSION['login'])) : ?>
+                    <span style="font-size: 1rem; font-weight: 700; color: #000; white-space: nowrap; display: inline-block;">
+                        Ol&#225;, <?php echo htmlspecialchars($_SESSION['login']); ?>!
                     </span>
-                    
+
                     <a href="logout.php" aria-label="Sair" title="Sair"><i class="fas fa-sign-out-alt"></i></a>
+                
+                    <?php
+                    $admin_users = ['admin', 'master'];
+                    $isAdmin = in_array($_SESSION['login'], $admin_users);
+                    ?>
+                    <div class="admin-menu-container">
+                        <a href="#" id="admin-menu-button" aria-label="Configurações" title="Configurações">
+                            <i class="fas fa-cog"></i>
+                        </a>
+                        <div id="admin-menu-dropdown" class="admin-dropdown-content">
+                            <?php if ($isAdmin) : ?>
+                                <a href="sistema.php">Gerenciar Cadastros</a>
+                                <a href="log.php">Tela log</a>
+                            <?php endif; ?>
+                            
+                            <a href="telabd.php">Modelo BD</a>
+                            
+                            <?php if (!$isAdmin) : ?>
+                                <a onclick="abrirAlterarSenha()" style="cursor:pointer;">Alterar Senha</a>
+                            <?php endif; ?>
+                        </div>
+                    </div>
+
                 <?php else : ?>
                     <a href="login.php" aria-label="Login"><i class="fas fa-user"></i></a>
-                    <a href="login.php" style="font-size: 1rem; font-weight: 700; white-space: nowrap;">Entrar/Cadastrar</a>
-                    
-                <?php endif; ?>
-                <?php
-                $admin_users = ['admin', 'master'];
-                if (isset($_SESSION['login']) && in_array($_SESSION['login'], $admin_users)) : 
-                ?>
-                <div class="admin-menu-container">
-                    <a href="#" id="admin-menu-button" aria-label="Painel Admin" title="Painel Admin">
-                        <i class="fas fa-cog"></i>
-                    </a>
-                    <div id="admin-menu-dropdown" class="admin-dropdown-content">
-                        <a href="sistema.php">Gerenciar Cadastros</a>
-                        <a href="log.php">Tela log</a>
-                        <a href="telabd.php">Modelo BD</a>
-                    </div>
-                </div>
                 <?php endif; ?>
             </div>
             <button class="mobile-menu-icon" aria-label="Abrir menu">
@@ -1059,12 +751,18 @@ function renderProduto($row)
             </button>
         </div>
     </header>
-<div id="site-content">
+
     <nav class="mobile-nav">
         <a href="#prod_destaq">Produtos em Destaque</a>
         <a href="#perif">Periféricos</a>
         <a href="#pc_completo">PCs Completos</a>
-        <a href="#">Minha conta</a>
+        <a href="#fontes">Fontes</a>
+        <a href="#placas">Placas de Vídeo</a>
+        <?php if (isset($_SESSION['login'])) : ?>
+             <a href="logout.php" style="color: #ff4d4d;">Sair</a>
+        <?php else: ?>
+             <a href="login.php">Entrar / Cadastrar</a>
+        <?php endif; ?>
     </nav>
 
     <main>
@@ -1086,9 +784,9 @@ function renderProduto($row)
                         $sql_search = "SELECT * FROM produtos 
                                        WHERE nome LIKE '%$search_term_sql%'
                                           OR categoria LIKE '%$search_term_sql%'";
-                        
+
                         $result_search = $conn->query($sql_search);
-                        
+
                         if ($result_search && $result_search->num_rows > 0) {
                             while ($row = $result_search->fetch_assoc()) {
                                 renderProduto($row);
@@ -1195,7 +893,7 @@ function renderProduto($row)
                     </div>
                 </div>
             </section>
-            
+
             <section id="placas" class="product-section secao-carrossel">
                 <div class="container" style="text-align: center; width: 100%;">
                     <h2>Placas de Vídeo</h2>
@@ -1253,51 +951,58 @@ function renderProduto($row)
 
     </main>
 
+    <div class="accessibility-menu">
+        <button id="toggle-theme" class="accessibility-btn">🌓 Tema</button>
+        <button id="increase-font" class="accessibility-btn">A+</button>
+        <button id="decrease-font" class="accessibility-btn">A-</button>
+    </div>
+
     <script>
-
-// DARK / LIGHT MODE — NÃO ALTERA O HEADER EM HIPÓTESE ALGUMA
-document.getElementById("toggle-theme").addEventListener("click", () => {
-    const site = document.getElementById("site-content");
-    
-    // Alterna a classe
-    const dark = site.classList.toggle("dark-mode");
-    
-    if (dark) {
-        site.style.setProperty("--dark-bg", "#000000");
-        site.style.setProperty("--card-bg", "#292828ff");
-        site.style.setProperty("--text-color", "#ff7300");
-        site.style.setProperty("--text-muted", "#cccccc");
-        site.style.background = "#000";
-        site.style.color = "#ff7300";
-    } else {
-        site.style.setProperty("--dark-bg", "#ffffff");
-        site.style.setProperty("--card-bg", "#ff7300");
-        site.style.setProperty("--text-color", "#000000");
-        site.style.setProperty("--text-muted", "#111111");
-        site.style.background = "#ffffff";
-        site.style.color = "#ff7300";
-    }
-});
-
-// AUMENTAR / DIMINUIR FONTE
-let currentFont = 100;
-
-document.getElementById("increase-font").addEventListener("click", () => {
-    if (currentFont < 150) {
-        currentFont += 10;
-        document.getElementById("site-content").style.fontSize = currentFont + "%";
-    }
-});
-
-document.getElementById("decrease-font").addEventListener("click", () => {
-    if (currentFont > 70) {
-        currentFont -= 10;
-        document.getElementById("site-content").style.fontSize = currentFont + "%";
-    }
-});
+        function abrirAlterarSenha() {
+            const width = 400;
+            const height = 500;
+            const left = (screen.width / 2) - (width / 2);
+            const top = (screen.height / 2) - (height / 2);
+            window.open('alterarSenha.php', 'alterarSenha', `width=${width},height=${height},top=${top},left=${left},resizable=yes,scrollbars=yes`);
+        }
 
         document.addEventListener('DOMContentLoaded', function() {
-            
+
+            // --- CÓDIGO DE ACESSIBILIDADE ---
+            const body = document.body;
+            const btnToggle = document.getElementById('toggle-theme');
+            const btnInc = document.getElementById('increase-font');
+            const btnDec = document.getElementById('decrease-font');
+
+            // Alternar Tema
+            btnToggle.addEventListener('click', () => {
+                body.classList.toggle('light-mode');
+                const isLight = body.classList.contains('light-mode');
+                localStorage.setItem('theme', isLight ? 'light' : 'dark');
+            });
+
+            // Carregar tema salvo
+            if (localStorage.getItem('theme') === 'light') {
+                body.classList.add('light-mode');
+            }
+
+            // Tamanho da fonte
+            let currentFont = 100;
+            btnInc.addEventListener('click', () => {
+                if (currentFont < 150) {
+                    currentFont += 10;
+                    document.documentElement.style.fontSize = currentFont + '%';
+                }
+            });
+            btnDec.addEventListener('click', () => {
+                if (currentFont > 70) {
+                    currentFont -= 10;
+                    document.documentElement.style.fontSize = currentFont + '%';
+                }
+            });
+            // --- FIM DO CÓDIGO DE ACESSIBILIDADE ---
+
+
             // Menu Mobile
             const mobileMenuIcon = document.querySelector('.mobile-menu-icon');
             const mobileNav = document.querySelector('.mobile-nav');
@@ -1324,8 +1029,7 @@ document.getElementById("decrease-font").addEventListener("click", () => {
                     event.preventDefault(); // Impede o envio
                     searchContainer.classList.add('active');
                     searchInput.focus();
-                } 
-                else if (isActive && isEmpty) {
+                } else if (isActive && isEmpty) {
                     event.preventDefault(); // Impede o envio
                     searchContainer.classList.remove('active');
                 }
@@ -1334,12 +1038,12 @@ document.getElementById("decrease-font").addEventListener("click", () => {
             searchForm.addEventListener('submit', function(event) {
                 const isEmpty = searchInput.value.trim() === "";
                 if (isEmpty) {
-                    event.preventDefault(); 
+                    event.preventDefault();
                     window.location.href = 'loja.php';
                 }
             });
 
-            
+
             searchInput.addEventListener('input', function() {
                 const termo = searchInput.value.trim();
                 const urlAtual = new URL(window.location.href);
@@ -1353,7 +1057,7 @@ document.getElementById("decrease-font").addEventListener("click", () => {
             const adminButton = document.getElementById('admin-menu-button');
             if (adminButton) {
                 adminButton.addEventListener('click', function(event) {
-                    event.preventDefault(); 
+                    event.preventDefault();
                     const dropdown = document.getElementById('admin-menu-dropdown');
                     dropdown.classList.toggle('show');
                 });
@@ -1370,7 +1074,7 @@ document.getElementById("decrease-font").addEventListener("click", () => {
                 }
             });
 
-        }); 
+        });
 
         // Carrossel 
         function scrollCarrossel(direction, carrosselId) {
@@ -1382,7 +1086,7 @@ document.getElementById("decrease-font").addEventListener("click", () => {
             });
         }
     </script>
-</div> <!-- fechamento do #site-content -->
+
 </body>
 
 </html>
