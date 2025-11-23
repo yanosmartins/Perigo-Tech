@@ -54,9 +54,50 @@ function renderProduto($row)
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Perigo Tech - A sua loja de peças de PC</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+
 </div>
 
     <style>
+    /* --- MENU FLUTUANTE FIXO E SEMPRE ABERTO --- */
+
+.float-menu {
+    position: fixed;
+    right: 20px;
+    bottom: 20px;
+    z-index: 2000;
+}
+
+.float-options {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+
+    opacity: 1 !important;
+    visibility: visible !important;
+    transform: translateY(0) !important;
+}
+
+.float-options button {
+    padding: 10px 15px;
+    background-color: var(--card-bg);
+    border: 1px solid #333;
+    border-radius: 8px;
+    color: var(--text-color);
+    font-weight: 700;
+    cursor: pointer;
+    transition: background 0.3s;
+}
+
+.float-options button:hover {
+    background: var(--primary-color);
+    color: white;
+}
+
+/* Remove qualquer elemento relacionado ao botão antigo */
+.float-btn {
+    display: none !important;
+}
+
         @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700;900&display=swap');
 
         * {
@@ -311,14 +352,16 @@ function renderProduto($row)
 
         .product-card .product-category {
             font-size: 0.9rem;
-            color: var(--text-muted);
+            color: #ff7300!important;
             margin-bottom: 1rem;
+            -webkit-text-fill-color: #ff7300 !important; /* Força em navegadores WebKit */
         }
 
         .product-card .product-price {
             font-size: 1.5rem;
             font-weight: 700;
-            color: var(--primary-color);
+            color: #ff7300!important;
+            -webkit-text-fill-color: #ff7300 !important; /* Força em navegadores WebKit */
         }
 
         /* --- Rodapé --- */
@@ -489,7 +532,7 @@ function renderProduto($row)
         }
 
         .product-name {
-            color: white;
+            color: #ff7300;
             font-size: 1.1rem;
             min-height: 4.5em;
             display: flex;
@@ -590,8 +633,6 @@ function renderProduto($row)
           transform: translateY(0);
         }
    
-   </style>
-<style>
 
         @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700;900&display=swap');
 
@@ -882,7 +923,7 @@ function renderProduto($row)
         .price-box > p {
             margin: 2px 0 10px 0;
             font-size: 0.85rem;
-            color: #ffffff;
+            color: #ff7300;
             font-weight: 500;
         }
 
@@ -937,14 +978,35 @@ function renderProduto($row)
             line-height: 1.8;
         }
 
+#site-content .product-price {
+    color: #ff7300 !important;
+    -webkit-text-fill-color: #ff7300 !important;
+}
+.main-footer {
+    background: #ff7300 !important;  /* fundo laranja */
+    color: #000000 !important;       /* texto preto */
+}
 
-    
+.main-footer * {
+    color: #000000 !important;       /* força texto preto para todos os elementos dentro */
+}
+
 </style>
 </head>
 
-<body>
 
-    <header class="main-header">
+<body>
+<!-- MENU FLUTUANTE SEMPRE ABERTO -->
+<div class="float-menu always-open">
+    <div class="float-options show">
+        <button id="toggle-theme">🌗 Tema</button>
+        <button id="increase-font">A+</button>
+        <button id="decrease-font">A-</button>
+    </div>
+</div>
+
+</header>
+ <header class="main-header fixed-header">
         <div class="container">
             <a href="loja.php" class="logo">Perigo <span>Tech</span></a>
             <nav class="main-nav">
@@ -997,7 +1059,7 @@ function renderProduto($row)
             </button>
         </div>
     </header>
-
+<div id="site-content">
     <nav class="mobile-nav">
         <a href="#prod_destaq">Produtos em Destaque</a>
         <a href="#perif">Periféricos</a>
@@ -1192,6 +1254,48 @@ function renderProduto($row)
     </main>
 
     <script>
+
+// DARK / LIGHT MODE — NÃO ALTERA O HEADER EM HIPÓTESE ALGUMA
+document.getElementById("toggle-theme").addEventListener("click", () => {
+    const site = document.getElementById("site-content");
+    
+    // Alterna a classe
+    const dark = site.classList.toggle("dark-mode");
+    
+    if (dark) {
+        site.style.setProperty("--dark-bg", "#000000");
+        site.style.setProperty("--card-bg", "#292828ff");
+        site.style.setProperty("--text-color", "#ff7300");
+        site.style.setProperty("--text-muted", "#cccccc");
+        site.style.background = "#000";
+        site.style.color = "#ff7300";
+    } else {
+        site.style.setProperty("--dark-bg", "#ffffff");
+        site.style.setProperty("--card-bg", "#ff7300");
+        site.style.setProperty("--text-color", "#000000");
+        site.style.setProperty("--text-muted", "#111111");
+        site.style.background = "#ffffff";
+        site.style.color = "#ff7300";
+    }
+});
+
+// AUMENTAR / DIMINUIR FONTE
+let currentFont = 100;
+
+document.getElementById("increase-font").addEventListener("click", () => {
+    if (currentFont < 150) {
+        currentFont += 10;
+        document.getElementById("site-content").style.fontSize = currentFont + "%";
+    }
+});
+
+document.getElementById("decrease-font").addEventListener("click", () => {
+    if (currentFont > 70) {
+        currentFont -= 10;
+        document.getElementById("site-content").style.fontSize = currentFont + "%";
+    }
+});
+
         document.addEventListener('DOMContentLoaded', function() {
             
             // Menu Mobile
@@ -1278,7 +1382,7 @@ function renderProduto($row)
             });
         }
     </script>
-
+</div> <!-- fechamento do #site-content -->
 </body>
 
 </html>
