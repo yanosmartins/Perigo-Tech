@@ -14,7 +14,7 @@ if (isset($_SESSION['carrinho']) && !empty($_SESSION['carrinho'])) {
     $total_itens_carrinho = array_sum($_SESSION['carrinho']);
 }
 
-if (!isset($_SESSION['nome'])) {
+if (!isset($_SESSION['login'])) {
     header('Location: login.php');
     exit();
 }
@@ -46,7 +46,7 @@ if (!isset($_SESSION['nome'])) {
             --body-bg: #000000;
             --body-text: #ffffff;
         }
-        
+
         body.light-mode {
             --body-bg: #ffffff;
             --body-text: #000000;
@@ -290,6 +290,7 @@ if (!isset($_SESSION['nome'])) {
         .btn-danger {
             background-color: transparent;
             color: #ff4d4d;
+            margin-top: 80px;
             padding: 10px 20px;
             border: 2px solid #ff4d4d;
             border-radius: 5px;
