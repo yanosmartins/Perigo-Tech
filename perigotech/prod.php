@@ -53,16 +53,37 @@ $produto = $result->fetch_assoc();
             --text-color: #000000;
             --text-muted: #111111;
             --accent-color: #ff7300;
+            --body-bg: black;
+            --body-text: white;
+            --desc-color: #dddddd;
+            --cat-color: #bbbbbb;
+            --box-bg: #000000ff;
+            --box-text: #ffffff;
+            --border-box: #ff7300;
+        }
+
+        body.light-mode {
+            --body-bg: #ffffff;
+            --body-text: #000000;
+            --card-bg: #e0e0e0;
+            --text-color: #000000;
+            --text-muted: #333333;
+            --desc-color: #333333;
+            --cat-color: #555555;
+            --box-bg: #f4f4f4;
+            --box-text: #000000;
+            --border-box: #ad6224ff;
         }
 
         body {
             font-family: 'Roboto', sans-serif;
-            background-color: black;
-            color: white;
+            background-color: var(--body-bg);
+            color: var(--body-text);
             line-height: 1.6;
             display: flex;
             flex-direction: column;
             min-height: 100vh;
+            transition: background-color 0.3s, color 0.3s;
         }
         
         main {
@@ -76,7 +97,6 @@ $produto = $result->fetch_assoc();
             padding: 0 20px;
         }
 
-        /* --- Cabeçalho --- */
         .main-header {
             background-color: var(--card-bg);
             padding: 1rem 0;
@@ -154,7 +174,6 @@ $produto = $result->fetch_assoc();
             transition: color 0.3s ease;
         }
 
-        /* --- Detalhe Produto --- */
         .produto-detalhe-wrapper {
             display: flex;
             flex-direction: column;
@@ -183,17 +202,18 @@ $produto = $result->fetch_assoc();
         .produto-info h1 {
             font-size: 2rem;
             margin-bottom: 1rem;
+            color: var(--body-text);
         }
 
         .produto-info .categoria {
             font-size: 1rem;
-            color: #bbbbbb;
+            color: var(--cat-color);
             margin-bottom: 1rem;
         }
 
         .produto-info .descricao {
             margin-bottom: 1.5rem;
-            color: #dddddd;
+            color: var(--desc-color);
         }
 
         .produto-info .preco {
@@ -221,7 +241,6 @@ $produto = $result->fetch_assoc();
             color: white;
         }
 
-        /* --- Rodapé --- */
         .main-footer {
             background-color: var(--card-bg);
             padding: 3rem 0 1rem;
@@ -243,7 +262,7 @@ $produto = $result->fetch_assoc();
         }
 
         .footer-section {
-            color: #000000;
+            color: var(--text-color);
         }
 
         .footer-section ul {
@@ -278,7 +297,6 @@ $produto = $result->fetch_assoc();
             color: var(--text-muted);
         }
 
-        /* --- Responsividade --- */
         @media (min-width: 768px) {
             .produto-detalhe-wrapper {
                 flex-direction: row;
@@ -317,8 +335,8 @@ $produto = $result->fetch_assoc();
             margin: 20px 0;
             padding: 15px;
             border-radius: 10px;
-            background: #000000ff;
-            border: 2px solid #ff7300;
+            background: var(--box-bg);
+            border: 2px solid var(--border-box);
             text-align: center;
             transition: transform 0.3s ease, box-shadow 0.3s ease;
             cursor: pointer;
@@ -328,7 +346,7 @@ $produto = $result->fetch_assoc();
         .price-box > p {
             margin: 2px 0 10px 0;
             font-size: 0.85rem;
-            color: #ffffff;
+            color: var(--box-text);
             font-weight: 500;
         }
 
@@ -350,7 +368,7 @@ $produto = $result->fetch_assoc();
 
         .parcelas-linha span {
             font-size: 1rem;
-            color: #ffffff;
+            color: var(--box-text);
         }
 
         .especificacoes-wrapper {
@@ -358,8 +376,8 @@ $produto = $result->fetch_assoc();
             margin-bottom: 80px;
             padding: 15px;
             border-radius: 10px;
-            background: #000000ff;
-            border: 2px solid #ff7300;
+            background: var(--box-bg);
+            border: 2px solid var(--border-box);
             text-align: center; 
             transition: transform 0.3s ease, box-shadow 0.3s ease;
             cursor: pointer;
@@ -372,17 +390,46 @@ $produto = $result->fetch_assoc();
         .especificacoes-wrapper h2 {
             margin: 2px 0 15px 0;
             font-size: 0.85rem;
-            color: #ffffff;
+            color: var(--box-text);
             font-weight: 500;
         }
 
         .especificacoes-wrapper p {
             font-size: 1rem;
-            color: #ffffff;
+            color: var(--box-text);
             text-align: left;
             line-height: 1.8;
         }
 
+        .accessibility-menu {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: rgba(0, 0, 0, 0.8);
+            padding: 10px;
+            border-radius: 8px;
+            border: 1px solid var(--primary-color);
+            z-index: 2000;
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .accessibility-btn {
+            background: transparent;
+            border: 1px solid #fff;
+            color: #fff;
+            padding: 5px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            font-weight: bold;
+        }
+
+        .accessibility-btn:hover {
+            background: var(--primary-color);
+            border-color: var(--primary-color);
+        }
 
     </style>
 </head>
@@ -512,6 +559,45 @@ $produto = $result->fetch_assoc();
             </div>
         </div>
     </footer>
+
+    <div class="accessibility-menu">
+        <button id="toggle-theme" class="accessibility-btn">🌓 Tema</button>
+        <button id="increase-font" class="accessibility-btn">A+</button>
+        <button id="decrease-font" class="accessibility-btn">A-</button>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const body = document.body;
+            const btnToggle = document.getElementById('toggle-theme');
+            const btnInc = document.getElementById('increase-font');
+            const btnDec = document.getElementById('decrease-font');
+
+            btnToggle.addEventListener('click', () => {
+                body.classList.toggle('light-mode');
+                const isLight = body.classList.contains('light-mode');
+                localStorage.setItem('theme_prod', isLight ? 'light' : 'dark');
+            });
+
+            if (localStorage.getItem('theme_prod') === 'light') {
+                body.classList.add('light-mode');
+            }
+
+            let currentFont = 100;
+            btnInc.addEventListener('click', () => {
+                if (currentFont < 150) {
+                    currentFont += 10;
+                    document.documentElement.style.fontSize = currentFont + '%';
+                }
+            });
+            btnDec.addEventListener('click', () => {
+                if (currentFont > 70) {
+                    currentFont -= 10;
+                    document.documentElement.style.fontSize = currentFont + '%';
+                }
+            });
+        });
+    </script>
 
 </body>
 
