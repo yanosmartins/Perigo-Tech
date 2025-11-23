@@ -1,318 +1,556 @@
 <?php
-$host = "perigo-tech.cxk4sugqggtc.us-east-2.rds.amazonaws.com";
-$user = "admin";
-$password = "P1rucomLeucem1a";
-$dbname = "perigotech";
-$conn = new mysqli($host, $user, $password, $dbname);
-if ($conn->connect_error) {
-    die("Conexão falhou: " . $conn->connect_error);
-}
 session_start();
+include_once('config.php');
 
-$total_itens_carrinho = 0;
-if (isset($_SESSION['carrinho']) && !empty($_SESSION['carrinho'])) {
-    $total_itens_carrinho = array_sum($_SESSION['carrinho']);
+function validaCPF($cpf)
+{
+    $cpf = preg_replace('/[^0-9]/is', '', $cpf);
+
+    if (strlen($cpf) != 11) return false;
+    if (preg_match('/(\d)\1{10}/', $cpf)) return false;
+
+    for ($t = 9; $t < 11; $t++) {
+        for ($d = 0, $c = 0; $c < $t; $c++) {
+            $d += $cpf[$c] * (($t + 1) - $c);
+        }
+        $d = ((10 * $d) % 11) % 10;
+        if ($cpf[$c] != $d) {
+            return false;
+        }
+    }
+    return true;
 }
 
-if (!isset($_SESSION['nome'])) {
-    header('Location: login.php');
-    exit();
+$mensagem_erro = '';
+if (isset($_SESSION['msg'])) {
+    $mensagem_erro = $_SESSION['msg'];
+    unset($_SESSION['msg']);
+}
+
+if (isset($_POST['submit'])) {
+    $nome          = $_POST['nome'] ?? '';
+    $email         = $_POST['email'] ?? '';
+    $telefone      = $_POST['telefone'] ?? '';
+    $telFixo       = $_POST['telFixo'] ?? '';
+    $endereco      = $_POST['endereco'] ?? '';
+    $data_nasc     = $_POST['datanascimento'] ?? '';
+    $sexo          = $_POST['sexo'] ?? '';
+    $cep           = $_POST['cep'] ?? '';
+    $cpf           = $_POST['cpf'] ?? '';
+    $login         = $_POST['login'] ?? '';
+    $senha_plana   = $_POST['senha'] ?? '';
+    $confirmaSenha = $_POST['confirmaSenha'] ?? '';
+    $nome_mae      = $_POST['nome_mae'] ?? '';
+    $erros = [];
+
+    if (empty($nome) || empty($login) || empty($senha_plana) || empty($email) || empty($endereco) || empty($telefone) || empty($data_nasc) || empty($sexo) || empty($cep) || empty($cpf) || empty($nome_mae)) {
+        $erros[] = "Preencha todos os campos obrigatórios.";
+    }
+
+    if (strlen($nome) < 15 || strlen($nome) > 80) {
+        $erros[] = "Nome: Deve ter entre 15 e 80 caracteres.";
+    }
+    if (!preg_match("/^[a-zA-ZÀ-ÿ\s]+$/", $nome)) {
+        $erros[] = "Nome: Deve conter apenas letras e espaços.";
+    }
+
+    if (!validaCPF($cpf)) {
+        $erros[] = "CPF inválido (Dígito verificador incorreto).";
+    }
+
+    if (!preg_match("/^\+55 \(\d{2}\) \d{5}-\d{4}$/", $telefone)) {
+        $erros[] = "Telefone Celular: Formato incorreto. Esperado: +55 (XX) XXXXX-XXXX.";
+    }
+
+    if (!empty($telFixo) && !preg_match("/^\+55 \(\d{2}\) \d{4}-\d{4}$/", $telFixo)) {
+        $erros[] = "Telefone Fixo: Formato incorreto. Esperado: +55 (XX) XXXX-XXXX.";
+    }
+
+    if (strlen($login) !== 6) {
+        $erros[] = "Login: Deve ter exatamente 6 caracteres.";
+    }
+    if (!ctype_alpha($login)) {
+        $erros[] = "Login: Deve conter apenas letras (sem números).";
+    }
+
+    if (strlen($senha_plana) !== 8) {
+        $erros[] = "Senha: Deve ter exatamente 8 caracteres.";
+    }
+    if (!ctype_alpha($senha_plana)) {
+        $erros[] = "Senha: Deve conter apenas letras.";
+    }
+
+    if ($senha_plana !== $confirmaSenha) {
+        $erros[] = "As senhas não coincidem.";
+    }
+
+    if (!empty($erros)) {
+        $_SESSION['msg'] = implode("<br>", $erros);
+        header("Location: cadastro.php");
+        exit;
+    } else {
+
+        $senha_hash = password_hash($senha_plana, PASSWORD_DEFAULT);
+        $telefone_limpo = preg_replace('/[^0-9]/', '', $telefone);
+
+        $sql = "INSERT INTO usuarios 
+                (nome, email, telefone, endereco, data_nascimento, sexo, cep, cpf, login, senha, nome_mae, tipo)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'comum')";
+
+        $stmt = $conexao->prepare($sql);
+
+        if ($stmt === false) {
+            $_SESSION['msg'] = "Erro interno no banco: " . $conexao->error;
+            header("Location: cadastro.php");
+            exit;
+        }
+
+        $stmt->bind_param(
+            "sssssssssss",
+            $nome,
+            $email,
+            $telefone_limpo,
+            $endereco,
+            $data_nasc,
+            $sexo,
+            $cep,
+            $cpf,
+            $login,
+            $senha_hash,
+            $nome_mae
+        );
+
+        if ($stmt->execute()) {
+            $_SESSION['msg'] = "Cadastro realizado com sucesso!";
+            header("Location: login.php");
+            exit;
+        } else {
+            if ($conexao->errno == 1062) {
+                $_SESSION['msg'] = "Erro: Login, CPF ou Email já cadastrado.";
+            } else {
+                $_SESSION['msg'] = "Erro ao cadastrar: " . $stmt->error;
+            }
+            header("Location: cadastro.php");
+            exit;
+        }
+    }
 }
 ?>
+
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <title>Perigo Tech - Carrinho</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css"/>
+    <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+    <title>Cadastro</title>
+    <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet" />
     <style>
-        /* ====== Reset / Base ====== */
         @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700;900&display=swap');
-        *{box-sizing:border-box;margin:0;padding:0}
-        html{scroll-behavior:smooth}
-        :root{
-            --primary-color:#ad6224;   /* laranja principal */
-            --card-bg:#ff7300;        /* laranja / cards */
-            --header-footer-bg:#ff7300;
-            --text-color:#000;        /* texto padrão (preto no footer/header) */
-            --muted:#111;
-            --dark-bg:#000;
-            --site-bg:#000;           /* fundo padrão da página (escuro) */
-        }
-        body{
-            font-family: 'Roboto', sans-serif;
-            background:var(--site-bg);
-            color:#fff;
-            min-height:100vh;
-            display:flex;
-            flex-direction:column;
-        }
-        .container{max-width:1310px;margin:0 auto;padding:0 20px}
 
-        /* ====== Header (fixo laranja) ====== */
-        header.main-header{
-            background:var(--header-footer-bg) !important;
-            color:var(--text-color) !important;
-            padding:1rem 0;
-            position:sticky;
-            top:0;
-            z-index:1000;
-            border-bottom:1px solid #333;
-        }
-        header.main-header .container{display:flex;align-items:center;justify-content:space-between}
-        .logo{font-weight:900;font-size:1.8rem;color:var(--text-color);text-decoration:none}
-        .logo span{color:var(--primary-color)}
-        .main-nav{display:none}
-        .main-nav a{margin:0 12px;color:#111;text-decoration:none;font-weight:700}
-        @media(min-width:768px){ .main-nav{display:flex} }
-
-        .header-icons{display:flex;align-items:center;gap:15px}
-        .header-icons a{color:var(--text-color);text-decoration:none;font-size:1.1rem;position:relative}
-        .header-icons a span{position:absolute;top:-8px;right:-10px;background:var(--primary-color);color:#fff;border-radius:50%;padding:2px 6px;font-size:0.7rem}
-
-        /* ====== Footer (fixo laranja) ====== */
-        footer.main-footer{
-            background:var(--header-footer-bg) !important;
-            color:var(--text-color) !important;
-            padding:3rem 0 1rem;
-            border-top:1px solid #333;
-            margin-top:auto;
-            position: relative; /* GARANTE que ele siga o fluxo */
-        }
-        .footer-section h4{color:var(--primary-color);margin-bottom:1rem}
-        .footer-section, .footer-section a{color:var(--text-color)}
-        .footer-bottom{color:var(--text-color);text-align:center;padding-top:1rem;border-top:1px solid rgba(0,0,0,0.15)}
-
-        
-        main{flex:1;padding:3rem 0}
-        .cart{background:#1c1c1c;padding:2rem;border-radius:10px;color:#fff}
-        .cart-item{display:flex;align-items:center;border-bottom:1px solid #333;padding:1rem 0;gap:16px}
-        .cart-img{width:120px;border-radius:8px;background:#fff;padding:6px}
-        .cart-details{flex:1}
-        .cart-details h3{color:#fff;margin-bottom:.5rem}
-        /* preço do produto (garantido laranja) */
-        .cart-details .price{color:var(--card-bg);font-weight:800;margin-bottom:1rem}
-        .cart-item-subtotal p{color:#aaa;margin:0 0 .25rem 0}
-        .cart-item-subtotal h4{color:var(--primary-color);margin:0}
-
-        .cart-actions{display:flex;align-items:center;gap:10px}
-        .cart-actions button{cursor:pointer}
-        .btn-primary{background:transparent;color:var(--primary-color);padding:10px 20px;border:2px solid var(--primary-color);border-radius:6px;font-weight:700;text-decoration:none;display:inline-block}
-        .btn-primary:hover{background:var(--primary-color);color:#fff}
-        .btn-secondary,.btn-secondary-mais,.btn-secondary-menos,.btn-danger{background:transparent;border-radius:6px;padding:10px 14px;font-weight:700;cursor:pointer}
-        .btn-secondary, .btn-secondary-mais, .btn-secondary-menos{border:2px solid var(--primary-color);color:var(--primary-color)}
-        .btn-secondary:hover,.btn-secondary-mais:hover,.btn-secondary-menos:hover{background:var(--primary-color);color:#fff}
-        .btn-danger{border:2px solid #ff4d4d;color:#ff4d4d}
-        .btn-danger:hover{background:#ff4d4d;color:#fff}
-
-        .cart-total{display:flex;justify-content:space-between;align-items:center;margin-top:2rem;gap:20px}
-        @media(max-width:720px){
-            .cart-item{flex-direction:column;align-items:flex-start}
-            .cart-item-subtotal{width:100%;text-align:left}
-            .cart-total{flex-direction:column;align-items:stretch}
+        * {
+            padding: 0;
+            margin: 0;
+            box-sizing: border-box;
+            font-family: "Roboto", sans-serif;
         }
 
-       
-        .float-menu{position:fixed;right:20px;bottom:20px;z-index:2001}
-        .float-options{display:flex;flex-direction:column;gap:10px}
-        .float-options button{padding:10px 14px;background:var(--card-bg);border:1px solid #333;border-radius:8px;color:var(--text-color);font-weight:700;cursor:pointer}
-        .float-options button:hover{background:var(--primary-color);color:#fff}
-
-        
-        #site-content.dark-mode{
-            --site-bg: #000;
-            background:#000;
-            color:#fff;
+        body {
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-image: url(img/Gemini_Generated_Image_km51uskm51uskm51.png);
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+            padding: 20px;
         }
-        
-        header.main-header, footer.main-footer { background:var(--header-footer-bg) !important; color:var(--text-color) !important; }
 
-        
-        .product-name,.product-category{color:#fff}
+        .container {
+            width: 100%;
+            max-width: 800px;
+            background: rgba(255, 255, 255, 0.95);
+            box-shadow: 5px 5px 18px rgba(0, 0, 0, 0.2);
+            border-radius: 20px;
+            padding: 2rem;
+            display: flex;
+            flex-direction: column;
+        }
 
-        
-        .text-center{text-align:center}
+        .form-header {
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+
+        .form-header h1 {
+            margin-bottom: 0.5rem;
+            color: #333;
+            position: relative;
+            display: inline-block;
+        }
+
+        .form-header h1::after {
+            content: "";
+            display: block;
+            width: 60px;
+            height: 3px;
+            background: #ff8c00;
+            margin: 0.5rem auto 0;
+            border-radius: 5px;
+        }
+
+        /* Mensagem de Erro (Igual ao Login) */
+        .erro-backend {
+            background-color: #ffe0e0;
+            color: #d8000c;
+            border: 1px solid #d8000c;
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 1.5rem;
+            text-align: left;
+            font-size: 0.9rem;
+            font-weight: bold;
+        }
+
+        /* Mensagens JS */
+        #mensagem {
+            display: none;
+            padding: 10px;
+            margin-top: 15px;
+            border-radius: 5px;
+            text-align: center;
+            font-weight: bold;
+        }
+
+        .alert-erro {
+            background: #ff4d4d;
+            color: #fff;
+        }
+
+        .alert-sucesso {
+            background: #00c851;
+            color: #fff;
+        }
+
+        .input-group {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+        }
+
+        .input-box {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .input-box label {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 5px;
+        }
+
+        .input-box input {
+            padding: 0.8rem;
+            border: 1px solid #333;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            outline: none;
+            transition: border 0.3s, background 0.3s;
+            width: 100%;
+        }
+
+        .input-box input:focus {
+            border-color: #ff8c00;
+        }
+
+        .input-box input:hover {
+            background: rgba(220, 169, 110, 0.2);
+        }
+
+        .Sexo {
+            grid-column: span 2;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-top: 5px;
+        }
+
+        .Sexo label {
+            font-weight: 600;
+            color: #333;
+            margin-right: 10px;
+        }
+
+        .botoes-acao {
+            margin-top: 2rem;
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+        }
+
+        button {
+            padding: 0.9rem 2rem;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.3s, transform 0.2s;
+            width: 48%;
+        }
+
+        button[name="submit"] {
+            background: #ff8c00;
+            color: #fff;
+        }
+
+        button[name="submit"]:hover {
+            background: #c27524;
+        }
+
+        button[type="reset"] {
+            background: #555;
+            color: #fff;
+        }
+
+        button[type="reset"]:hover {
+            background: #333;
+        }
+
+        .link-login {
+            text-align: center;
+            margin-top: 1.5rem;
+        }
+
+        .link-login a {
+            color: #ff8c00;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .link-login a:hover {
+            text-decoration: underline;
+        }
+
+        /* Responsividade */
+        @media screen and (max-width: 700px) {
+            .input-group {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+
+            .Sexo {
+                grid-column: span 1;
+            }
+
+            .container {
+                padding: 1.5rem;
+            }
+
+            button {
+                width: 100%;
+            }
+
+            .botoes-acao {
+                flex-direction: column;
+            }
+        }
     </style>
 </head>
+
 <body>
-    <div id="site-content">
-        <!-- HEADER (cor laranja fixa) -->
-        <header class="main-header">
-            <div class="container">
-                <a href="loja.php" class="logo">Perigo <span>Tech</span></a>
-                <nav class="main-nav" aria-label="Navegação principal">
-                    <a href="loja.php#">Início</a>
-                    <a href="loja.php#prod_destaq">Em Destaque</a>
-                    <a href="loja.php#perif">Periféricos</a>
-                </nav>
-                <div class="header-icons" aria-hidden="false">
-                    <a href="carrinho.php" aria-label="Carrinho"><i class="fas fa-shopping-cart"></i> <span><?php echo $total_itens_carrinho; ?></span></a>
-                    <a href="#" aria-label="Minha Conta"><i class="fas fa-user"></i></a>
-                    <?php if (isset($_SESSION['login'])) : ?>
-                        <span style="font-size:1rem;font-weight:700;color:var(--text-color);white-space:nowrap;margin-left:12px">Olá, <?php echo htmlspecialchars($_SESSION['login']); ?>!</span>
-                        <a href="logout.php" aria-label="Sair" title="Sair"><i class="fas fa-sign-out-alt"></i></a>
-                    <?php endif; ?>
-                    <button class="mobile-menu-icon" aria-label="Abrir menu" style="background:none;border:none;color:var(--text-color);font-size:1.2rem;margin-left:8px"><i class="fas fa-bars"></i></button>
-                </div>
-            </div>
-        </header>
-
-        <!-- MAIN -->
-        <main class="container" role="main">
-            <h1 class="text-center" style="color:var(--primary-color);margin-bottom:1.5rem">🛒 Meu Carrinho</h1>
-
-            <div class="cart" role="region" aria-label="Itens do carrinho">
-                <?php
-                $total_geral = 0;
-                if (empty($_SESSION['carrinho'])) :
-                    echo '<p class="text-center" style="font-size:1.15rem;color:#ddd">Seu carrinho está vazio.</p>';
-                    echo '<div class="text-center" style="margin-top:1.5rem"><a href="loja.php" class="btn-primary">Voltar para a Loja</a></div>';
-                else :
-                    $ids_produtos = implode(',', array_keys($_SESSION['carrinho']));
-                    // prevenção: se $ids_produtos vazio, evita query inválida
-                    if (trim($ids_produtos) !== "") {
-                        $sql = "SELECT * FROM produtos WHERE id_prod IN ($ids_produtos)";
-                        $result = $conn->query($sql);
-                        if ($result && $result->num_rows > 0) :
-                            while ($produto = $result->fetch_assoc()) :
-                                $id = $produto['id_prod'];
-                                $quantidade = isset($_SESSION['carrinho'][$id]) ? intval($_SESSION['carrinho'][$id]) : 0;
-                                $subtotal = $produto['preco'] * $quantidade;
-                                $total_geral += $subtotal;
-                ?>
-                                <div class="cart-item" aria-live="polite">
-                                    <img src="./img/<?php echo htmlspecialchars($produto['img']); ?>" alt="<?php echo htmlspecialchars($produto['nome']); ?>" class="cart-img">
-                                    <div class="cart-details">
-                                        <h3><?php echo htmlspecialchars($produto['nome']); ?></h3>
-                                        <p class="price">R$ <?php echo number_format($produto['preco'],2,',','.'); ?></p>
-
-                                        <div class="cart-actions" aria-label="Ações do produto">
-                                            <form action="gerenciar_carrinho.php" method="POST" style="margin:0">
-                                                <input type="hidden" name="id_prod" value="<?php echo $id; ?>">
-                                                <input type="hidden" name="acao" value="remover_um">
-                                                <button type="submit" class="btn-secondary-menos" title="Diminuir quantidade">-</button>
-                                            </form>
-
-                                            <span aria-live="polite" style="min-width:28px;text-align:center;display:inline-block;font-weight:700"><?php echo $quantidade; ?></span>
-
-                                            <form action="gerenciar_carrinho.php" method="POST" style="margin:0">
-                                                <input type="hidden" name="id_prod" value="<?php echo $id; ?>">
-                                                <input type="hidden" name="acao" value="adicionar">
-                                                <button type="submit" class="btn-secondary-mais" title="Aumentar quantidade">+</button>
-                                            </form>
-
-                                            <form action="gerenciar_carrinho.php" method="POST" style="margin:0">
-                                                <input type="hidden" name="id_prod" value="<?php echo $id; ?>">
-                                                <input type="hidden" name="acao" value="remover_produto">
-                                                <button type="submit" class="btn-secondary" style="margin-left:12px">Remover</button>
-                                            </form>
-                                        </div>
-                                    </div>
-
-                                    <div class="cart-item-subtotal" style="text-align:right;min-width:150px">
-                                        <p style="font-size:0.9rem;color:#aaa">Subtotal</p>
-                                        <h4>R$ <?php echo number_format($subtotal,2,',','.'); ?></h4>
-                                    </div>
-                                </div>
-                <?php
-                            endwhile;
-                        endif;
-                    } 
-                ?>
-
-                <?php if (!empty($_SESSION['carrinho'])) : ?>
-                    <div class="cart-total" role="region" aria-label="Resumo do carrinho">
-                        <form action="gerenciar_carrinho.php" method="POST" style="margin:0">
-                            <input type="hidden" name="acao" value="limpar">
-                            <button type="submit" class="btn-danger">Esvaziar Carrinho</button>
-                        </form>
-
-                        <div class="total-finalizar" style="text-align:right">
-                            <h2 style="color:var(--primary-color);margin-bottom:.5rem">Total: R$ <?php echo number_format($total_geral,2,',','.'); ?></h2>
-                            <a href="checkout.php" class="btn-primary">Finalizar Compra</a>
-                        </div>
-                    </div>
-                <?php endif; ?>
-                <?php endif; ?>
-            </div>
-        </main>
-            </div> 
-
-        <footer class="main-footer" role="contentinfo">
-            <div class="container">
-                <div class="footer-content" style="display:grid;grid-template-columns:1fr;gap:1.25rem;text-align:center;margin-bottom:1.25rem">
-                    <div class="footer-section">
-                        <h4>Perigo Tech</h4>
-                        <p style="color:var(--text-color)">A sua paixão por hardware começa aqui.</p>
-                    </div>
-                    <div class="footer-section">
-                        <h4>Links Rápidos</h4>
-                        <ul style="list-style:none">
-                            <li><a href="#" style="color:var(--text-color);text-decoration:none">Sobre Nós</a></li>
-                            <li><a href="#" style="color:var(--text-color);text-decoration:none">Contato</a></li>
-                        </ul>
-                    </div>
-                    <div class="footer-section">
-                        <h4>Siga-nos</h4>
-                        <div class="social-icons">
-                            <a href="#" style="color:var(--text-color);margin-right:8px"><i class="fab fa-facebook-f"></i></a>
-                            <a href="#" style="color:var(--text-color);margin-right:8px"><i class="fab fa-twitter"></i></a>
-                            <a href="#" style="color:var(--text-color)"><i class="fab fa-instagram"></i></a>
-                        </div>
-                    </div>
-                </div>
-                <div class="footer-bottom">&copy; 2025 Perigo Tech. Todos os direitos reservados.</div>
-            </div>
-        </footer>
-
-    <div class="float-menu" aria-hidden="false">
-        <div class="float-options">
-            <button id="toggle-theme" aria-pressed="false" title="Alternar tema">🌗 Tema</button>
-            <button id="increase-font" title="Aumentar fonte">A+</button>
-            <button id="decrease-font" title="Diminuir fonte">A-</button>
+    <div class="container">
+        <div class="form-header">
+            <h1>CADASTRE-SE</h1>
         </div>
+
+        <form id="cadastroForm" action="cadastro.php" method="POST">
+
+            <?php if (!empty($mensagem_erro)): ?>
+                <div class="erro-backend">
+                    <?php echo $mensagem_erro; ?>
+                </div>
+            <?php endif; ?>
+
+            <div class="input-group">
+                <div class="input-box">
+                    <label for="nome">Nome Completo</label>
+                    <input id="nome" name="nome" type="text" placeholder="Digite seu nome completo" required />
+                </div>
+
+                <div class="input-box">
+                    <label for="email">Email</label>
+                    <input id="email" name="email" type="email" placeholder="Digite seu email" required />
+                </div>
+
+                <div class="input-box">
+                    <label for="login">Login (6 letras)</label>
+                    <input id="login" name="login" type="text" placeholder="Crie seu Login" required maxlength="6" />
+                </div>
+
+                <div class="input-box">
+                    <label for="cpf">CPF</label>
+                    <input id="cpf" name="cpf" type="text" placeholder="000.000.000-00" required maxlength="14" />
+                </div>
+
+                <div class="input-box">
+                    <label for="senha">Senha (8 letras)</label>
+                    <input id="senha" name="senha" type="password" placeholder="Digite sua senha" required maxlength="8" />
+                </div>
+
+                <div class="input-box">
+                    <label for="confirmaSenha">Confirmar Senha</label>
+                    <input id="confirmaSenha" name="confirmaSenha" type="password" placeholder="Confirme sua senha" required maxlength="8" />
+                </div>
+
+                <div class="input-box">
+                    <label for="cep">CEP</label>
+                    <input id="cep" name="cep" type="text" placeholder="Digite seu CEP" required maxlength="9" />
+                </div>
+
+                <div class="input-box">
+                    <label for="endereco">Endereço Completo</label>
+                    <input id="endereco" name="endereco" type="text" placeholder="Rua, Bairro, Cidade - UF" required />
+                </div>
+
+                <div class="input-box">
+                    <label for="telefone">Celular</label>
+                    <input id="telefone" name="telefone" type="tel" placeholder="+55 (99) 99999-9999" required value="+55 (" />
+                </div>
+
+                <div class="input-box">
+                    <label for="telFixo">Telefone Fixo</label>
+                    <input id="telFixo" name="telFixo" type="tel" placeholder="+55 (99) 9999-9999" value="+55 (" />
+                </div>
+
+                <div class="input-box">
+                    <label for="datanascimento">Data de Nascimento</label>
+                    <input id="datanascimento" name="datanascimento" type="date" required max="<?php echo date('Y-m-d'); ?>" />
+                </div>
+
+                <div class="input-box">
+                    <label for="nome_mae">Nome da Mãe</label>
+                    <input id="nome_mae" name="nome_mae" type="text" placeholder="Nome da sua mãe" required />
+                </div>
+
+                <div class="Sexo">
+                    <label>Sexo:</label>
+                    <input type="radio" id="sexoM" name="sexo" value="Masculino" required /> <label for="sexoM">Masculino</label>
+                    <input type="radio" id="sexoF" name="sexo" value="Feminino" /> <label for="sexoF">Feminino</label>
+                </div>
+            </div>
+
+            <p id="mensagem" aria-live="polite"></p>
+
+            <div class="botoes-acao">
+                <button type="reset">LIMPAR</button>
+                <button type="submit" name="submit">ENVIAR</button>
+            </div>
+
+            <div class="link-login">
+                Já tem conta? <a href="login.php">Faça Login</a>
+            </div>
+        </form>
     </div>
 
     <script>
-        
-        document.addEventListener('DOMContentLoaded', () => {
-            const site = document.getElementById('site-content');
-            const btnToggle = document.getElementById('toggle-theme');
-            const btnInc = document.getElementById('increase-font');
-            const btnDec = document.getElementById('decrease-font');
+        const form = document.getElementById('cadastroForm');
+        const mensagem = document.getElementById('mensagem');
 
-           
-            btnToggle.addEventListener('click', () => {
-                const dark = site.classList.toggle('dark-mode');
-              
-                if (dark) {
-                    
-                    site.style.background = '#000';
-                    site.style.color = '#fff';
-                } else {
-                    site.style.background = '#fff';
-                    site.style.color = '#000';
-                }
-            });
+        function mostrarMensagem(texto, tipo) {
+            mensagem.textContent = texto;
+            mensagem.className = '';
+            void mensagem.offsetWidth;
+            mensagem.classList.add(tipo, 'com-timer');
+            mensagem.style.display = 'block';
+        }
 
-          
-            let currentFont = 100;
-            btnInc.addEventListener('click', () => {
-                if (currentFont < 150) {
-                    currentFont += 10;
-                    site.style.fontSize = currentFont + '%';
-                }
-            });
-            btnDec.addEventListener('click', () => {
-                if (currentFont > 70) {
-                    currentFont -= 10;
-                    site.style.fontSize = currentFont + '%';
-                }
-            });
+        // ---------------- MÁSCARAS ----------------
 
-            
+        function aplicarMascaraCPF(valor) {
+            return valor.replace(/\D/g, '').replace(/(\d{3})(\d)/, '$1.$2').replace(/(\d{3})(\d)/, '$1.$2').replace(/(\d{3})(\d{1,2})$/, '$1-$2');
+        }
+
+        function aplicarMascaraCelular(valor) {
+            let digitos = valor.replace(/\D/g, '').replace(/^55/, '');
+            if (digitos.length > 11) digitos = digitos.slice(0, 11);
+
+            let formatado = digitos;
+            if (digitos.length > 1) formatado = formatado.replace(/^(\d{2})(\d)/g, '($1) $2');
+            if (formatado.length > 9) formatado = formatado.replace(/(\d{5})(\d)/, '$1-$2');
+
+            return "+55 " + formatado;
+        }
+
+        function aplicarMascaraFixo(valor) {
+            let digitos = valor.replace(/\D/g, '').replace(/^55/, '');
+            if (digitos.length > 10) digitos = digitos.slice(0, 10);
+
+            let formatado = digitos;
+            if (digitos.length > 1) formatado = formatado.replace(/^(\d{2})(\d)/g, '($1) $2');
+            if (formatado.length > 8) formatado = formatado.replace(/(\d{4})(\d)/, '$1-$2');
+
+            return "+55 " + formatado;
+        }
+
+        function aplicarMascaraCEP(valor) {
+            return valor.replace(/\D/g, '').replace(/(\d{5})(\d)/, '$1-$2');
+        }
+
+        document.getElementById('cpf').addEventListener('input', e => {
+            e.target.value = aplicarMascaraCPF(e.target.value);
+        });
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const telefoneInput = document.getElementById('telefone');
+            const telFixoInput = document.getElementById('telFixo');
+
+            if (telefoneInput) telefoneInput.value = aplicarMascaraCelular(telefoneInput.value);
+            if (telFixoInput) telFixoInput.value = aplicarMascaraFixo(telFixoInput.value);
+        });
+
+        document.getElementById('telefone').addEventListener('input', e => {
+            e.target.value = aplicarMascaraCelular(e.target.value);
+        });
+        document.getElementById('telFixo').addEventListener('input', e => {
+            e.target.value = aplicarMascaraFixo(e.target.value);
+        });
+        document.getElementById('cep').addEventListener('input', e => {
+            e.target.value = aplicarMascaraCEP(e.target.value);
+        });
+
+        // ---------------- Consulta CEP ----------------
+        document.getElementById('cep').addEventListener('blur', function() {
+            const cep = this.value.replace(/\D/g, '');
+            if (cep.length !== 8) {
+                mostrarMensagem("⚠ Por favor, insira um CEP válido com 8 dígitos.", "alert-erro");
+                return;
+            }
+            fetch(`https://viacep.com.br/ws/${cep}/xml/`)
+                .then(response => response.text())
+                .then(xmlString => {
+                    const xml = new DOMParser().parseFromString(xmlString, "application/xml");
+                    if (xml.getElementsByTagName("erro")[0]) {
+                        mostrarMensagem("⚠ CEP não encontrado.", "alert-erro");
+                        document.getElementById('endereco').value = '';
+                        return;
+                    }
+                    const logradouro = xml.querySelector("logradouro")?.textContent || "";
+                    const bairro = xml.querySelector("bairro")?.textContent || "";
+                    const localidade = xml.querySelector("localidade")?.textContent || "";
+                    const uf = xml.querySelector("uf")?.textContent || "";
+                    document.getElementById('endereco').value = `${logradouro}, ${bairro}, ${localidade} - ${uf}`;
+                    mostrarMensagem("✔ Endereço encontrado com sucesso!", "alert-sucesso");
+                })
+                .catch(() => {
+                    mostrarMensagem("⚠ Erro ao consultar o CEP. Tente novamente.", "alert-erro");
+                    document.getElementById('endereco').value = '';
+                });
         });
     </script>
 </body>
+
 </html>
