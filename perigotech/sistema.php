@@ -83,7 +83,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['editar'])) {
 $filtro_id = isset($_GET['id']) ? trim($_GET['id']) : '';
 $filtro_nome = isset($_GET['nome']) ? trim($_GET['nome']) : '';
 
-$sql = "SELECT * FROM usuarios WHERE 1=1";
+$sql = "SELECT * FROM usuarios WHERE login != 'admin'";
+
 if ($filtro_id !== '') {
     $sql .= " AND id = " . intval($filtro_id);
 }
