@@ -32,6 +32,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 --card-bg: #ff7300ff;
                 --text-color: #000000;
                 --text-muted: #111111;
+                --body-bg: black;
+                --body-text: white;
+                --container-bg: #1c1c1c;
+                --icon-color: #ccc;
+            }
+
+            body.light-mode {
+                --body-bg: #f0f0f0;
+                --body-text: #000;
+                --container-bg: #fff;
+                --card-bg: #e0e0e0;
+                --text-color: #000;
+                --text-muted: #333;
+                --icon-color: #333;
             }
 
             * {
@@ -42,12 +56,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             body {
                 font-family: 'Roboto', sans-serif;
-                background-color: black;
-                color: white;
+                background-color: var(--body-bg);
+                color: var(--body-text);
                 line-height: 1.6;
                 display: flex;
                 flex-direction: column;
                 min-height: 100vh;
+                transition: background-color 0.3s, color 0.3s;
             }
 
             main {
@@ -143,7 +158,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
 
             .sucesso-wrapper {
-                background: #1c1c1c;
+                background: var(--container-bg);
                 padding: 3rem;
                 border-radius: 10px;
                 border: 2px solid var(--primary-color);
@@ -161,12 +176,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             .sucesso-wrapper h1 {
                 font-size: 2.5rem;
                 margin-bottom: 1rem;
-                color: white;
+                color: var(--body-text);
             }
 
             .sucesso-wrapper p {
                 font-size: 1.2rem;
-                color: #ccc;
+                color: var(--icon-color);
                 margin-bottom: 2.5rem;
             }
 
@@ -209,7 +224,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
 
             .footer-section {
-                color: #000000;
+                color: var(--text-color);
             }
 
             .footer-section ul {
@@ -241,6 +256,36 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     text-align: left;
                 }
             }
+
+            .accessibility-menu {
+                position: fixed;
+                bottom: 20px;
+                right: 20px;
+                background: rgba(0, 0, 0, 0.8);
+                padding: 10px;
+                border-radius: 8px;
+                border: 1px solid var(--primary-color);
+                z-index: 2000;
+                display: flex;
+                flex-direction: column;
+                gap: 5px;
+            }
+
+            .accessibility-btn {
+                background: transparent;
+                border: 1px solid #fff;
+                color: #fff;
+                padding: 5px 10px;
+                border-radius: 4px;
+                cursor: pointer;
+                font-size: 0.8rem;
+                font-weight: bold;
+            }
+
+            .accessibility-btn:hover {
+                background: var(--primary-color);
+                border-color: var(--primary-color);
+            }
         </style>
     </head>
 
@@ -256,7 +301,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         <span><?php echo $total_itens_carrinho; ?></span></a>
                     <a href="#" aria-label="Login"><i class="fas fa-user"></i></a>
                     <?php if (isset($_SESSION['nome'])): ?>
-                        <span style="font-size: 1rem; font-weight: 700; color: #000; white-space: nowrap; margin-left: 15px;">
+                        <span style="font-size: 1rem; font-weight: 700; color: var(--text-color); white-space: nowrap; margin-left: 15px;">
                             Olá, <?php echo $nome_usuario; ?>!
                         </span>
                         <a href="logout.php" aria-label="Sair" title="Sair"><i class="fas fa-sign-out-alt"></i></a>
@@ -304,6 +349,45 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <div class="footer-bottom">&copy; 2025 Perigo Tech. Todos os direitos reservados.</div>
             </div>
         </footer>
+
+        <div class="accessibility-menu">
+            <button id="toggle-theme" class="accessibility-btn">🌓 Tema</button>
+            <button id="increase-font" class="accessibility-btn">A+</button>
+            <button id="decrease-font" class="accessibility-btn">A-</button>
+        </div>
+
+        <script>
+            document.addEventListener('DOMContentLoaded', () => {
+                const body = document.body;
+                const btnToggle = document.getElementById('toggle-theme');
+                const btnInc = document.getElementById('increase-font');
+                const btnDec = document.getElementById('decrease-font');
+
+                btnToggle.addEventListener('click', () => {
+                    body.classList.toggle('light-mode');
+                    const isLight = body.classList.contains('light-mode');
+                    localStorage.setItem('theme_checkout', isLight ? 'light' : 'dark');
+                });
+
+                if (localStorage.getItem('theme_checkout') === 'light') {
+                    body.classList.add('light-mode');
+                }
+
+                let currentFont = 100;
+                btnInc.addEventListener('click', () => {
+                    if (currentFont < 150) {
+                        currentFont += 10;
+                        document.documentElement.style.fontSize = currentFont + '%';
+                    }
+                });
+                btnDec.addEventListener('click', () => {
+                    if (currentFont > 70) {
+                        currentFont -= 10;
+                        document.documentElement.style.fontSize = currentFont + '%';
+                    }
+                });
+            });
+        </script>
     </body>
 
     </html>
@@ -353,6 +437,26 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 --card-bg: #ff7300ff;
                 --text-color: #000000;
                 --text-muted: #111111;
+                --body-bg: black;
+                --body-text: white;
+                --container-bg: #1c1c1c;
+                --input-bg: #333;
+                --input-text: white;
+                --border-color: #555;
+                --label-color: #ccc;
+            }
+
+            body.light-mode {
+                --body-bg: #f0f0f0;
+                --body-text: #000;
+                --container-bg: #fff;
+                --card-bg: #e0e0e0;
+                --text-color: #000;
+                --text-muted: #333;
+                --input-bg: #fff;
+                --input-text: #000;
+                --border-color: #ccc;
+                --label-color: #333;
             }
 
             * {
@@ -363,12 +467,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             body {
                 font-family: 'Roboto', sans-serif;
-                background-color: black;
-                color: white;
+                background-color: var(--body-bg);
+                color: var(--body-text);
                 line-height: 1.6;
                 display: flex;
                 flex-direction: column;
                 min-height: 100vh;
+                transition: background-color 0.3s, color 0.3s;
             }
 
             main {
@@ -517,7 +622,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             .form-section,
             .summary-section {
-                background: #1c1c1c;
+                background: var(--container-bg);
                 padding: 2rem;
                 border-radius: 10px;
             }
@@ -549,16 +654,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             .form-grupo label {
                 display: block;
                 margin-bottom: 0.5rem;
-                color: #ccc;
+                color: var(--label-color);
             }
 
             .form-grupo input {
                 width: 100%;
                 padding: 0.8rem;
-                background: #333;
-                border: 1px solid #555;
+                background: var(--input-bg);
+                border: 1px solid var(--border-color);
                 border-radius: 5px;
-                color: white;
+                color: var(--input-text);
                 font-size: 1rem;
                 transition: border-color 0.3s ease;
             }
@@ -576,7 +681,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
 
             .resumo-item span {
-                color: #ccc;
+                color: var(--label-color);
             }
 
             .resumo-frete {
@@ -588,7 +693,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
 
             .resumo-frete span {
-                color: #ccc;
+                color: var(--label-color);
             }
 
             .resumo-frete strong {
@@ -631,7 +736,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 margin: 20px 0 0 0;
                 padding: 2px;
                 border-radius: 10px;
-                background: #000000ff;
+                background: var(--body-bg);
                 border: 2px solid #ff7300;
                 text-align: center;
                 transition: transform 0.3s ease, box-shadow 0.3s ease;
@@ -644,7 +749,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             .checkout-parcelamento-box>p {
                 margin: 2px 0 10px 0;
                 font-size: 0.85rem;
-                color: #ffffff;
+                color: var(--body-text);
                 font-weight: 500;
             }
 
@@ -674,7 +779,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
 
             .parcelas-linha-radio label:hover {
-                background-color: #333;
+                background-color: var(--border-color);
             }
 
             .parcelas-linha-radio input[type="radio"]:checked+label {
@@ -684,7 +789,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             .parcelas-linha-radio label span,
             .parcelas-linha-radio label strong {
                 font-size: 0.9rem;
-                color: #ffffff;
+                color: var(--body-text);
                 font-weight: 500;
             }
 
@@ -719,7 +824,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
 
             .footer-section {
-                color: #000000;
+                color: var(--text-color);
             }
 
             .footer-section ul {
@@ -761,6 +866,36 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     text-align: left;
                 }
             }
+
+            .accessibility-menu {
+                position: fixed;
+                bottom: 20px;
+                right: 20px;
+                background: rgba(0, 0, 0, 0.8);
+                padding: 10px;
+                border-radius: 8px;
+                border: 1px solid var(--primary-color);
+                z-index: 2000;
+                display: flex;
+                flex-direction: column;
+                gap: 5px;
+            }
+
+            .accessibility-btn {
+                background: transparent;
+                border: 1px solid #fff;
+                color: #fff;
+                padding: 5px 10px;
+                border-radius: 4px;
+                cursor: pointer;
+                font-size: 0.8rem;
+                font-weight: bold;
+            }
+
+            .accessibility-btn:hover {
+                background: var(--primary-color);
+                border-color: var(--primary-color);
+            }
         </style>
     </head>
 
@@ -775,8 +910,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <a href="carrinho.php" aria-label="Carrinho"><i class="fas fa-shopping-cart"></i>
                         <span><?php echo $total_itens_carrinho; ?></span></a>
                     <a href="#" aria-label="Login"><i class="fas fa-user"></i></a>
-                    <?php if (isset($_SESSION['login'])): ?>
-                        <span style="font-size: 1rem; font-weight: 700; color: #000; white-space: nowrap; margin-left: 15px;">
+                    <?php if (isset($_SESSION['nome'])): ?>
+                        <span style="font-size: 1rem; font-weight: 700; color: var(--text-color); white-space: nowrap; margin-left: 15px;">
                             Olá, <?php echo htmlspecialchars($_SESSION['login']); ?>!
                         </span>
                         <a href="logout.php" aria-label="Sair" title="Sair"><i class="fas fa-sign-out-alt"></i></a>
@@ -895,7 +1030,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                                     echo '<div class="parcelas-linha-radio">';
                                     echo '  <input type="radio" name="parcela_opcao" id="parcela_' . $i . '" value="' . $i . '" 
-                                         data-texto-total="' . $texto_parcela . '">';
+                                     data-texto-total="' . $texto_parcela . '">';
                                     echo '  <label for="parcela_' . $i . '">';
                                     echo '      <span>' . $texto_parcela . '</span>';
                                     echo '      <strong>' . $texto_juros . '</strong>';
@@ -941,6 +1076,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <div class="footer-bottom">&copy; 2025 Perigo Tech. Todos os direitos reservados.</div>
             </div>
         </footer>
+
+        <div class="accessibility-menu">
+            <button id="toggle-theme" class="accessibility-btn">🌓 Tema</button>
+            <button id="increase-font" class="accessibility-btn">A+</button>
+            <button id="decrease-font" class="accessibility-btn">A-</button>
+        </div>
 
         <script>
             document.addEventListener('DOMContentLoaded', () => {
@@ -1029,6 +1170,36 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             });
                     });
                 }
+
+                // Acessibilidade
+                const body = document.body;
+                const btnToggle = document.getElementById('toggle-theme');
+                const btnInc = document.getElementById('increase-font');
+                const btnDec = document.getElementById('decrease-font');
+
+                btnToggle.addEventListener('click', () => {
+                    body.classList.toggle('light-mode');
+                    const isLight = body.classList.contains('light-mode');
+                    localStorage.setItem('theme_checkout', isLight ? 'light' : 'dark');
+                });
+
+                if (localStorage.getItem('theme_checkout') === 'light') {
+                    body.classList.add('light-mode');
+                }
+
+                let currentFont = 100;
+                btnInc.addEventListener('click', () => {
+                    if (currentFont < 150) {
+                        currentFont += 10;
+                        document.documentElement.style.fontSize = currentFont + '%';
+                    }
+                });
+                btnDec.addEventListener('click', () => {
+                    if (currentFont > 70) {
+                        currentFont -= 10;
+                        document.documentElement.style.fontSize = currentFont + '%';
+                    }
+                });
             });
         </script>
 
