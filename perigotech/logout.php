@@ -1,10 +1,8 @@
 <?php
 session_start();
 
-// Limpando todas as variáveis de sessão
 $_SESSION = [];
 
-// Deleta o cookie de sessão, se usado
 if (ini_get("session.use_cookies")) {
     $params = session_get_cookie_params();
     setcookie(session_name(), '', time() - 42000,
@@ -13,7 +11,6 @@ if (ini_get("session.use_cookies")) {
     );
 }
 
-// Destrói a sessão
 session_destroy();
 
 header('Location: loja.php');
