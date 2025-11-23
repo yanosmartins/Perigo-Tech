@@ -7,7 +7,6 @@ $conn = new mysqli($host, $user, $password, $dbname);
 if ($conn->connect_error) {
     die("Conexão falhou: " . $conn->connect_error);
 }
-
 session_start();
 
 $total_itens_carrinho = 0;
@@ -21,7 +20,7 @@ if (!isset($_SESSION['nome'])) {
 }
 ?>
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt-BR">
 
 <head>
     <meta charset="UTF-8">
@@ -44,16 +43,38 @@ if (!isset($_SESSION['nome'])) {
             --text-color: #000000;
             --text-muted: #111111;
             --accent-color: #ff7300;
+            --body-bg: #000000;
+            --body-text: #ffffff;
+        }
+        
+        body.light-mode {
+            --body-bg: #ffffff;
+            --body-text: #000000;
+        }
+
+        body.light-mode .cart {
+            background-color: #f4f4f4;
+            color: #000;
+        }
+
+        body.light-mode .cart-details h3 {
+            color: #000;
+        }
+
+        body.light-mode .cart-item {
+            border-bottom: 1px solid #ccc;
         }
 
         body {
             font-family: 'Roboto', sans-serif;
-            background-color: black;
-            color: white;
+            background-color: var(--body-bg);
+            color: var(--body-text);
             line-height: 1.6;
             display: flex;
             flex-direction: column;
             min-height: 100vh;
+            transition: background-color 0.3s, color 0.3s;
+            /* Transição suave */
         }
 
         main {
@@ -70,7 +91,6 @@ if (!isset($_SESSION['nome'])) {
             padding: 0 20px;
         }
 
-        /* --- Cabeçalho --- */
         .main-header {
             background-color: var(--card-bg);
             padding: 1rem 0;
@@ -122,7 +142,7 @@ if (!isset($_SESSION['nome'])) {
             color: var(--text-color);
             text-decoration: none;
             font-size: 1.2rem;
-            margin-left: 31px;
+            margin-left: 20px;
             position: relative;
         }
 
@@ -142,42 +162,6 @@ if (!isset($_SESSION['nome'])) {
             transition: color 0.3s ease;
         }
 
-        .mobile-menu-icon {
-            display: block;
-            background: none;
-            border: none;
-            color: white;
-            font-size: 1.5rem;
-            cursor: pointer;
-        }
-
-        /* --- Menu Mobile --- */
-        .mobile-nav {
-            display: none;
-            flex-direction: column;
-            background-color: var(--card-bg);
-            position: sticky;
-            top: 70px;
-            z-index: 999;
-        }
-
-        .mobile-nav.active {
-            display: flex;
-        }
-
-        .mobile-nav a {
-            color: var(--text-color);
-            text-decoration: none;
-            padding: 15px 20px;
-            border-bottom: 1px solid #333;
-            text-align: center;
-        }
-
-        .mobile-nav a:hover {
-            background-color: var(--primary-color);
-        }
-
-        /* --- Botões --- */
         .btn-primary {
             background-color: transparent;
             color: var(--primary-color);
@@ -189,7 +173,7 @@ if (!isset($_SESSION['nome'])) {
             transition: all 0.3s ease;
             width: auto;
             margin-top: 1rem;
-            text-decoration: none; 
+            text-decoration: none;
             display: inline-block;
         }
 
@@ -203,14 +187,13 @@ if (!isset($_SESSION['nome'])) {
         .btn-secondary-menos {
             background-color: transparent;
             color: var(--primary-color);
-            padding: 10px 20px;
+            padding: 8px 15px;
             border: 2px solid var(--primary-color);
             border-radius: 5px;
             font-weight: 700;
             cursor: pointer;
             transition: all 0.3s ease;
-            width: 100%;
-            margin-top: 1rem;
+            margin: 0;
         }
 
         .btn-secondary:hover,
@@ -219,12 +202,115 @@ if (!isset($_SESSION['nome'])) {
             background-color: var(--primary-color);
             color: white;
         }
-        
+
+        .cart {
+            background: #1c1c1c;
+            padding: 2rem;
+            border-radius: 10px;
+            color: white;
+            margin-top: 1rem;
+        }
+
+        .cart-item {
+            display: flex;
+            align-items: center;
+            border-bottom: 1px solid #333;
+            padding: 1.5rem 0;
+            gap: 20px;
+        }
+
+        .cart-img {
+            width: 100px;
+            height: 100px;
+            object-fit: contain;
+            border-radius: 8px;
+            background: #fff;
+            padding: 5px;
+            flex-shrink: 0;
+        }
+
+        .cart-details {
+            flex: 1;
+        }
+
+        .cart-details h3 {
+            margin-bottom: .5rem;
+            font-size: 1.1rem;
+            color: inherit;
+        }
+
+        .cart-details .price {
+            color: var(--primary-color);
+            font-weight: bold;
+            margin-bottom: 1rem;
+        }
+
+        .cart-actions {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .cart-actions span {
+            font-size: 1.2rem;
+            font-weight: bold;
+            margin: 0 10px;
+            color: inherit;
+        }
+
+        .cart-item-subtotal {
+            text-align: right;
+            min-width: 120px;
+        }
+
+        .cart-item-subtotal p {
+            font-size: 0.9rem;
+            color: #aaa;
+        }
+
+        .cart-total {
+            margin-top: 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .total-finalizar {
+            text-align: right;
+        }
+
+        .cart-total h2 {
+            margin-bottom: 1rem;
+            color: var(--primary-color);
+        }
+
+        .btn-danger {
+            background-color: transparent;
+            color: #ff4d4d;
+            padding: 10px 20px;
+            border: 2px solid #ff4d4d;
+            border-radius: 5px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+        }
+
+        .btn-danger:hover {
+            background-color: #ff4d4d;
+            color: white;
+        }
+
         /* --- Rodapé --- */
         .main-footer {
             background-color: var(--card-bg);
             padding: 3rem 0 1rem;
             border-top: 1px solid #333;
+            margin-top: auto;
+            color: #000;
         }
 
         .footer-content {
@@ -277,12 +363,38 @@ if (!isset($_SESSION['nome'])) {
             color: var(--text-muted);
         }
 
-        /* --- Media Queries (Responsividade) --- */
-        @media (min-width: 768px) {
-            .mobile-menu-icon {
-                display: none;
-            }
+        .accessibility-menu {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: rgba(0, 0, 0, 0.8);
+            padding: 10px;
+            border-radius: 8px;
+            border: 1px solid var(--primary-color);
+            z-index: 2000;
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
 
+        .accessibility-btn {
+            background: transparent;
+            border: 1px solid #fff;
+            color: #fff;
+            padding: 5px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            font-weight: bold;
+        }
+
+        .accessibility-btn:hover {
+            background: var(--primary-color);
+            border-color: var(--primary-color);
+        }
+
+        /* --- RESPONSIVIDADE --- */
+        @media (min-width: 768px) {
             .main-nav {
                 display: flex;
             }
@@ -292,90 +404,60 @@ if (!isset($_SESSION['nome'])) {
                 text-align: left;
             }
         }
-        
-        .cart {
-            background: #1c1c1c;
-            padding: 2rem;
-            border-radius: 10px;
-            color: white;
-        }
 
-        .cart-item {
-            display: flex;
-            align-items: center;
-            border-bottom: 1px solid #333;
-            padding: 1rem 0;
-        }
+        @media (max-width: 768px) {
+            .cart-item {
+                flex-direction: column;
+                align-items: flex-start;
+                text-align: left;
+            }
 
-        .cart-img {
-            width: 120px;
-            height: auto;
-            margin-right: 20px;
-            border-radius: 8px;
-            background: #fff;
-            padding: 5px;
-        }
+            .cart-img {
+                width: 300px;
+                height: 300px;
+                margin-bottom: 10px;
+            }
 
-        .cart-details {
-            flex: 1;
-        }
+            .cart-details {
+                width: 100%;
+            }
 
-        .cart-details h3 {
-            margin-bottom: .5rem;
-            color: white;
-        }
+            .cart-actions {
+                justify-content: flex-start;
+                margin-top: 30px;
+            }
 
-        .cart-details .price {
-            color: var(--primary-color);
-            font-weight: bold;
-            margin-bottom: 1rem;
-        }
+            .cart-item-subtotal {
+                text-align: left;
+                margin-top: 15px;
+                width: 100%;
+                border-top: 1px solid #333;
+                padding-top: 10px;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+            }
 
-        .cart-actions {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
+            .cart-total {
+                flex-direction: column;
+                text-align: center;
+                align-items: stretch;
+            }
 
-        .cart-actions span {
-            font-size: 1.2rem;
-            font-weight: bold;
-        }
+            .total-finalizar {
+                text-align: center;
+                margin-top: 20px;
+            }
 
-        .cart-total {
-            margin-top: 2rem;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        
-        .total-finalizar {
-            text-align: right;
-        }
+            .btn-secondary.remove {
+                margin-left: 0 !important;
+                width: 100%;
+            }
 
-        .cart-total h2 {
-            margin-bottom: 1rem;
-            color: var(--primary-color);
+            .cart-actions form {
+                display: inline-block;
+            }
         }
-        
-        .btn-danger {
-            background-color: transparent;
-            color: #ff4d4d;
-            padding: 10px 20px;
-            border: 2px solid #ff4d4d;
-            border-radius: 5px;
-            font-weight: 700;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            margin-top: 4.7rem;
-            text-decoration: none;
-        }
-
-        .btn-danger:hover {
-            background-color: #ff4d4d;
-            color: white;
-        }
-
     </style>
 </head>
 
@@ -402,11 +484,7 @@ if (!isset($_SESSION['nome'])) {
                     </span>
                     <a href="logout.php" aria-label="Sair" title="Sair"><i class="fas fa-sign-out-alt"></i></a>
                 <?php endif; ?>
-
             </div>
-            <button class="mobile-menu-icon" aria-label="Abrir menu">
-                <i class="fas fa-bars"></i>
-            </button>
         </div>
     </header>
 
@@ -418,41 +496,42 @@ if (!isset($_SESSION['nome'])) {
         <div class="cart">
             <?php
             $total_geral = 0;
-            
+
             if (empty($_SESSION['carrinho'])) :
-            
                 echo '<p style="text-align: center; font-size: 1.2rem;">Seu carrinho está vazio.</p>';
                 echo '<div style="text-align: center; margin-top: 2rem;"><a href="loja.php" class="btn-primary" style="width: auto;">Voltar para a Loja</a></div>';
-            
             else :
-            
                 $ids_produtos = implode(',', array_keys($_SESSION['carrinho']));
+                // Validação para evitar erro SQL se array vazio
+                if (empty($ids_produtos)) $ids_produtos = "0";
+
                 $sql = "SELECT * FROM produtos WHERE id_prod IN ($ids_produtos)";
                 $result = $conn->query($sql);
-                
-                if ($result->num_rows > 0) :
+
+                if ($result && $result->num_rows > 0) :
                     while ($produto = $result->fetch_assoc()) :
                         $id = $produto['id_prod'];
                         $quantidade = $_SESSION['carrinho'][$id];
                         $subtotal = $produto['preco'] * $quantidade;
                         $total_geral += $subtotal;
             ?>
-            
+
                         <div class="cart-item">
                             <img src="./img/<?php echo htmlspecialchars($produto['img']); ?>" alt="<?php echo htmlspecialchars($produto['nome']); ?>" class="cart-img">
+
                             <div class="cart-details">
                                 <h3><?php echo htmlspecialchars($produto['nome']); ?></h3>
                                 <p class="price">R$ <?php echo number_format($produto['preco'], 2, ',', '.'); ?></p>
-                                
+
                                 <div class="cart-actions">
                                     <form action="gerenciar_carrinho.php" method="POST" style="margin: 0;">
                                         <input type="hidden" name="id_prod" value="<?php echo $id; ?>">
                                         <input type="hidden" name="acao" value="remover_um">
                                         <button type="submit" class="btn-secondary-menos">-</button>
                                     </form>
-                                    
+
                                     <span><?php echo $quantidade; ?></span>
-                                    
+
                                     <form action="gerenciar_carrinho.php" method="POST" style="margin: 0;">
                                         <input type="hidden" name="id_prod" value="<?php echo $id; ?>">
                                         <input type="hidden" name="acao" value="adicionar">
@@ -466,30 +545,31 @@ if (!isset($_SESSION['nome'])) {
                                     </form>
                                 </div>
                             </div>
-                            <div class="cart-item-subtotal" style="text-align: right; min-width: 150px;">
-                                <p style="font-size: 0.9rem; color: #aaa;">Subtotal</p>
+
+                            <div class="cart-item-subtotal">
+                                <p>Subtotal</p>
                                 <h4 style="color: var(--primary-color);">R$ <?php echo number_format($subtotal, 2, ',', '.'); ?></h4>
                             </div>
                         </div>
 
-            <?php
+                <?php
                     endwhile;
                 endif;
-            ?>
+                ?>
 
                 <div class="cart-total">
                     <form action="gerenciar_carrinho.php" method="POST" style="margin: 0;">
                         <input type="hidden" name="acao" value="limpar">
                         <button type="submit" class="btn-danger">Esvaziar Carrinho</button>
                     </form>
-                    
+
                     <div class="total-finalizar">
                         <h2>Total: R$ <?php echo number_format($total_geral, 2, ',', '.'); ?></h2>
                         <a href="checkout.php" class="btn-primary">Finalizar Compra</a>
                     </div>
                 </div>
-            <?php endif;?>
-            
+            <?php endif; ?>
+
         </div>
     </main>
 
@@ -524,7 +604,46 @@ if (!isset($_SESSION['nome'])) {
         </div>
     </footer>
 
+    <div class="accessibility-menu">
+        <button id="toggle-theme" class="accessibility-btn">🌓 Tema</button>
+        <button id="increase-font" class="accessibility-btn">A+</button>
+        <button id="decrease-font" class="accessibility-btn">A-</button>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const body = document.body;
+            const btnToggle = document.getElementById('toggle-theme');
+            const btnInc = document.getElementById('increase-font');
+            const btnDec = document.getElementById('decrease-font');
+
+            // Acessibilidade
+            btnToggle.addEventListener('click', () => {
+                body.classList.toggle('light-mode');
+                const isLight = body.classList.contains('light-mode');
+                localStorage.setItem('theme', isLight ? 'light' : 'dark');
+            });
+
+            if (localStorage.getItem('theme') === 'light') {
+                body.classList.add('light-mode');
+            }
+
+            let currentFont = 100;
+            btnInc.addEventListener('click', () => {
+                if (currentFont < 150) {
+                    currentFont += 10;
+                    document.documentElement.style.fontSize = currentFont + '%';
+                }
+            });
+            btnDec.addEventListener('click', () => {
+                if (currentFont > 70) {
+                    currentFont -= 10;
+                    document.documentElement.style.fontSize = currentFont + '%';
+                }
+            });
+        });
+    </script>
+
 </body>
 
 </html>
-
