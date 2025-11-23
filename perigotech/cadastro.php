@@ -148,6 +148,29 @@ if (isset($_POST['submit'])) {
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700;900&display=swap');
 
+        :root {
+            /* PADRÃO: DARK MODE */
+            --bg-image: url(img/Gemini_Generated_Image_km51uskm51uskm51.png);
+            --bg-color: #121212;
+            --container-bg: rgba(30, 30, 30, 0.95);
+            --text-color: #e0e0e0;
+            --input-bg: #333;
+            --input-border: #555;
+            --input-text: #fff;
+            --primary: #ff8c00;
+            --hover: #c27524;
+        }
+
+        body.light-mode {
+            /* ALTERNATIVO: LIGHT MODE (Imagem mantida) */
+            --bg-color: #f0f0f0;
+            --container-bg: rgba(255, 255, 255, 0.95);
+            --text-color: #333;
+            --input-bg: #fff;
+            --input-border: #333;
+            --input-text: #000;
+        }
+
         * {
             padding: 0;
             margin: 0;
@@ -160,18 +183,20 @@ if (isset($_POST['submit'])) {
             display: flex;
             justify-content: center;
             align-items: center;
-            background-image: url(img/Gemini_Generated_Image_km51uskm51uskm51.png);
+            background-image: var(--bg-image);
+            background-color: var(--bg-color);
             background-size: cover;
             background-position: center;
             background-repeat: no-repeat;
             background-attachment: fixed;
             padding: 20px;
+            transition: background-color 0.3s, color 0.3s;
         }
 
         .container {
             width: 100%;
             max-width: 800px;
-            background: rgba(255, 255, 255, 0.95);
+            background: var(--container-bg);
             box-shadow: 5px 5px 18px rgba(0, 0, 0, 0.2);
             border-radius: 20px;
             padding: 2rem;
@@ -186,7 +211,7 @@ if (isset($_POST['submit'])) {
 
         .form-header h1 {
             margin-bottom: 0.5rem;
-            color: #333;
+            color: var(--text-color);
             position: relative;
             display: inline-block;
         }
@@ -196,12 +221,11 @@ if (isset($_POST['submit'])) {
             display: block;
             width: 60px;
             height: 3px;
-            background: #ff8c00;
+            background: var(--primary);
             margin: 0.5rem auto 0;
             border-radius: 5px;
         }
 
-        /* Mensagem de Erro (Igual ao Login) */
         .erro-backend {
             background-color: #ffe0e0;
             color: #d8000c;
@@ -214,7 +238,6 @@ if (isset($_POST['submit'])) {
             font-weight: bold;
         }
 
-        /* Mensagens JS */
         #mensagem {
             display: none;
             padding: 10px;
@@ -248,22 +271,24 @@ if (isset($_POST['submit'])) {
         .input-box label {
             font-size: 0.9rem;
             font-weight: 600;
-            color: #333;
+            color: var(--text-color);
             margin-bottom: 5px;
         }
 
         .input-box input {
             padding: 0.8rem;
-            border: 1px solid #333;
+            border: 1px solid var(--input-border);
             border-radius: 8px;
             font-size: 0.95rem;
             outline: none;
             transition: border 0.3s, background 0.3s;
             width: 100%;
+            background: var(--input-bg);
+            color: var(--input-text);
         }
 
         .input-box input:focus {
-            border-color: #ff8c00;
+            border-color: var(--primary);
         }
 
         .input-box input:hover {
@@ -276,11 +301,12 @@ if (isset($_POST['submit'])) {
             align-items: center;
             gap: 15px;
             margin-top: 5px;
+            color: var(--text-color);
         }
 
         .Sexo label {
             font-weight: 600;
-            color: #333;
+            color: var(--text-color);
             margin-right: 10px;
         }
 
@@ -303,12 +329,12 @@ if (isset($_POST['submit'])) {
         }
 
         button[name="submit"] {
-            background: #ff8c00;
+            background: var(--primary);
             color: #fff;
         }
 
         button[name="submit"]:hover {
-            background: #c27524;
+            background: var(--hover);
         }
 
         button[type="reset"] {
@@ -323,10 +349,11 @@ if (isset($_POST['submit'])) {
         .link-login {
             text-align: center;
             margin-top: 1.5rem;
+            color: var(--text-color);
         }
 
         .link-login a {
-            color: #ff8c00;
+            color: var(--primary);
             text-decoration: none;
             font-weight: bold;
         }
@@ -335,7 +362,6 @@ if (isset($_POST['submit'])) {
             text-decoration: underline;
         }
 
-        /* Responsividade */
         @media screen and (max-width: 700px) {
             .input-group {
                 grid-template-columns: 1fr;
@@ -357,6 +383,37 @@ if (isset($_POST['submit'])) {
             .botoes-acao {
                 flex-direction: column;
             }
+        }
+
+        .accessibility-menu {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: rgba(0, 0, 0, 0.8);
+            padding: 10px;
+            border-radius: 8px;
+            border: 1px solid var(--primary);
+            z-index: 2000;
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .accessibility-btn {
+            background: transparent;
+            border: 1px solid #fff;
+            color: #fff;
+            padding: 5px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            font-weight: bold;
+            width: auto;
+        }
+
+        .accessibility-btn:hover {
+            background: var(--primary);
+            border-color: var(--primary);
         }
     </style>
 </head>
@@ -456,6 +513,12 @@ if (isset($_POST['submit'])) {
         </form>
     </div>
 
+    <div class="accessibility-menu">
+        <button id="toggle-theme" class="accessibility-btn">🌓 Tema</button>
+        <button id="increase-font" class="accessibility-btn">A+</button>
+        <button id="decrease-font" class="accessibility-btn">A-</button>
+    </div>
+
     <script>
         const form = document.getElementById('cadastroForm');
         const mensagem = document.getElementById('mensagem');
@@ -467,8 +530,6 @@ if (isset($_POST['submit'])) {
             mensagem.classList.add(tipo, 'com-timer');
             mensagem.style.display = 'block';
         }
-
-        // ---------------- MÁSCARAS ----------------
 
         function aplicarMascaraCPF(valor) {
             return valor.replace(/\D/g, '').replace(/(\d{3})(\d)/, '$1.$2').replace(/(\d{3})(\d)/, '$1.$2').replace(/(\d{3})(\d{1,2})$/, '$1-$2');
@@ -510,6 +571,35 @@ if (isset($_POST['submit'])) {
 
             if (telefoneInput) telefoneInput.value = aplicarMascaraCelular(telefoneInput.value);
             if (telFixoInput) telFixoInput.value = aplicarMascaraFixo(telFixoInput.value);
+
+            const body = document.body;
+            const btnToggle = document.getElementById('toggle-theme');
+            const btnInc = document.getElementById('increase-font');
+            const btnDec = document.getElementById('decrease-font');
+
+            btnToggle.addEventListener('click', () => {
+                body.classList.toggle('light-mode');
+                const isLight = body.classList.contains('light-mode');
+                localStorage.setItem('theme_cadastro', isLight ? 'light' : 'dark');
+            });
+
+            if (localStorage.getItem('theme_cadastro') === 'dark') {
+                body.classList.add('dark-mode');
+            }
+
+            let currentFont = 100;
+            btnInc.addEventListener('click', () => {
+                if (currentFont < 150) {
+                    currentFont += 10;
+                    document.documentElement.style.fontSize = currentFont + '%';
+                }
+            });
+            btnDec.addEventListener('click', () => {
+                if (currentFont > 70) {
+                    currentFont -= 10;
+                    document.documentElement.style.fontSize = currentFont + '%';
+                }
+            });
         });
 
         document.getElementById('telefone').addEventListener('input', e => {
@@ -522,7 +612,6 @@ if (isset($_POST['submit'])) {
             e.target.value = aplicarMascaraCEP(e.target.value);
         });
 
-        // ---------------- Consulta CEP ----------------
         document.getElementById('cep').addEventListener('blur', function() {
             const cep = this.value.replace(/\D/g, '');
             if (cep.length !== 8) {
