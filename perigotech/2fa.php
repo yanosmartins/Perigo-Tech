@@ -87,31 +87,51 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <meta charset="UTF-8">
     <title>Autenticação de 2 Fatores</title>
     <style>
+        :root {
+            --primary-color: #ff7300;
+            --bg-card: #fff;
+            --text-color: #000;
+            --input-bg: #fff;
+            --input-border: #ccc;
+            --shadow-color: #ccc;
+        }
+
+        body.dark-mode {
+            --bg-card: #1c1c1c;
+            --text-color: #fff;
+            --input-bg: #333;
+            --input-border: #555;
+            --shadow-color: #000;
+        }
+
         body {
             font-family: Arial, sans-serif;
             background-image: url(img/Gemini_Generated_Image_km51uskm51uskm51.png);
             background-size: cover;
             background-position: center;
+            font-size: 100%; 
         }
 
         .container {
             max-width: 400px;
             margin: 60px auto;
-            background: #fff;
+            background: var(--bg-card);
             padding: 2rem;
             border-radius: 10px;
-            box-shadow: 0 0 10px #ccc;
+            box-shadow: 0 0 10px var(--shadow-color);
+            color: var(--text-color);
         }
 
         h2 {
             text-align: center;
-            color: #ff7300;
+            color: var(--primary-color);
         }
 
         label {
             font-weight: bold;
             margin-top: 1rem;
             display: block;
+            color: var(--text-color);
         }
 
         input[type="text"] {
@@ -119,11 +139,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             padding: 0.5rem;
             margin-top: 0.3rem;
             border-radius: 5px;
-            border: 1px solid #ccc;
+            border: 1px solid var(--input-border);
+            background-color: var(--input-bg);
+            color: var(--text-color);
+            box-sizing: border-box;
         }
 
         button {
-            background: #ff7300;
+            background: var(--primary-color);
             color: #fff;
             border: none;
             padding: 0.7rem 1.5rem;
@@ -131,12 +154,45 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             margin-top: 1.5rem;
             cursor: pointer;
             font-weight: bold;
+            width: 100%;
         }
 
         .erro {
             color: red;
             text-align: center;
             margin-bottom: 1rem;
+        }
+
+        .accessibility-menu {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: rgba(0, 0, 0, 0.8);
+            padding: 10px;
+            border-radius: 8px;
+            border: 1px solid var(--primary-color);
+            z-index: 2000;
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .accessibility-btn {
+            background: transparent;
+            border: 1px solid #fff;
+            color: #fff;
+            padding: 5px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            font-weight: bold;
+            width: auto;
+            margin-top: 0;
+        }
+
+        .accessibility-btn:hover {
+            background: var(--primary-color);
+            border-color: var(--primary-color);
         }
     </style>
 </head>
@@ -159,6 +215,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         </form>
     </div>
 
+    <div class="accessibility-menu">
+        <button id="toggle-theme" class="accessibility-btn">🌓 Tema</button>
+        <button id="increase-font" class="accessibility-btn">A+</button>
+        <button id="decrease-font" class="accessibility-btn">A-</button>
+    </div>
+
     <script>
         function mascaraCPF(valor) {
             return valor
@@ -178,6 +240,40 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 });
             }
         }
+
+        // ACESSIBILIDADE
+        document.addEventListener('DOMContentLoaded', () => {
+            const body = document.body;
+            const btnToggle = document.getElementById('toggle-theme');
+            const btnInc = document.getElementById('increase-font');
+            const btnDec = document.getElementById('decrease-font');
+
+            btnToggle.addEventListener('click', () => {
+                body.classList.toggle('dark-mode');
+                const isDark = body.classList.contains('dark-mode');
+                localStorage.setItem('theme_2fa', isDark ? 'dark' : 'light');
+            });
+
+            if (localStorage.getItem('theme_2fa') === 'dark') {
+                body.classList.add('dark-mode');
+            } else if (localStorage.getItem('theme') === 'dark') {
+                body.classList.add('dark-mode');
+            }
+
+            let currentFont = 100;
+            btnInc.addEventListener('click', () => {
+                if (currentFont < 150) {
+                    currentFont += 10;
+                    document.documentElement.style.fontSize = currentFont + '%';
+                }
+            });
+            btnDec.addEventListener('click', () => {
+                if (currentFont > 70) {
+                    currentFont -= 10;
+                    document.documentElement.style.fontSize = currentFont + '%';
+                }
+            });
+        });
     </script>
 </body>
 </html>
